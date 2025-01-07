@@ -15,7 +15,7 @@ router = APIRouter(prefix="/auth-google", tags=["autenticacion-google"])
 # Leer las variables de entorno
 GOOGLE_CLIENT_ID = load_dotenv(".env")
 GOOGLE_CLIENT_SECRET = load_dotenv(".env")
-GOOGLE_REDIRECT_URI = "/api/auth-google/callback"
+GOOGLE_REDIRECT_URI = "https://vps-4622713-x.dattaweb.com/api/auth-google/callback"
 GOOGLE_AUTH_URI = "https://accounts.google.com/o/oauth2/auth"
 GOOGLE_TOKEN_URI = "https://oauth2.googleapis.com/token"
 GOOGLE_USER_INFO_URI = "https://www.googleapis.com/oauth2/v2/userinfo"
