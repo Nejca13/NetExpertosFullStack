@@ -1,0 +1,137 @@
+.container {
+  position: relative;
+  padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100dvh;
+  width: 100dvw;
+  background-image: url('../.../../../../assets/images/FondoAmarillo.jpg');
+}
+
+.header {
+  background-color: white;
+  height: 85px;
+  width: 100dvw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.div {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.imagenPerfil {
+  border: 3px solid var(--color-amarillo);
+  border-radius: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.username {
+  font-family: var(--font-roboto-bold);
+  font-size: 18px;
+  color: var(--color-gris-medio);
+}
+
+.iconoLlamada {
+  background-color: var(--color-amarillo);
+  border-radius: 100%;
+  padding: 5px;
+  margin-right: 10px;
+  box-shadow: var(--box-shadow);
+}
+
+.chats {
+  height: 100%;
+  width: 100dvw;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+  scrollbar-width: none;
+  gap: 10px;
+  padding: 20px 5px;
+}
+
+.mensajeEntrante {
+  background-color: var(--color-gris-medio);
+  padding: 10px 12px;
+  text-wrap: balance;
+  width: fit-content;
+  max-width: 80%;
+  box-shadow: var(--box-shadow);
+  border-radius: 0 20px 20px 20px;
+  color: white;
+  overflow-wrap: break-word;
+  text-align: left;
+  font-family: var(--font-roboto-regular);
+}
+
+.mensajeSaliente {
+  background-color: white;
+  padding: 10px 12px;
+  text-wrap: balance;
+  width: fit-content;
+  box-shadow: var(--box-shadow);
+  max-width: 80%;
+  overflow-wrap: break-word;
+  text-align: left;
+  border-radius: 20px 0px 20px 20px;
+  color: var(--color-gris-medio);
+  align-self: flex-end;
+  font-family: var(--font-roboto-regular);
+}
+
+.containerInput {
+  width: 90%;
+  position: relative;
+  min-height: fit-content;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: center;
+  border-radius: 26px;
+  background-color: white;
+  margin-bottom: 10px;
+  padding: 0 10px;
+}
+
+.input {
+  border: none;
+  color: var(--color-gris-medio);
+  font-family: var(--font-roboto-regular);
+  max-height: 70px;
+  width: 80%;
+  resize: none;
+  field-sizing: content;
+  border-radius: 26px;
+  padding: 10px;
+}
+.input:focus-visible {
+  outline: none;
+}
+
+.botonEnviar {
+  background-color: transparent;
+  border: none;
+  max-height: 30px;
+  cursor: pointer;
+}
+
+.containerEmojis {
+  max-width: 90dvw;
+  left: 0;
+  position: absolute;
+  bottom: calc(100% + 10px);
+}
+
+.hora {
+  font-size: 11px;
+  margin: 0 5px;
+  color: rgb(173, 173, 173);
+}

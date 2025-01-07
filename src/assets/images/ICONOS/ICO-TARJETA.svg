@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30" height="30" viewBox="0 0 30 30">
+  <defs>
+    <clipPath id="clip-path">
+      <rect width="30" height="30" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="ICO-TARJETA" clip-path="url(#clip-path)">
+    <g id="ico-tarjeta-2" data-name="ico-tarjeta">
+      <rect id="Rectángulo_218" data-name="Rectángulo 218" width="30" height="30" fill="none"/>
+      <g id="Grupo_382" data-name="Grupo 382" transform="translate(-705 -737)">
+        <g id="Rectángulo_174" data-name="Rectángulo 174" transform="translate(707 742)" fill="none" stroke="#545454" stroke-width="1">
+          <rect width="26" height="20" rx="2" stroke="none"/>
+          <rect x="0.5" y="0.5" width="25" height="19" rx="1.5" fill="none"/>
+        </g>
+        <rect id="Rectángulo_175" data-name="Rectángulo 175" width="26" height="5" transform="translate(707 746)" fill="#545454"/>
+      </g>
+    </g>
+  </g>
+</svg>

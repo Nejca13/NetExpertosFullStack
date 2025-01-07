@@ -1,0 +1,7 @@
+.p {
+  font-family: var(--font-roboto-regular);
+  font-size: 14px;
+  color: var(--color-gris-medio);
+  text-align: center;
+  text-wrap: pretty;
+}

@@ -1,0 +1,59 @@
+#map {
+  height: 200px;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: 30px;
+  z-index: 1000;
+}
+
+.button {
+  background-color: var(--color-amarillo);
+  z-index: 500;
+  width: 120px;
+  position: absolute;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  top: 20px;
+  padding: 8px 10px;
+  box-shadow: var(--box-shadow);
+  font-family: var(--font-roboto-bold);
+  color: var(--color-gris-medio);
+  font-size: 18px;
+  border: none;
+  border-radius: 32px;
+  right: calc(50% - 60px);
+  text-align: center;
+  text-decoration: none;
+}
+
+.errorMessage {
+  position: fixed;
+  z-index: 1050;
+  bottom: 50%;
+  pointer-events: none;
+  text-align: center;
+  font-size: 11px;
+  width: 100%;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--font-roboto-bold);
+  background-color: rgba(255, 255, 255, 0.568);
+}
+
+.containerMap {
+  height: 100dvh;
+  width: 100dvw;
+  position: relative;
+}

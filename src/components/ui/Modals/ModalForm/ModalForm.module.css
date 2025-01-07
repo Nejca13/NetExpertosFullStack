@@ -1,0 +1,36 @@
+.modal {
+  background-color: white;
+  border-radius: 10px;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  padding: 20px 0;
+  gap: 20px;
+  box-shadow: var(--box-shadow);
+  margin-top: 50px;
+}
+.modal div {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  width: 100%;
+}
+.button {
+  background-color: var(--color-amarillo);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-family: var(--font-roboto-bold);
+  color: white;
+  box-shadow: var(--box-shadow);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.p {
+  font-family: var(--font-roboto-bold);
+  font-size: 20px;
+  color: var(--color-gris-medio);
+}

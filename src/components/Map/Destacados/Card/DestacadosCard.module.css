@@ -1,0 +1,32 @@
+.destacadosLi {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.destacadosLi .image {
+  border-radius: 100%;
+  border: 3px solid var(--color-amarillo);
+  object-fit: cover;
+  margin-top: 5px;
+}
+.destacadosLi .pName {
+  color: var(--color-blanco);
+  font-family: var(--font-roboto-bold);
+  font-size: 11px;
+}
+.destacadosLi .pDescripcion {
+  color: var(--color-amarillo);
+  font-family: var(--font-helvetica-italic);
+  font-size: 10px;
+  text-wrap: nowrap;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.destacadosLi .pDescripcion .spanCalificacion {
+  color: var(--color-blanco);
+  font-family: var(--font-roboto-bold);
+}

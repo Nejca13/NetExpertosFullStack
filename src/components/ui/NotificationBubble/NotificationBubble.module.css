@@ -1,0 +1,19 @@
+.container {
+  position: absolute;
+  left: 45%;
+  top: 7px;
+  height: 10px;
+  width: 10px;
+  background-color: var(--color-amarillo);
+  border-radius: 100%;
+  animation: parpadeo 1s linear infinite;
+}
+
+@keyframes parpadeo {
+  0% {
+    box-shadow: 0 0 5px orange;
+  }
+  100% {
+    box-shadow: 0 0 30px orange;
+  }
+}

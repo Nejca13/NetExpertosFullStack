@@ -1,0 +1,71 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  flex-direction: column;
+}
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.input {
+  border: none;
+  color: var(--color-gris-medio);
+  font-family: var(--font-roboto-bold);
+  height: 28px;
+  border-bottom: 1px solid var(--color-gris-medio);
+  width: 100%;
+}
+.input::placeholder {
+  color: var(--color-gris-medio);
+}
+.input:focus-visible {
+  border: none;
+  outline: none;
+  border-bottom: 1px solid var(--color-gris-medio);
+}
+
+.imagen {
+  object-fit: cover;
+  object-position: center;
+}
+.inputFile {
+  display: none;
+}
+
+.inputFileLabel {
+  cursor: pointer;
+}
+
+.errorMessage {
+  position: absolute;
+  transform: translateY(-40%);
+  color: var(--color-blanco);
+  background-color: var(--color-danger);
+  padding: 5px 20px;
+  border-radius: 10px;
+  font-family: var(--font-roboto-bold);
+}
+
+.defaultContainer {
+  background-color: var(--color-gris-medio);
+  height: 144px;
+  width: 256px;
+  border-radius: 6px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.defaultContainer .p {
+  color: white;
+  font-size: 11px;
+  font-family: var(--font-roboto-regular);
+}

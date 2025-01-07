@@ -1,0 +1,119 @@
+.divNavBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 100%;
+  padding-left: 10px;
+}
+.divBuscador {
+  width: 90%;
+  max-width: 380px;
+  height: 30px;
+  background-color: var(--color-amarillo);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.divBuscador .logoLupa {
+  background-color: var(--color-gris-medio);
+  width: 45px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.divBuscador .searchInput {
+  height: 20px;
+  width: 70%;
+  max-width: 273px;
+  margin: auto;
+  border-radius: 5px;
+  padding: 0 10px;
+  border: none;
+}
+.divBuscador .searchInput:focus {
+  border: none;
+}
+
+.divCategorias {
+  max-height: 350px;
+  min-height: 300px;
+  width: 90%;
+  max-width: 380px;
+  overflow: scroll;
+  border-radius: 10px;
+  background-image: url('../../../assets//images/FondoAmarillo.jpg');
+  padding: 13px 10px;
+}
+
+.destacados {
+  position: relative;
+  height: 130px;
+  width: 100%;
+  border-radius: 10px 10px 0 0;
+}
+.destacados .title {
+  background-color: var(--color-amarillo);
+  text-align: center;
+  font-family: var(--font-roboto-bold);
+  font-size: 16px;
+  padding: 2px 0;
+  align-content: center;
+  color: var(--color-gris-medio);
+  border-radius: 10px;
+  width: 100%;
+}
+.destacadosUl {
+  display: flex;
+  justify-content: space-around;
+  gap: 25px;
+  padding: 9px;
+}
+
+.destacadosLi {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.destacadosLi .image {
+  border-radius: 100%;
+  border: 3px solid var(--color-amarillo);
+  object-fit: cover;
+}
+.destacadosLi .pName {
+  color: var(--color-blanco);
+  font-family: var(--font-roboto-bold);
+  font-size: 11px;
+}
+.destacadosLi .pDescripcion {
+  color: var(--color-amarillo);
+  font-family: var(--font-helvetica-italic);
+  font-size: 10px;
+}
+
+.destacadosLi .pDescripcion .spanCalificacion {
+  color: var(--color-blanco);
+  font-family: var(--font-roboto-bold);
+}
+
+@media (min-height: 850px) {
+  .divCategorias {
+    max-height: 450px;
+    min-height: 300px;
+    width: 90%;
+    max-width: 380px;
+    overflow: scroll;
+    scrollbar-width: none;
+    border-radius: 10px;
+    background-image: url('../../../assets/images/FondoAmarillo.jpg');
+    padding: 13px 10px;
+  }
+  .divCategorias::-webkit-scrollbar {
+    width: none;
+  }
+}

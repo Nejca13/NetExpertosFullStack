@@ -1,0 +1,42 @@
+.container {
+  height: 100dvh;
+  width: 100dvw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+.modal {
+  background-color: white;
+  position: relative;
+  height: 162px;
+  width: 288px;
+  border-radius: 10px;
+  padding: 0 10px;
+  text-align: center;
+  text-wrap: balance;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: var(--box-shadow);
+}
+.button {
+  width: fit-content;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 20px;
+  height: 20px;
+  background-color: var(--color-danger);
+  border: none;
+  border-radius: 100%;
+}
+
+.p {
+  font-family: var(--font-roboto-italic);
+  font-size: 14px;
+}

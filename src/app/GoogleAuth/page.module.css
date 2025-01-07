@@ -1,0 +1,16 @@
+.container {
+  font-family: var(--font-roboto-regular);
+  font-size: 14px;
+  color: var(--color-gris-medio);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-wrap: pretty;
+}
+
+.a {
+  text-decoration: none;
+  font-family: var(--font-roboto-black);
+  color: var(--color-naranja);
+}

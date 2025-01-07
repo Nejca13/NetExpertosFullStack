@@ -1,0 +1,25 @@
+.container {
+  position: relative;
+}
+.notifications {
+  position: absolute;
+  background-color: var(--color-amarillo);
+  padding: 3px;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: -20px;
+  right: 5px;
+  border: 2px solid var(--color-amarillo);
+  animation: parpadeo 1s linear infinite;
+}
+
+@keyframes parpadeo {
+  0% {
+    box-shadow: 0 0 4px var(--color-amarillo);
+  }
+  100% {
+    box-shadow: 0 0 30px var(--color-amarillo);
+  }
+}

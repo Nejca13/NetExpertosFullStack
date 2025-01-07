@@ -1,0 +1,35 @@
+{
+  "name": "netexpertos",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "fastapi-dev": "./start_fastapi.sh",
+    "vps_start": "./start_vps.sh",
+    "next-dev": "next dev",
+    "dev": "pnpm run fastapi-dev next-dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prod": "pnpm run fastapi-dev start",
+    "vps": "concurrently \"pnpm run vps_start\" \"pnpm start\""
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.2.3",
+    "concurrently": "^9.1.2",
+    "emoji-picker-react": "^4.9.3",
+    "jwt-decode": "^4.0.0",
+    "leaflet": "^1.9.4",
+    "leaflet-defaulticon-compatibility": "^0.1.2",
+    "next": "14.2.1",
+    "react": "^18.2.0",
+    "react-calendar": "^5.0.0",
+    "react-dom": "^18.2.0",
+    "react-leaflet": "^4.2.1",
+    "react-redux": "^9.1.1",
+    "sharp": "^0.33.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.1"
+  }
+}

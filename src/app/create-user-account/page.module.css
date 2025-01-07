@@ -1,0 +1,40 @@
+.ul {
+  width: 100%;
+  align-content: flex-start;
+  justify-content: left;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-left: 30px;
+  font-family: var(--font-helvetica-regular);
+  font-size: 12px;
+  color: var(--color-gris);
+}
+.ul .li {
+  min-width: 100px;
+}
+.p {
+  font-family: var(--font-helvetica-regular);
+  font-size: 12px;
+  color: var(--color-silver);
+  margin: 10px 0;
+}
+
+.userImage {
+  border: 3px solid var(--color-amarillo);
+  object-fit: cover;
+  background-color: var(--color-negro-transparente);
+}
+
+.ubicacionSpan {
+  font-weight: 700;
+  margin-left: 14px;
+  font-size: 12px;
+  color: var(--color-gris-medio);
+  width: 100%;
+  display: flex;
+  margin-left: 30px;
+  justify-content: left;
+  align-items: center;
+  gap: 15px;
+}

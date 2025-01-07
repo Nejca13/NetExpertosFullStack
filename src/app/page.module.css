@@ -1,0 +1,53 @@
+.resetPassword {
+  font-size: 14px;
+  border-bottom: 1px solid var(--color-gris-medio);
+  font-style: normal;
+  padding-bottom: 23px;
+}
+.resetPassword .p {
+  color: var(--color-gris-medio);
+  .link {
+    color: var(--color-naranja);
+    text-decoration: none;
+  }
+}
+
+.register {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 10px;
+}
+
+.register .p {
+  font-size: 20px;
+  font-family: var(--font-roboto-black);
+  color: var(--color-gris);
+}
+.register .span {
+  color: var(--color-gris-medio);
+  font-family: var(--font-roboto-bold);
+  font-size: 20px;
+}
+.containerButtons {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.register .registerButtons {
+  cursor: pointer;
+  font-family: var(--font-roboto-bold);
+  background-color: var(--color-blanco);
+  color: var(--color-naranja);
+  padding: 9px 20px;
+  border-radius: 24px;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: var(--box-shadow);
+}

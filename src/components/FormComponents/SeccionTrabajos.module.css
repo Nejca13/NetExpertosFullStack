@@ -1,0 +1,21 @@
+.jobsImage {
+  border-radius: 100%;
+}
+.title {
+  text-align: center;
+}
+.carrusel {
+  margin-top: 30px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.buttonMore {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  margin: 30px 20px;
+}

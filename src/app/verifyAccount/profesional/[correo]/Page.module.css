@@ -1,0 +1,11 @@
+.p {
+  font-size: 16px;
+  font-family: var(--font-roboto-bold);
+  color: var(--color-gris-medio);
+}
+
+.span {
+  font-size: 12px;
+  font-family: var(--font-roboto-italic);
+  color: var(--color-gris-medio);
+}

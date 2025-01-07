@@ -1,0 +1,70 @@
+.containerInputs {
+  width: fit-content;
+  padding: 5px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 90%;
+  color: var(--color-gris-medio);
+  font-family: var(--font-roboto-bold);
+  border-bottom: 1px solid var(--color-gris-medio);
+}
+.formLabel {
+  font-family: var(--font-roboto-italic);
+  color: var(--color-gris-medio);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+.input,
+.textarea {
+  border: none;
+  color: inherit;
+  font-family: var(--font-roboto-bold);
+  margin-top: 1px;
+  padding-left: 20px;
+  padding-right: 12px;
+  font-size: 12px;
+  width: 100%;
+  height: 30px;
+  border: 1px solid var(--color-gris-medio);
+  border-radius: 36px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  background-color: var(--color-blanco);
+}
+.textarea {
+  height: 60px;
+  padding-top: 5px;
+  border-radius: 10px;
+}
+.select {
+  width: 100%;
+  border: none;
+  color: inherit;
+  font-family: var(--font-roboto-bold);
+  padding-left: 20px;
+  padding-right: 12px;
+  font-size: 12px;
+  width: 100%;
+  height: 30px;
+  border: 1px solid var(--color-gris-medio);
+  border-radius: 36px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  background-color: var(--color-blanco);
+}
+
+.input:disabled,
+.textarea:disabled,
+.select:disabled {
+  background-color: transparent;
+  border: none;
+}
+
+.containerInputs:disabled {
+  background-color: transparent;
+}

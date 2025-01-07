@@ -1,0 +1,27 @@
+.nav {
+  color: var(--color-negro);
+  padding: 3px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: absolute;
+  top: 1%;
+  z-index: 200;
+  left: 0;
+}
+.nav .image {
+  padding-left: 14px;
+}
+.nav .p {
+  font-size: 18px;
+  text-align: center;
+  width: 100%;
+  font-weight: light;
+  font-family: var(--font-roboto-bold);
+}
+
+.button {
+  background-color: transparent;
+  border: none;
+}

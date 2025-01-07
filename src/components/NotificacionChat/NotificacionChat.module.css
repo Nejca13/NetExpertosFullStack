@@ -1,0 +1,57 @@
+.container {
+  position: absolute;
+  border: 3px solid black;
+  display: flex;
+  top: 0;
+  margin: 3px;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-amarillo);
+  border-radius: 30px;
+  padding: 4px;
+  width: fit-content;
+  gap: 10px;
+  animation: box-shadow 0.7s linear alternate infinite;
+  animation: slide-in-top 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  z-index: 1200;
+}
+
+@keyframes slide-in-top {
+  0% {
+    -webkit-transform: translateY(-1000px);
+    transform: translateY(-1000px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes box-shadow {
+  0% {
+    box-shadow: 0 3px 10px hsla(0, 0%, 0%, 0.2);
+  }
+  100% {
+    box-shadow: 0 3px 20px hsla(0, 0%, 0%, 0.404);
+  }
+}
+
+.imagen {
+  border-radius: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.mensaje {
+  font-family: var(--font-roboto-regular);
+  color: var(--color-gris-medio);
+  margin-right: 5px;
+  max-width: 200px;
+  max-height: 40px;
+  overflow: hidden;
+  padding: 2px;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
+}
