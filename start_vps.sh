@@ -1,4 +1,11 @@
 #!/bin/bash
+
+# Verificar si existe el entorno virtual
+if [ ! -d "src/app/api/venv" ]; then
+    echo -e "El entorno virtual no existe, creando..."
+    python3 -m venv src/app/api/venv
+fi 
+
 source src/app/api/venv/bin/activate
 
 echo -e "Instalando dependencias de Python..."
