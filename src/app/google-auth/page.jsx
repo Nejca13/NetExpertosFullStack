@@ -16,7 +16,12 @@ const Page = () => {
   const { location, error } = useGeolocation()
 
   const handleAuth = async (data) => {
-    data.ubicacion = `${location.latitude}, ${location.longitude}`
+    if (localStorage.getItem('userLocation')) {
+      const userLocation = JSON.parse(localStorage.getItem('userLocation'))
+      data.ubicacion = `${userLocation.latitude}, ${userLocation.longitude}`
+    } else {
+      data.ubicacion = `${location.latitude}, ${location.longitude}`
+    }
     const response = await fetch('/api/auth-google/login/', {
       method: 'POST',
       headers: {

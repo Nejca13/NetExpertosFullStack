@@ -29,7 +29,7 @@ export const WebSocketProvider = ({ children }) => {
 
   const connectWebSocket = (id, role) => {
     ws.current = new WebSocket(
-      `wss://vps-4057595-x.dattaweb.com/chat/ws/${id}/${role}`
+      `wss://vps-4622713-x.dattaweb.com/api/chat/ws/${id}/${role}`
     )
 
     ws.current.onopen = () => {
