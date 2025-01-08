@@ -31,7 +31,7 @@ profesiones_collection = db.profesiones
 smtp_server = "smtp.gmail.com"
 smtp_port = 587  # Puerto estándar para SMTP con cifrado TLS
 email = "desarrollo.nca@gmail.com"
-password = "fokd ydcg wlks guzi"
+password = "jitr phsl sjkl aass"
 
 router = APIRouter(
     prefix="/clientes", tags=["clientes"], responses={404: {"message": "No encontrado"}}

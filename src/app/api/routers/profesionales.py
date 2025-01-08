@@ -42,8 +42,8 @@ LOCATION_REGEX = r"^(-?([1-8]?\d(\.\d+)?|90(\.0+)?)),\s*(-?((1[0-7]\d(\.\d+)?|1[
 # Configuración del servidor SMTP
 smtp_server = "smtp.gmail.com"
 smtp_port = 587  # Puerto estándar para SMTP con cifrado TLS
-email = "renzofranchetto91@gmail.com"
-password = "ddbh nfyj oovx aoqq"
+email = "desarrollo.nca@gmail.com"
+password = "jitr phsl sjkl aass"
 
 
 def send_otp_email(username, otp):
