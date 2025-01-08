@@ -10,12 +10,13 @@ const ButtonSignInWithGoogle = () => {
   const [auth, setAuth] = useAuth()
   const router = useRouter()
   useEffect(() => {
-    '4e7921ab61fa598a'
-    window.handleCredentialResponse = (response) => {
-      const responsePayload = jwtDecode(response.credential)
-      if (responsePayload.sub) {
-        setAuth(responsePayload)
-        router.push('/google-auth')
+    if (typeof window !== 'undefined' && window.google) {
+      window.handleCredentialResponse = (response) => {
+        const responsePayload = jwtDecode(response.credential)
+        if (responsePayload.sub) {
+          setAuth(responsePayload)
+          router.push('/google-auth')
+        }
       }
     }
   }, [])
