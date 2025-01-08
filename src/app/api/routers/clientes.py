@@ -270,7 +270,7 @@ async def obtener_clientes():
     return lista_clientes
 
 
-@router.post("/buscar")
+@router.post("/buscar/")
 async def buscar_cliente_por_correo(json_data: dict):
     correo_cliente = json_data.get("correo")
 
@@ -314,7 +314,7 @@ async def actualizar_cliente(correo: str, campos_actualizados: dict):
         )
 
 
-@router.delete("/{cliente_id}")
+@router.delete("/{cliente_id}/")
 async def eliminar_cliente(cliente_id: str):
     resultado = clientes_collection.delete_one({"_id": ObjectId(cliente_id)})
     if resultado.deleted_count == 1:
@@ -323,7 +323,7 @@ async def eliminar_cliente(cliente_id: str):
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
 
 
-@router.post("/favoritos/agregar/{cliente_id}")
+@router.post("/favoritos/agregar/{cliente_id}/")
 async def agregar_favoritos(cliente_id: str, profesionales: List[str]):
     # Verificar si el cliente existe
     cliente_existente = clientes_collection.find_one({"_id": ObjectId(cliente_id)})
@@ -357,7 +357,7 @@ async def agregar_favoritos(cliente_id: str, profesionales: List[str]):
         )
 
 
-@router.post("/favoritos/eliminar/{cliente_id}")
+@router.post("/favoritos/eliminar/{cliente_id}/")
 async def eliminar_favoritos(cliente_id: str, profesionales: List[str]):
     # Verificar si el cliente existe
     cliente_existente = clientes_collection.find_one({"_id": ObjectId(cliente_id)})

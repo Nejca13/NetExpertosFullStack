@@ -232,7 +232,7 @@ async def verify_otp(correo: str = Form(...), otp: str = Form(...)):
 
 
 # Endpoint para obtener profesionales cercanos dentro de un rango específico
-@router.get("/cercanos/{profesion}")
+@router.get("/cercanos/{profesion}/")
 async def obtener_profesionales_cercanos(
     latitud: str,
     longitud: str,
@@ -343,7 +343,7 @@ async def obtener_profesionales(
     }
 
 
-@router.post("/buscar")
+@router.post("/buscar/")
 async def buscar_profesional_por_correo(json_data: dict):
     correo_profesional = json_data.get("correo")
     if not correo_profesional:

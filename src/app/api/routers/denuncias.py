@@ -69,7 +69,7 @@ async def obtener_denuncias(
     }
 
 
-@router.get("/cliente/{cliente_id}")
+@router.get("/cliente/{cliente_id}/")
 async def obtener_denuncias_por_cliente_id(
     cliente_id: str, page: int = Query(1, gt=0), page_size: int = Query(10, gt=0)
 ):
@@ -103,7 +103,7 @@ async def obtener_denuncias_por_cliente_id(
     }
 
 
-@router.delete("/{denuncia_id}")
+@router.delete("/{denuncia_id}/")
 async def eliminar_denuncia(denuncia_id: str):
     # Eliminar la denuncia por su ID de la base de datos
     resultado = denuncias_collection.delete_one({"_id": ObjectId(denuncia_id)})
@@ -115,7 +115,7 @@ async def eliminar_denuncia(denuncia_id: str):
         )
 
 
-@router.get("/cliente/{correo_cliente}")
+@router.get("/cliente/{correo_cliente}/")
 async def obtener_denuncias_cliente(
     correo_cliente: str, page: int = Query(1, gt=0), page_size: int = Query(10, gt=0)
 ) -> dict:

@@ -32,7 +32,7 @@ async def obtener_profesiones():
     return lista_profesiones
 
 
-@router.delete("/{profesion_id}")
+@router.delete("/{profesion_id}/")
 async def eliminar_cliente(profesion_id: str):
     resultado = profesiones_collection.delete_one({"_id": ObjectId(profesion_id)})
     if resultado.deleted_count == 1:
@@ -41,7 +41,7 @@ async def eliminar_cliente(profesion_id: str):
         raise HTTPException(status_code=404, detail="Profesion no encontrada")
 
 
-@router.put("/{profesion_id}")
+@router.put("/{profesion_id}/")
 async def actualizar_cliente(profesion_id: str, profesion: Profesion):
     profesion_actualizada = profesiones_collection.update_one(
         {"_id": ObjectId(profesion_id)}, {"$set": profesion.model_dump()}

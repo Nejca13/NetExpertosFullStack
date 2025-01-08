@@ -27,7 +27,7 @@ def cita_helper(cita) -> dict:
     }
 
 
-@router.post("/crear_cita")
+@router.post("/crear_cita/")
 async def crear_cita(cita: Cita):
     cliente_id = ObjectId(cita.cliente_id)
     profesional_id = ObjectId(cita.profesional_id)
@@ -65,7 +65,7 @@ async def crear_cita(cita: Cita):
     return nueva_cita
 
 
-@router.post("/calificar_cita", response_model=Cita)
+@router.post("/calificar_cita/", response_model=Cita)
 async def calificar_cita(calificacion: CitaCalificar):
     cliente_id = ObjectId(calificacion.cliente_id)
     profesional_id = ObjectId(calificacion.profesional_id)
@@ -106,7 +106,7 @@ async def calificar_cita(calificacion: CitaCalificar):
     return Cita(**cita_actualizada)
 
 
-@router.delete("/cancelar_cita")
+@router.delete("/cancelar_cita/")
 async def cancelar_cita(cliente_id: str, profesional_id: str, fecha: str, hora: str):
     cliente_id = ObjectId(cliente_id)
     profesional_id = ObjectId(profesional_id)
@@ -127,7 +127,7 @@ async def cancelar_cita(cliente_id: str, profesional_id: str, fecha: str, hora: 
     return {"message": "Cita cancelada exitosamente"}
 
 
-@router.get("/citas_profesional/{correo}")
+@router.get("/citas_profesional/{correo}/")
 async def obtener_citas_profesional(correo: str):
     profesional = await profesionales_collection.find_one({"correo": correo})
     if not profesional:
@@ -144,7 +144,7 @@ async def obtener_citas_profesional(correo: str):
     return [cita_helper(cita) for cita in citas]
 
 
-@router.get("/citas_cliente/{correo}")
+@router.get("/citas_cliente/{correo}/")
 async def obtener_citas_cliente(correo: str):
     cliente = await clientes_collection.find_one({"correo": correo})
     if not cliente:
@@ -159,7 +159,7 @@ async def obtener_citas_cliente(correo: str):
     return [cita_helper(cita) for cita in citas]
 
 
-@router.patch("/modificar_cita/{cita_id}")
+@router.patch("/modificar_cita/{cita_id}/")
 async def modificar_cita(cita_id: str, nueva_fecha: str = None, nueva_hora: str = None):
     # Verificar si la cita existe
     cita = await citas_collection.find_one({"_id": cita_id})
