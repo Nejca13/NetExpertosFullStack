@@ -128,7 +128,7 @@ def get_or_create_user(user_data):
         }
 
 
-@router.post("/login")
+@router.post("/login/")
 def login(user_data: dict):
     existing_profesional = profesionales_collection.find_one(
         {"correo": user_data.get("email")}

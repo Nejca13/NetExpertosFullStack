@@ -17,7 +17,7 @@ const Page = () => {
 
   const handleAuth = async (data) => {
     data.ubicacion = `${location.latitude}, ${location.longitude}`
-    const response = await fetch('/api/auth-google/login', {
+    const response = await fetch('/api/auth-google/login/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
