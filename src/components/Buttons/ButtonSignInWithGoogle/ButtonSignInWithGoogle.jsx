@@ -15,7 +15,7 @@ const ButtonSignInWithGoogle = () => {
       const responsePayload = jwtDecode(response.credential)
       if (responsePayload.sub) {
         setAuth(responsePayload)
-        router.push('/GoogleAuth')
+        router.push('/google-auth')
       }
     }
   }, [])
