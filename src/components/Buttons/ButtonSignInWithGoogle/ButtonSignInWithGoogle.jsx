@@ -25,7 +25,7 @@ const ButtonSignInWithGoogle = () => {
       <Script src='https://accounts.google.com/gsi/client' async defer />
       <div
         id='g_id_onload'
-        data-client_id='738129296063-ieoasm43scmsgin6lrh1462l9r6631rb.apps.googleusercontent.com'
+        data-client_id='714395374113-539b12soro38d2srslfjgt07l04m8j4a.apps.googleusercontent.com'
         data-context='signup'
         data-ux_mode='popup'
         data-callback='handleCredentialResponse'
