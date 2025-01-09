@@ -14,7 +14,6 @@ import ModalError from '@/components/ui/Modals/ModalError/ModalError'
 import { useRouter } from 'next/navigation'
 import { addUser, clearUsers, getFirstUser } from '@/utils/indexedDataBase'
 import ModalLoading from '@/components/ui/Modals/ModalLoading/ModalLoading'
-import useGeolocation from '@/hooks/useGeolocation'
 
 export default function Home() {
   const [showModalError, setShowModalError] = useState(false)
@@ -23,7 +22,6 @@ export default function Home() {
   const [loadingMessage, setLoadingMessage] = useState(
     'Buscando sesiones activas...'
   )
-  const { location } = useGeolocation()
 
   const router = useRouter()
 

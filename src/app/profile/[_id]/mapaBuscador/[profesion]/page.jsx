@@ -1,6 +1,5 @@
 'use client'
 import { useEffect, useState } from 'react'
-import useGeolocation from '@/hooks/useGeolocation'
 import MapComponent from '@/components/Map'
 import styles from './page.module.css'
 import Link from 'next/link'
@@ -21,7 +20,7 @@ import NotificacionChat from '@/components/NotificacionChat/NotificacionChat'
 
 const Map = () => {
   const { profesion, _id } = useParams()
-  const { location, error } = useGeolocation()
+  const [location, setLocation] = useState(null)
   const [userApp, setUserApp] = useState({})
   const [coord, setCoord] = useState(null)
   const [show, setShow] = useState(false)
@@ -63,6 +62,23 @@ const Map = () => {
           setErrorMsg('Hubo un error al cargar los profesionales cercanos.')
           setLoading(false)
         })
+    } else {
+      const storageLocation = localStorage.getItem('location')
+      if (storageLocation) {
+        setLocation(JSON.parse(storageLocation))
+      } else {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords
+            const newLocation = { latitude, longitude }
+            setLocation(newLocation)
+            localStorage.setItem('location', JSON.stringify(newLocation))
+          },
+          (error) => {
+            console.error('Error al obtener la ubicación:', error)
+          }
+        )
+      }
     }
   }, [location])
   useEffect(() => {

@@ -8,11 +8,10 @@ import NavBar from '@/components/Navbar/NavBar'
 import ButtonSubmit from '@/components/Buttons/ButtonSubmit/ButtonSubmit'
 import Container from '@/components/Containers/Container'
 import FormContainer from '@/components/Containers/FormContainer'
-import useGeolocation from '@/hooks/useGeolocation'
 import SimpleLoader from '@/components/Loaders/SimpleLoader'
 import checkIcon from '../../assets/images/checkIcon.svg'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import defaultUserImage from '../../assets/images/userImage.png'
 import { createUser } from '@/services/api/clientes'
 import { saveCompressedImageToLocalStorage } from '@/utils/minificadorDeImagenes'
@@ -21,13 +20,21 @@ import ModalError from '@/components/ui/Modals/ModalError/ModalError'
 import ModalLoading from '@/components/ui/Modals/ModalLoading/ModalLoading'
 
 const Page = () => {
-  const { location, error } = useGeolocation()
   const [userImage, setUserImage] = useState(defaultUserImage)
   const [profilePhoto, setProfilePhoto] = useState('')
   const [onError, setOnError] = useState(false)
   const [loading, setLoading] = useState(false)
-
   const router = useRouter()
+  const [location, setLocation] = useState(null)
+
+  useEffect(() => {
+    if (!location) {
+      const storedLocation = JSON.parse(localStorage.getItem('userLocation'))
+      if (storedLocation) {
+        setLocation(storedLocation)
+      }
+    }
+  }, [])
 
   const handleSubmit = async (e) => {
     const formData = new FormData(e.target)

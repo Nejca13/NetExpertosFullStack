@@ -4,23 +4,28 @@ import { useAuth } from '../userContext'
 import LogoNetExpertos from '@/components/ui/Logo/LogoNetExpertos'
 import NavBar from '@/components/Navbar/NavBar'
 import { useRouter } from 'next/navigation'
-import useGeolocation from '@/hooks/useGeolocation'
 import ModalLoading from '@/components/ui/Modals/ModalLoading/ModalLoading'
 import Container from '@/components/Containers/Container'
 import { addUser } from '@/utils/indexedDataBase'
+import ModalError from '@/components/ui/Modals/ModalError/ModalError'
 
 const Page = () => {
   const [auth, setAuth] = useAuth()
   const [authComponent, setAuthComponent] = useState(null)
   const router = useRouter()
-  const { location, error } = useGeolocation()
 
   const handleAuth = async (data) => {
     if (localStorage.getItem('userLocation')) {
       const userLocation = JSON.parse(localStorage.getItem('userLocation'))
       data.ubicacion = `${userLocation.latitude}, ${userLocation.longitude}`
     } else {
-      data.ubicacion = `${location.latitude}, ${location.longitude}`
+      return (
+        <ModalError
+          errorMessage={
+            'Obtener la ubicación actual es necesario para el correcto funcionamiento de la aplicación!'
+          }
+        />
+      )
     }
     const response = await fetch('/api/auth-google/login/', {
       method: 'POST',

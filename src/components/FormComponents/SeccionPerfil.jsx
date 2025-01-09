@@ -4,12 +4,23 @@ import SimpleLoader from '../Loaders/SimpleLoader'
 import Image from 'next/image'
 import ButtonSubmit from '../Buttons/ButtonSubmit/ButtonSubmit'
 import { InputTypeFile, Inputs, TextArea } from './FormComponents'
-import useGeolocation from '@/hooks/useGeolocation'
 import checkIcon from '../../assets/images/checkIcon.svg'
 import Button from '../Buttons/Button/Button'
+import { useEffect } from 'react'
 
 const SeccionPerfil = ({ onNext, onBack }) => {
-  const { location, error } = useGeolocation()
+  const [location, setLocation] = useState(null)
+
+  useEffect(() => {
+    const storedLocation = JSON.parse(localStorage.getItem('userLocation'))
+    if (storedLocation) {
+      setLocation(storedLocation)
+    } else {
+      alert(
+        'Obtener la ubicación actual es necesario para el correcto funcionamiento de la aplicación!'
+      )
+    }
+  }, [])
 
   return (
     <FormContainer
