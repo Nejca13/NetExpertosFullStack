@@ -21,6 +21,7 @@ import NotificacionChat from '@/components/NotificacionChat/NotificacionChat'
 const Map = () => {
   const { profesion, _id } = useParams()
   const [location, setLocation] = useState(null)
+  const [error, setError] = useState(null)
   const [userApp, setUserApp] = useState({})
   const [coord, setCoord] = useState(null)
   const [show, setShow] = useState(false)
@@ -68,6 +69,7 @@ const Map = () => {
         setLocation(JSON.parse(storageLocation))
       } else {
         console.log('No se pudo obtener la ubicacion /mapaBuscador')
+        setError('No se pudo obtener la ubicacion')
       }
     }
   }, [location])
