@@ -52,9 +52,7 @@ const Page = () => {
     setAuthComponent(<ModalLoading message={'Cargando infomacion...'} />)
   }
   useEffect(() => {
-    if (location && auth) {
-      handleAuth(auth)
-    }
+    handleAuth(auth)
   }, [location])
 
   return (
