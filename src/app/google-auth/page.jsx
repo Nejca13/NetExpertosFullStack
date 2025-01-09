@@ -13,19 +13,21 @@ const Page = () => {
   const [auth, setAuth] = useAuth()
   const [authComponent, setAuthComponent] = useState(null)
   const router = useRouter()
+  const [location, setLocation] = useState(null)
+
+  useEffect(() => {
+    const storedLocation = JSON.parse(localStorage.getItem('userLocation'))
+    if (storedLocation) {
+      setLocation(storedLocation)
+    }
+  }, [])
 
   const handleAuth = async (data) => {
     if (localStorage.getItem('userLocation')) {
       const userLocation = JSON.parse(localStorage.getItem('userLocation'))
       data.ubicacion = `${userLocation.latitude}, ${userLocation.longitude}`
     } else {
-      return (
-        <ModalError
-          errorMessage={
-            'Obtener la ubicación actual es necesario para el correcto funcionamiento de la aplicación!'
-          }
-        />
-      )
+      console.log('No se pudo obtener la ubicacion /google-auth')
     }
     const response = await fetch('/api/auth-google/login/', {
       method: 'POST',
