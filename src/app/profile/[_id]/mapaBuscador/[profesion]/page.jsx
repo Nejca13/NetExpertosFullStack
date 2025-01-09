@@ -63,21 +63,11 @@ const Map = () => {
           setLoading(false)
         })
     } else {
-      const storageLocation = localStorage.getItem('location')
+      const storageLocation = localStorage.getItem('userLocation')
       if (storageLocation) {
         setLocation(JSON.parse(storageLocation))
       } else {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords
-            const newLocation = { latitude, longitude }
-            setLocation(newLocation)
-            localStorage.setItem('location', JSON.stringify(newLocation))
-          },
-          (error) => {
-            console.error('Error al obtener la ubicación:', error)
-          }
-        )
+        console.log('No se pudo obtener la ubicacion /mapaBuscador')
       }
     }
   }, [location])
