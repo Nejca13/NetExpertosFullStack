@@ -68,14 +68,16 @@
   flex-direction: column;
   width: 100%;
   overflow: scroll;
+  scroll-snap-type: y mandatory;
   gap: 10px;
   background-color: white;
   border-radius: 0 0 10px 10px;
-  margin-top: 29px;
-  padding: 8px;
+  margin-top: 37px;
+  padding-bottom: 20px;
   padding-left: 10px;
 }
 .link {
+  scroll-snap-align: start;
   text-decoration: none;
   color: inherit;
 }
