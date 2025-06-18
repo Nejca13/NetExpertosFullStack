@@ -37,26 +37,48 @@ const Page = () => {
   }, [])
 
   const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    // 1. Construir el FormData a partir del <form>
     const formData = new FormData(e.target)
-    formData.append('foto_base64', profilePhoto)
-    const formDataValues = Object.fromEntries(formData)
-    formDataValues.nombre = formDataValues.nombre_apellido.split(' ')[0]
-    formDataValues.apellido = formDataValues.nombre_apellido.split(' ')[1]
-    createUser(formDataValues, setOnError, setLoading)
+
+    // 2. Añadir la foto (si la traés por estado)
+    if (profilePhoto) {
+      formData.append('image', profilePhoto)
+    }
+
+    // 3. Extraer nombre y apellido de un único campo
+    const fullName = formData.get('nombre_apellido') || ''
+    const [nombre = '', apellido = ''] = fullName.trim().split(' ')
+
+    // 4. Añadir nombre y apellido separados
+    formData.append('nombre', nombre)
+    formData.append('apellido', apellido)
+
+    // 5. Llamar a tu API con FormData directamente
+    createUser(formData, setOnError, setLoading)
       .then((res) => {
-        res === true &&
-          router.push(`/verifyAccount/cliente/${formDataValues.correo}`)
+        if (res === true) {
+          // redirigir una vez creado
+          router.push(`/verifyAccount/cliente/${formData.get('correo')}`)
+        }
       })
-      .catch((error) => {
-        console.log(error)
+      .catch((err) => {
+        console.error(err)
       })
   }
   const handleFileChange = (e) => {
     const file = e.target.files[0]
-    saveCompressedImageToLocalStorage(file, (compressedImage) => {
+    /* saveCompressedImageToLocalStorage(file, (compressedImage) => {
       setUserImage(compressedImage)
       setProfilePhoto(compressedImage)
-    })
+    }) */
+    const reader = new FileReader()
+    reader.onload = () => {
+      setUserImage(reader.result)
+      setProfilePhoto(file)
+    }
+    reader.readAsDataURL(file)
   }
   return (
     <Container>
