@@ -74,7 +74,7 @@ const Chat = () => {
     }
     const image_perfil = isFotoPerfilValid(user.user_data.foto_perfil)
       ? user.user_data.foto_perfil
-      : user.user_data.foto_base64
+      : user.user_data.foto_perfil
     setShowEmojis(false)
     if (currentMessage.trim() !== '') {
       const messageToSend = `${_id}:${currentMessage}:${btoa(image_perfil)}:${
