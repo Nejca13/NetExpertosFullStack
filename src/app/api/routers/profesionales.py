@@ -40,10 +40,10 @@ NUMERO_REGEX = (
 LOCATION_REGEX = r"^(-?([1-8]?\d(\.\d+)?|90(\.0+)?)),\s*(-?((1[0-7]\d(\.\d+)?|1[0-8]0(\.0+)?|\d{1,2}(\.\d+)?)))$"
 
 # Configuración del servidor SMTP
-smtp_server = "smtp.gmail.com"
-smtp_port = 587  # Puerto estándar para SMTP con cifrado TLS
-email = "desarrollo.nca@gmail.com"
-password = "jitr phsl sjkl aass"
+smtp_server = "c2710770.ferozo.com"
+smtp_port = 465  # Puerto estándar para SMTP con cifrado TLS
+email = "verify@netexpertos.com"
+password = "AF/1J6E5kK"
 
 
 def send_otp_email(username, otp):
@@ -57,8 +57,8 @@ def send_otp_email(username, otp):
     message.attach(MIMEText(body, "plain"))
 
     # Iniciar sesión en el servidor SMTP
-    with smtplib.SMTP(smtp_server, smtp_port) as server:
-        server.starttls()  # Habilitar cifrado TLS
+    with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
+        # Habilitar cifrado TLS
         server.login(
             email, password
         )  # Iniciar sesión con correo electrónico y contraseña
