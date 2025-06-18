@@ -70,17 +70,15 @@ const HambMenu = ({ show, userApp }) => {
           <div className={styles.div}>
             <Image
               className={styles.image}
-              src={
-                userApp
-                  ? userApp.foto_base64 || userApp.foto_perfil
-                  : defaultImage.src
-              }
+              src={userApp ? userApp.foto_perfil : defaultImage.src}
               width={60}
               height={60}
               alt='Imagen de perfil del usuario'
             />
             <div className={styles.divText}>
-              <p className={styles.name}>¡Hola, {userApp.nombre}!</p>
+              <p className={styles.name}>
+                ¡Hola, {userApp.nombre.split(' ')[0]}!
+              </p>
               <p className={styles.email}>{userApp.correo}</p>
             </div>
           </div>
