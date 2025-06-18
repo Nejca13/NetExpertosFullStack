@@ -4,7 +4,6 @@ import Link from 'next/link'
 import styles from './page.module.css'
 import { Inputs } from '@/components/FormComponents/FormComponents'
 import ButtonSubmit from '@/components/Buttons/ButtonSubmit/ButtonSubmit'
-import ButtonSignInWithGoogle from '@/components/Buttons/ButtonSignInWithGoogle/ButtonSignInWithGoogle'
 import FormContainer from '@/components/Containers/FormContainer'
 import { userLogin } from '@/services/api/authUsuarios'
 import Container from '@/components/Containers/Container'
@@ -14,6 +13,15 @@ import ModalError from '@/components/ui/Modals/ModalError/ModalError'
 import { useRouter } from 'next/navigation'
 import { addUser, clearUsers, getFirstUser } from '@/utils/indexedDataBase'
 import ModalLoading from '@/components/ui/Modals/ModalLoading/ModalLoading'
+import dynamic from 'next/dynamic'
+
+const ButtonSignInWithGoogle = dynamic(
+  () =>
+    import(
+      '../components/Buttons/ButtonSignInWithGoogle/ButtonSignInWithGoogle'
+    ),
+  { ssr: false }
+)
 
 export default function Home() {
   const [showModalError, setShowModalError] = useState(false)
