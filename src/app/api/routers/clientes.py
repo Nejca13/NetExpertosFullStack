@@ -1,7 +1,9 @@
-from fastapi import APIRouter, HTTPException, Form
+from fastapi import APIRouter, File, HTTPException, Form, UploadFile
 from pymongo import MongoClient
 import bcrypt
 from datetime import datetime, timedelta
+
+from app.api.utils.save_image import save_image
 from ..models.cliente import Cliente
 from bson import ObjectId
 import re
@@ -28,10 +30,10 @@ profesiones_collection = db.profesiones
 
 
 # Configuración del servidor SMTP
-smtp_server = "smtp.gmail.com"
-smtp_port = 587  # Puerto estándar para SMTP con cifrado TLS
-email = "desarrollo.nca@gmail.com"
-password = "jitr phsl sjkl aass"
+smtp_server = "c2710770.ferozo.com"
+smtp_port = 465  # Puerto estándar para SMTP con cifrado TLS
+email = "verify@netexpertos.com"
+password = "AF/1J6E5kK"
 
 router = APIRouter(
     prefix="/clientes", tags=["clientes"], responses={404: {"message": "No encontrado"}}
@@ -89,8 +91,8 @@ def send_otp_email(username, otp):
     message.attach(MIMEText(body, "plain"))
 
     # Iniciar sesión en el servidor SMTP
-    with smtplib.SMTP(smtp_server, smtp_port) as server:
-        server.starttls()  # Habilitar cifrado TLS
+    with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
+        # Habilitar cifrado TLS
         server.login(
             email, password
         )  # Iniciar sesión con correo electrónico y contraseña
@@ -100,54 +102,57 @@ def send_otp_email(username, otp):
 
 
 @router.post("/request-registration/")
-async def request_registration(cliente: Cliente):
-    if cliente.plus not in ["False", "True"]:
-        raise HTTPException(
-            status_code=400, detail="El valor de plus debe ser 'True' o 'False'"
-        )
-    if (
-        not cliente.nombre
-        or not cliente.apellido
-        or not cliente.correo
-        or not cliente.password
-        or not cliente.ubicacion
-    ):
-        raise HTTPException(status_code=400, detail="Todos los campos son requeridos")
-    if not re.match(PASSWORD_REGEX, cliente.password):
-        raise HTTPException(
-            status_code=400, detail="La contraseña no cumple con los requisitos"
-        )
-    if clientes_collection.find_one({"correo": cliente.correo}):
-        raise HTTPException(status_code=400, detail="El cliente ya existe")
-    if profesionales_collection.find_one({"correo": cliente.correo}):
-        raise HTTPException(status_code=400, detail="El correo se encuentra en uso")
-    if not re.match(LOCATION_REGEX, cliente.ubicacion):
-        raise HTTPException(
-            status_code=400, detail="La ubicación no cumple con el formato requerido"
-        )
+async def request_registration(
+    nombre: str = Form(...),
+    apellido: str = Form(...),
+    correo: str = Form(...),
+    password: str = Form(...),
+    ubicacion: str = Form(...),
+    image: UploadFile = File(...),
+):
+    # 1. Validaciones básicas
 
-    otp_code = str(random.randint(100000, 999999))
-    otp_generated_time = datetime.now()
-    send_otp_email(cliente.correo, otp_code)
+    if not all([nombre, apellido, correo, password, ubicacion]):
+        raise HTTPException(400, "Todos los campos son requeridos")
+    if not re.match(PASSWORD_REGEX, password):
+        raise HTTPException(400, "La contraseña no cumple con los requisitos")
+    if clientes_collection.find_one({"correo": correo}):
+        raise HTTPException(400, "El cliente ya existe")
+    if profesionales_collection.find_one({"correo": correo}):
+        raise HTTPException(400, "El correo se encuentra en uso")
+    if not re.match(LOCATION_REGEX, ubicacion):
+        raise HTTPException(400, "La ubicación no cumple con el formato requerido")
 
-    # Almacenar OTP y hora en una colección temporal
-    temp_cliente = {
-        "rol": cliente.rol,
-        "plus": cliente.plus,
-        "nombre": cliente.nombre,
-        "apellido": cliente.apellido,
-        "correo": cliente.correo,
-        "password": cliente.password,  # No hasheado, solo para verificación posterior
-        "foto_base64": cliente.foto_base64,
-        "ubicacion": cliente.ubicacion,
+    # 2. Procesar la imagen (obligatoria)
+    try:
+        image_url = await save_image(image, "clientes")
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+    # 3. Generar y enviar OTP
+    otp_code = f"{random.randint(100000, 999999):06d}"
+    otp_generated_time = datetime.utcnow()
+    send_otp_email(correo, otp_code)
+
+    # 4. Almacenar en colección temporal
+    temp_doc = {
+        "rol": "Cliente",
+        "estado": "Pendiente",  # o "Activo" según tu lógica
+        "nombre": nombre,
+        "apellido": apellido,
+        "correo": correo,
+        "password": password,  # en prod: hashéala al verificar OTP
+        "ubicacion": ubicacion,
+        "foto_perfil": image_url,
         "otp_code": otp_code,
         "otp_generated_time": otp_generated_time,
         "fecha_registro": None,
     }
-    temp_clientes_collection.insert_one(temp_cliente)
+    temp_clientes_collection.insert_one(temp_doc)
 
     return {
-        "message": "OTP enviado al correo electrónico. Verifique para completar el registro."
+        "message": "OTP enviado al correo electrónico. Verifique para completar el registro.",
+        "expires_in_minutes": 10,
     }
 
 
@@ -181,7 +186,7 @@ async def convertir_cliente_a_profesional(datos: DatosProfesional):
         "calificacion": 0.0,
         "experiencia_laboral_años": datos.experiencia_laboral_años,
         "recomendaciones": 0,
-        "foto_perfil": cliente["foto_base64"],
+        "foto_perfil": cliente["foto_perfil"],
         "fotos_trabajos": fotos_trabajos_dict,  # Lista de diccionarios en lugar de objetos Foto para que no tener el mismo error al iterar
         "horarios_atencion": datos.horarios_atencion,
         "nacimiento": datos.nacimiento,
