@@ -12,10 +12,8 @@ export const createUser = async (data, setOnError, setLoading) => {
   try {
     const options = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
+
+      body: data,
     }
 
     const response = await fetch(API_URL + '/request-registration/', options)
@@ -127,7 +125,7 @@ export const converToProfesional = async (
     experiencia_laboral_años: parseInt(data.experiencia_laboral_años),
     recomendaciones: 0,
     fotos_trabajos: data.fotos_trabajos,
-    foto_perfil: data.foto_base64,
+    foto_perfil: data.foto_perfil,
     horarios_atencion: `de ${data.horario_apertura} - a ${data.horario_cierre}`,
     nacimiento: data.nacimiento,
     rubro_nombre: data.rubro_nombre,
