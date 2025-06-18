@@ -23,11 +23,11 @@ export const handleSubmit = (e, user, newProfileImage) => {
     if (user.rol === 'Profesional') {
       formData.set('foto_perfil', newProfileImage)
     } else {
-      formData.set('foto_base64', newProfileImage)
+      formData.set('foto_perfil', newProfileImage)
     }
   } else {
     formData.delete('foto_perfil')
-    formData.delete('foto_base64')
+    formData.delete('foto_perfil')
   }
 
   // Crear el string de horarios de atención
