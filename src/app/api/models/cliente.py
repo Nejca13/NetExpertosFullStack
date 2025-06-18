@@ -11,11 +11,12 @@ class Cliente(BaseModel):
     nombre: str
     apellido: str
     correo: str
-    foto_base64:str
+    foto_perfil: Optional[str] = None
     password: str
-    ubicacion: str 
+    ubicacion: str
     fecha_registro: Optional[datetime] = None
     # Campos relacionados con el OTP
     otp_code: Optional[str] = None  # Código de verificación OTP
-    otp_generated_time: Optional[datetime] = None  # Fecha y hora en que se generó el OTP
-
+    otp_generated_time: Optional[datetime] = (
+        None  # Fecha y hora en que se generó el OTP
+    )
