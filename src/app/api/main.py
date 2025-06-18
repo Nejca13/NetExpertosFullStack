@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routers import clientes, profesionales, profesion, citas, chat, denuncias
@@ -41,6 +43,7 @@ app.include_router(denuncias.router)
 
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/media", StaticFiles(directory="media"), name="media")
 
 
 def crear_profesiones_default():
