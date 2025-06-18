@@ -94,7 +94,7 @@ def get_or_create_user(user_data):
             "nombre": user_data.get("given_name"),
             "apellido": user_data.get("family_name"),
             "correo": email,
-            "foto_base64": user_data.get("picture"),
+            "foto_perfil": user_data.get("picture"),
             "password": bcrypt.hashpw(
                 "Google2024!".encode("utf-8"), bcrypt.gensalt()
             ).decode("utf-8"),
