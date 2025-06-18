@@ -177,8 +177,8 @@ def dashboard(request: Request, access_token: Annotated[str | None, Cookie()] = 
 #     message.attach(MIMEText(body, 'plain'))
 
 #     # Iniciar sesión en el servidor SMTP
-#     with smtplib.SMTP(smtp_server, smtp_port) as server:
-#         server.starttls()  # Habilitar cifrado TLS
+#     with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
+#            # Habilitar cifrado TLS
 #         server.login(email, password)  # Iniciar sesión con correo electrónico y contraseña
 #         server.sendmail(email, username, message.as_string())  # Enviar correo electrónico
 
