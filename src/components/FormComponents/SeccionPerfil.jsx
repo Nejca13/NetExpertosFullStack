@@ -6,7 +6,7 @@ import ButtonSubmit from '../Buttons/ButtonSubmit/ButtonSubmit'
 import { InputTypeFile, Inputs, TextArea } from './FormComponents'
 import checkIcon from '../../assets/images/checkIcon.svg'
 import Button from '../Buttons/Button/Button'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 const SeccionPerfil = ({ onNext, onBack }) => {
   const [location, setLocation] = useState(null)
