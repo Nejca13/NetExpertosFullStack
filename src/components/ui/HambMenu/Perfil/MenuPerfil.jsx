@@ -51,7 +51,7 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
                     ? newProfileImage
                     : user.rol === 'Profesional'
                     ? user.foto_perfil
-                    : user.foto_base64
+                    : user.foto_perfil
                 }
                 width={50}
                 height={50}
