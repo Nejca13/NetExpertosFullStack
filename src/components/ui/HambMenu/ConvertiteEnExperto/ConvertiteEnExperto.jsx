@@ -119,7 +119,7 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
           case 1:
             return accountType === 'empresa' ? (
               <Empresas
-                defaultProfilePhoto={user.foto_base64}
+                defaultProfilePhoto={user.foto_perfil}
                 onNext={handleNext}
                 onBack={handleBack}
               />
