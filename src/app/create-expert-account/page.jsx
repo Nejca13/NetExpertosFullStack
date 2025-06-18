@@ -26,7 +26,7 @@ const Page = () => {
 
   const handleSubmit = async (e) => {
     const formData = Object.fromEntries(new FormData(e))
-    // Verificar si foto_perfil es un objeto File
+    // Verificar sifoto_perfil es un objeto File
     const jobs = await separarDatos(formData)
     if (jobs.foto_perfil instanceof File) {
       const reader = new FileReader()
