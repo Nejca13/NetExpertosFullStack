@@ -14,7 +14,7 @@ import SeccionDatosIndependiente from './Formulario/ProfesionalesIndependientes/
 import { converToProfesional } from '@/services/api/clientes'
 import Empresas from './Formulario/Empresas/Empresas'
 import LogoNetExpertos from '../../Logo/LogoNetExpertos'
-import { getUser } from '@/utils/indexedDataBase'
+import { clearUsers, getUser } from '@/utils/indexedDataBase'
 
 /**
  * Componente ConvertiteEnExperto
@@ -125,6 +125,10 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
       if (res === true) {
         console.log(res)
         setIsLoading(false)
+        // logout y borrar datos del usuario
+        localStorage.removeItem('user')
+        await clearUsers()
+        router.push('/')
       } else {
         setIsLoading(false) // Asegúrate de que el loading se detenga si no hay recarga
       }
