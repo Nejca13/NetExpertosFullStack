@@ -123,7 +123,8 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
         setErrorMessage
       )
       if (res === true) {
-        window.location.reload()
+        console.log(res)
+        setIsLoading(false)
       } else {
         setIsLoading(false) // Asegúrate de que el loading se detenga si no hay recarga
       }
