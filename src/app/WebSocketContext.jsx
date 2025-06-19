@@ -53,9 +53,24 @@ export const WebSocketProvider = ({ children }) => {
     return () => ws.current?.close()
   }
 
+  const sendMessage = (msg) => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send(msg)
+    } else {
+      console.warn('WebSocket no está listo')
+    }
+  }
+
   return (
     <WebSocketContext.Provider
-      value={{ ws: ws.current, messages, setUserId, setRole }}
+      value={{
+        ws: ws.current,
+        messages,
+        setUserId,
+        setRole,
+        setMessages,
+        sendMessage,
+      }}
     >
       {children}
     </WebSocketContext.Provider>
