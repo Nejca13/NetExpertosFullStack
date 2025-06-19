@@ -24,7 +24,7 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Thor y Biena',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2024-05-14',
         lugar: 'Home',
       },
@@ -54,7 +54,7 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Economia 1',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2024-05-14',
         lugar: 'Online',
       },
@@ -86,7 +86,7 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Circulo',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2024-05-14',
         lugar: 'online',
       },
@@ -116,7 +116,7 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Banner',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2024-05-14',
         lugar: 'Web',
       },
@@ -146,7 +146,7 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Banner',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2024-05-14',
         lugar: 'Web',
       },
@@ -176,7 +176,7 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Salud',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2024-05-14',
         lugar: 'Hogar',
       },
@@ -206,13 +206,13 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Página web',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2023-05-15',
         lugar: 'Moron',
       },
       {
         titulo: 'Centro de Monitoreo ',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2020-05-15',
         lugar: 'Mercado central ',
       },
@@ -244,7 +244,7 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Thor y Biena',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2024-05-14',
         lugar: 'Home',
       },
@@ -274,7 +274,7 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Economia 1',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2024-05-14',
         lugar: 'Online',
       },
@@ -306,7 +306,7 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Circulo',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2024-05-14',
         lugar: 'online',
       },
@@ -336,7 +336,7 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Banner',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2024-05-14',
         lugar: 'Web',
       },
@@ -366,7 +366,7 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Banner',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2024-05-14',
         lugar: 'Web',
       },
@@ -396,7 +396,7 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Salud',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2024-05-14',
         lugar: 'Hogar',
       },
@@ -426,13 +426,13 @@ export const usuariosPremium = [
     fotos_trabajos: [
       {
         titulo: 'Página web',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2023-05-15',
         lugar: 'Moron',
       },
       {
         titulo: 'Centro de Monitoreo ',
-        imagen_base64: jardineria,
+        foto: jardineria,
         fecha: '2020-05-15',
         lugar: 'Mercado central ',
       },
