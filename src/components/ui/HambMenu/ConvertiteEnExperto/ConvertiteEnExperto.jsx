@@ -15,6 +15,7 @@ import { converToProfesional } from '@/services/api/clientes'
 import Empresas from './Formulario/Empresas/Empresas'
 import LogoNetExpertos from '../../Logo/LogoNetExpertos'
 import { clearUsers, getUser } from '@/utils/indexedDataBase'
+import useStore from '@/store/store'
 
 /**
  * Componente ConvertiteEnExperto
@@ -32,20 +33,27 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
   const [errorMessage, setErrorMessage] = useState(null) // Mensaje de error
   const [isLoading, setIsLoading] = useState(false) // Estado de carga
   const { _id } = useParams()
-  const [currentUser, setCurrentUser] = useState(null)
+  const [activeUser, setActiveUser] = useState(null)
 
   const router = useRouter()
+
+  //Zustand store
+  const { currentUser } = useStore()
 
   useEffect(() => {
     getUser(_id).then(
       (response) => {
-        setCurrentUser(response)
+        setActiveUser(response)
         console.log(response)
       },
       (error) => {
         console.log(error)
       }
     )
+    // Zustand
+    if (currentUser) {
+      setActiveUser(currentUser)
+    }
   }, [_id])
 
   /**
@@ -175,7 +183,7 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
           case 2:
             return (
               <SeccionPerfil
-                currentUser={currentUser}
+                activeUser={activeUser}
                 onNext={handleNext}
                 onBack={handleBack}
               />

@@ -8,7 +8,7 @@ import checkIcon from '../../assets/images/checkIcon.svg'
 import Button from '../Buttons/Button/Button'
 import { useEffect, useState } from 'react'
 
-const SeccionPerfil = ({ onNext, onBack, currentUser }) => {
+const SeccionPerfil = ({ onNext, onBack, activeUser }) => {
   const [location, setLocation] = useState(null)
 
   useEffect(() => {
@@ -82,7 +82,7 @@ const SeccionPerfil = ({ onNext, onBack, currentUser }) => {
         placeholder={'correo@empresa.com'}
         id={'correo'}
         name={'correo'}
-        value={currentUser.user_data.correo}
+        value={activeUser.user_data.correo}
         errorMessage={'Debe ingresar un correo valido.'}
       />
       <TextArea
