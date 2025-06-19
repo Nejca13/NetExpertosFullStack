@@ -32,9 +32,6 @@ const Page = () => {
   //Zustand store
   const { currentUser } = useStore()
 
-  //Comprobar si el usuario actual ya está en el store
-  if (currentUser) console.log(currentUser)
-
   useEffect(() => {
     fetchUserData()
   }, [])
@@ -76,7 +73,7 @@ const Page = () => {
     setUserId(user.user_data._id)
     setRole(user.user_data.rol)
 
-    // Usuario de Zustand
+    //Zustand
     setUserApp(currentUser?.user_data)
     setUserId(currentUser?.user_data._id)
     setRole(currentUser?.user_data.rol)

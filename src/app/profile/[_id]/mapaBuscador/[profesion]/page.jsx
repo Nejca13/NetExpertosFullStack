@@ -48,7 +48,7 @@ const Map = () => {
     setUserId(storageUser.user_data._id)
     setRole(storageUser.user_data.rol)
 
-    // Usuario de Zustand
+    //Zustand
     setUserApp(currentUser?.user_data)
     setUserId(currentUser?.user_data._id)
     setRole(currentUser?.user_data.rol)

@@ -28,7 +28,7 @@ export default function isAuth(Component) {
       if (authValue || user) {
         setAuth(authValue?.user_data || user.user_data)
       }
-      // Usuario de Zustand
+      //Zustand
       if (currentUser) {
         setAuth(currentUser?.user_data)
       }
