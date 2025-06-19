@@ -113,49 +113,30 @@ export const converToProfesional = async (
   setIsLoading,
   setErrorMessage
 ) => {
-  const newData = {
-    rol: 'Profesional',
-    nombre: data.nombre,
-    apellido: data.apellido,
-    numero: data.telefono,
-    correo: data.correo,
-    password: data.password,
-    ubicacion: data.ubicacion,
-    calificacion: 0,
-    experiencia_laboral_años: parseInt(data.experiencia_laboral_años),
-    recomendaciones: 0,
-    fotos_trabajos: data.fotos_trabajos,
-    foto_perfil: data.foto_perfil,
-    horarios_atencion: `de ${data.horario_apertura} - a ${data.horario_cierre}`,
-    nacimiento: data.nacimiento,
-    rubro_nombre: data.rubro_nombre,
-    profesion_nombre: data.profesion_nombre,
-    acerca_de_mi: data.acerca_de_mi,
-    fecha_registro: new Date().toISOString(),
-  }
   setIsLoading(true)
   try {
     const response = await fetch(API_URL + '/convertir-a-profesional/', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newData),
+      body: data,
     })
 
     if (response.ok) {
       const responseData = await response.json()
-      if (responseData) {
-        await clearUsers()
-        await addUser(responseData)
-        setIsLoading(false)
-        window.location.reload()
-        return true
-      }
+      await clearUsers()
+      await addUser(responseData)
+      setIsLoading(false)
+      window.location.reload()
+      return true
     } else {
-      const errorData = await response.json()
-      console.log(errorData)
-      setErrorMessage(errorData.detail)
+      let detail = 'Error al cambiar de tipo de cuenta' // mensaje por defecto
+      try {
+        const errorData = await response.json()
+        if (errorData?.detail) detail = errorData.detail
+        console.log(errorData)
+      } catch {
+        // si no se pudo parsear JSON, usamos el genérico
+      }
+      /* setErrorMessage(detail) */
       setIsLoading(false)
       return false
     }
