@@ -23,14 +23,14 @@ const MultiImageForm = ({ index, trabajos }) => {
 
   useEffect(() => {
     if (trabajos) {
-      setImage(trabajos[0].imagen_base64)
+      setImage(trabajos[0].foto)
     }
   }, [])
 
   return (
     <div name={index} className={styles.container}>
       <label
-        htmlFor={`trabajos_realizados_imagen_base64_${index}`}
+        htmlFor={`trabajos_realizados_foto_${index}`}
         className={styles.inputFileLabel}
       >
         {image ? (
@@ -57,8 +57,8 @@ const MultiImageForm = ({ index, trabajos }) => {
           type='file'
           accept='image/*'
           onChange={handleFileChange}
-          name={`trabajos_realizados_imagen_base64_${index}`}
-          id={`trabajos_realizados_imagen_base64_${index}`}
+          name={`trabajos_realizados_foto_${index}`}
+          id={`trabajos_realizados_foto_${index}`}
           required
           onInvalid={(e) => {
             setError(true)
