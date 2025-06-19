@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter, File, HTTPException, Form, UploadFile
 from pymongo import MongoClient
 import bcrypt
@@ -157,61 +158,85 @@ async def request_registration(
 
 
 @router.post("/convertir-a-profesional/")
-async def convertir_cliente_a_profesional(datos: DatosProfesional):
-    # Buscar el cliente por su correo
-    cliente = clientes_collection.find_one({"correo": datos.correo})
-
+async def convertir_cliente_a_profesional(
+    nombre: str = Form(...),
+    apellido: str = Form(...),
+    numero: str = Form(...),
+    correo: str = Form(...),
+    ubicacion: str = Form(...),
+    experiencia_laboral_años: int = Form(...),
+    horarios_atencion: str = Form(...),
+    nacimiento: str = Form(...),
+    rubro_nombre: str = Form(...),
+    profesion_nombre: str = Form(...),
+    acerca_de_mi: str = Form(...),
+    fotos_trabajos_meta: str = Form(...),  # JSON con metadata
+    fotos_trabajos: List[UploadFile] = File(None),  # Archivos
+):
+    # 1. Validar existencia de cliente
+    cliente = clientes_collection.find_one({"correo": correo})
     if not cliente:
-        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+        raise HTTPException(404, "Cliente no encontrado")
 
-    # Convertir la lista de fotos a una lista de diccionarios
-    fotos_trabajos_dict = []
-    if datos.fotos_trabajos:
-        for foto in datos.fotos_trabajos:
-            foto_dict = foto.dict()
-            fotos_trabajos_dict.append(foto_dict)
+    # 2. Parsear metadata JSON
+    try:
+        meta_list = json.loads(fotos_trabajos_meta)
+    except json.JSONDecodeError:
+        raise HTTPException(400, "Metadata de fotos inválida")
+    if fotos_trabajos:
+        if len(meta_list) != len(fotos_trabajos):
+            raise HTTPException(400, "Cantidad de imágenes y metadata no coincide")
+    else:
+        meta_list = []
 
-    # Crear el diccionario de profesional
+    # 3. Procesar cada imagen y emparejar con su metadata
+    fotos_final = []
+    for idx, md in enumerate(meta_list):
+        upload = fotos_trabajos[idx]
+        try:
+            url = await save_image(upload, f"profesionales/{cliente['_id']}")
+        except ValueError as e:
+            raise HTTPException(400, f"Error en imagen '{upload.filename}': {e}")
+        fotos_final.append(
+            {
+                "titulo": md.get("titulo"),
+                "lugar": md.get("lugar"),
+                "fecha": md.get("fecha"),
+                "foto": url,
+            }
+        )
+
+    # 4. Armar el dict final del nuevo profesional
     profesional_dict = {
-        "_id": cliente["_id"],  # Mantener el mismo id
+        "_id": cliente["_id"],  # mantenemos el mismo ObjectId
         "rol": "Profesional",
-        "nombre": datos.nombre,
-        "apellido": datos.apellido,
-        "numero": datos.numero,
-        "correo": datos.correo,
-        "password": cliente[
-            "password"
-        ],  # la contraseña ya viene hasheada desde el front
-        "ubicacion": datos.ubicacion,
+        "nombre": nombre,
+        "apellido": apellido,
+        "numero": numero,
+        "correo": correo,
+        "password": cliente["password"],  # ya hasheada en origen
+        "ubicacion": ubicacion,
         "calificacion": 0.0,
-        "experiencia_laboral_años": datos.experiencia_laboral_años,
+        "experiencia_laboral_años": experiencia_laboral_años,
         "recomendaciones": 0,
-        "foto_perfil": cliente["foto_perfil"],
-        "fotos_trabajos": fotos_trabajos_dict,  # Lista de diccionarios en lugar de objetos Foto para que no tener el mismo error al iterar
-        "horarios_atencion": datos.horarios_atencion,
-        "nacimiento": datos.nacimiento,
-        "rubro_nombre": datos.rubro_nombre,
-        "profesion_nombre": datos.profesion_nombre,
-        "acerca_de_mi": datos.acerca_de_mi,
-        "fecha_registro": cliente["fecha_registro"],
+        "foto_perfil": cliente.get("foto_perfil"),
+        "fotos_trabajos": fotos_final,  # metadata + URLs
+        "horarios_atencion": horarios_atencion,
+        "nacimiento": nacimiento,
+        "rubro_nombre": rubro_nombre,
+        "profesion_nombre": profesion_nombre,
+        "acerca_de_mi": acerca_de_mi,
+        "fecha_registro": cliente.get("fecha_registro"),
     }
 
+    # 5. Insertar y limpiar
     try:
-        # Intentar insertar el nuevo profesional con el mismo ID del cliente
         profesionales_collection.insert_one(profesional_dict)
-
-        # Eliminar el cliente después de insertar el profesional
         clientes_collection.delete_one({"_id": cliente["_id"]})
-
-        # Convertir ObjectId a string antes de devolver la respuesta
         profesional_dict["_id"] = str(profesional_dict["_id"])
-
         return {"user_data": profesional_dict}
-
     except PyMongoError as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error al convertir a profesional: {str(e)}"
-        )
+        raise HTTPException(500, f"Error al convertir a profesional: {e}")
 
 
 @router.post("/verify-otp/")
