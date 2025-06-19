@@ -25,10 +25,10 @@ const MessagesCard = ({ item, index, _id }) => {
 
     if (img[0] !== undefined) {
       const image = window.atob(img[0].imagen)
-      if (urlPattern.test(image) || base64Pattern.test(image)) {
-        return image
-      }
+
+      return image
     }
+    console.log(imageSrc)
     return defaultImage
   }
 
