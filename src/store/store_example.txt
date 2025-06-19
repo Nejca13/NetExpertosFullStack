@@ -1,0 +1,132 @@
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+
+const useStore = create(
+  persist(
+    (set, get) => ({
+      hasHydrated: false,
+      setHasHydrated: (state) => set({ hasHydrated: state }),
+
+      // usuario
+      currentUser: null,
+      setCurrentUser: (user) => set({ currentUser: user }),
+      clearCurrentUser: () => set({ currentUser: null }),
+
+      // Formulario
+      currentForm: null,
+      setCurrentForm: (formData) => set({ currentForm: formData }),
+      clearCurrentForm: () => set({ currentForm: null }),
+
+      // Reserva
+      currentReservation: null,
+      setCurrentReservation: (data) => set({ currentReservation: data }),
+      clearCurrentReservation: () => set({ currentReservation: null }),
+
+      // Tipo Dashboard (valor por defecto solo si no se hidrata)
+      typeDashboard: 'productos',
+      setTypeDashboard: (typeDashboard) => set({ typeDashboard }),
+
+      // Orden
+      currentOrden: {
+        products: [],
+        quantityTotal: 0,
+        quantityPayment: 0,
+      },
+      setCurrentOrden: (newOrder) => set({ currentOrden: newOrder }),
+      clearCurrentOrden: () =>
+        set({
+          currentOrden: {
+            products: [],
+            quantityTotal: 0,
+            quantityPayment: 0,
+          },
+        }),
+
+      addProductToOrder: (producto) => {
+        const products = get().currentOrden.products || []
+        const existingProduct = products.find(
+          (item) => item.product_id === producto._id
+        )
+
+        let updatedProducts
+        if (existingProduct) {
+          updatedProducts = products.map((item) =>
+            item.product_id === producto._id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+        } else {
+          updatedProducts = [
+            ...products,
+            {
+              product_id: producto._id,
+              quantity: 1,
+              copy_object: producto,
+            },
+          ]
+        }
+
+        const quantityTotal = updatedProducts.reduce(
+          (t, i) => t + i.quantity,
+          0
+        )
+        const quantityPayment = updatedProducts.reduce(
+          (t, i) => t + i.quantity * i.copy_object.price,
+          0
+        )
+
+        set({
+          currentOrden: {
+            products: updatedProducts,
+            quantityTotal,
+            quantityPayment,
+          },
+        })
+      },
+
+      removeProductFromOrder: (producto) => {
+        const products = get().currentOrden.products || []
+
+        const updatedProducts = products
+          .map((item) =>
+            item.product_id === producto._id
+              ? { ...item, quantity: item.quantity - 1 }
+              : item
+          )
+          .filter((item) => item.quantity > 0)
+
+        const quantityTotal = updatedProducts.reduce(
+          (t, i) => t + i.quantity,
+          0
+        )
+        const quantityPayment = updatedProducts.reduce(
+          (t, i) => t + i.quantity * i.copy_object.price,
+          0
+        )
+
+        set({
+          currentOrden: {
+            products: updatedProducts,
+            quantityTotal,
+            quantityPayment,
+          },
+        })
+      },
+    }),
+    {
+      name: 'store',
+      partialize: (state) => ({
+        currentUser: state.currentUser,
+        currentForm: state.currentForm,
+        currentReservation: state.currentReservation,
+        typeDashboard: state.typeDashboard,
+        currentOrden: state.currentOrden,
+      }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true)
+      },
+    }
+  )
+)
+
+export default useStore

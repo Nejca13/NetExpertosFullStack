@@ -8,6 +8,7 @@ import NavBar from '../Navbar/NavBar'
 import FormContainer from '../Containers/FormContainer'
 import LogoNetExpertos from '../ui/Logo/LogoNetExpertos'
 import ButtonSignInWithGoogle from '../Buttons/ButtonSignInWithGoogle/ButtonSignInWithGoogle'
+import useStore from '@/store/store'
 
 export default function isAuth(Component) {
   return function IsAuth(props) {
@@ -17,11 +18,19 @@ export default function isAuth(Component) {
 
     const { _id } = useParams()
 
+    //Zustand store
+    const { currentUser } = useStore()
+
     const setUser = async () => {
+      // IndexDB <--- BORRAR DESPUES
       const authValue = await getUser(_id)
       const user = await getFirstUser()
       if (authValue || user) {
         setAuth(authValue?.user_data || user.user_data)
+      }
+      // Usuario de Zustand
+      if (currentUser) {
+        setAuth(currentUser?.user_data)
       }
     }
 

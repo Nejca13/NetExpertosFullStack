@@ -18,6 +18,7 @@ import { useShowProfesionalCard } from '@/app/profesionalCardContext'
 import ProfesionalCard from '@/components/ProfesionalCard/ProfesionalCard'
 import { useWebSocket } from '@/app/WebSocketContext'
 import NotificacionChat from '@/components/NotificacionChat/NotificacionChat'
+import useStore from '@/store/store'
 
 const Page = () => {
   const [showMenu, setShowMenu] = useState(false)
@@ -27,6 +28,12 @@ const Page = () => {
   const [showProfesionalCard, setShowProfesionalCard] = useShowProfesionalCard()
   const { ws, messages, setUserId, setRole } = useWebSocket()
   const [notificationMessages, setNotificationMessages] = useState([])
+
+  //Zustand store
+  const { currentUser } = useStore()
+
+  //Comprobar si el usuario actual ya está en el store
+  if (currentUser) console.log(currentUser)
 
   useEffect(() => {
     fetchUserData()
@@ -63,10 +70,16 @@ const Page = () => {
   }, [messages])
 
   const fetchUserData = async () => {
+    // IndexDB <--- BORRAR DESPUES
     const user = await getUser(_id)
     setUserApp(user.user_data)
     setUserId(user.user_data._id)
     setRole(user.user_data.rol)
+
+    // Usuario de Zustand
+    setUserApp(currentUser?.user_data)
+    setUserId(currentUser?.user_data._id)
+    setRole(currentUser?.user_data.rol)
   }
 
   return (

@@ -17,6 +17,7 @@ import Image from 'next/image'
 import Lupa from '@/assets/images/LUPA_NEGRA.svg'
 import { useWebSocket } from '@/app/WebSocketContext'
 import NotificacionChat from '@/components/NotificacionChat/NotificacionChat'
+import useStore from '@/store/store'
 
 const Map = () => {
   const { profesion, _id } = useParams()
@@ -34,11 +35,23 @@ const Map = () => {
   const { ws, messages, setUserId, setRole } = useWebSocket()
   const [notificationMessages, setNotificationMessages] = useState([])
 
+  //Zustand store
+  const { currentUser } = useStore()
+
+  //Comprobar si el usuario actual ya está en el store
+  if (currentUser) console.log(currentUser)
+
   const setUser = async () => {
+    // IndexDB <--- BORRAR DESPUES
     const storageUser = await getUser(_id)
     setUserApp(storageUser.user_data)
     setUserId(storageUser.user_data._id)
     setRole(storageUser.user_data.rol)
+
+    // Usuario de Zustand
+    setUserApp(currentUser?.user_data)
+    setUserId(currentUser?.user_data._id)
+    setRole(currentUser?.user_data.rol)
   }
 
   useEffect(() => {

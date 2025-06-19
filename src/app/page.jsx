@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation'
 import { addUser, clearUsers, getFirstUser } from '@/utils/indexedDataBase'
 import ModalLoading from '@/components/ui/Modals/ModalLoading/ModalLoading'
 import dynamic from 'next/dynamic'
+import useStore from '@/store/store'
 
 const ButtonSignInWithGoogle = dynamic(
   () =>
@@ -30,6 +31,8 @@ export default function Home() {
   const [loadingMessage, setLoadingMessage] = useState(
     'Buscando sesiones activas...'
   )
+  //Zustand store
+  const { currentUser, setCurrentUser } = useStore()
 
   const router = useRouter()
 
@@ -63,8 +66,11 @@ export default function Home() {
         setErrorMessage(data.error.message)
       }
       if (data.user_data) {
+        // IndexDB <---- BORRAR DESPUES
         const saveUser = await addUser(data)
-        if (saveUser) {
+        // Guardamos usuario en el store de Zustand
+        setCurrentUser(data)
+        if (saveUser || currentUser) {
           router.push(`/profile/${data.user_data._id}`)
         }
       }
