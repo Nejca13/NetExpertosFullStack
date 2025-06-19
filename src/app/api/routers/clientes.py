@@ -231,8 +231,13 @@ async def convertir_cliente_a_profesional(
 
     # 5. Insertar y limpiar
     try:
-        profesionales_collection.insert_one(profesional_dict)
-        clientes_collection.delete_one({"_id": cliente["_id"]})
+        await profesionales_collection.insert_one(profesional_dict)
+
+        res = await clientes_collection.delete_one({"_id": cliente["_id"]})
+
+        if res.deleted_count == 0:
+            raise HTTPException(500, "Error al eliminar el cliente")
+
         profesional_dict["_id"] = str(profesional_dict["_id"])
         return {"user_data": profesional_dict}
     except PyMongoError as e:
