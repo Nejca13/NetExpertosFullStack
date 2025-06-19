@@ -1,7 +1,7 @@
 'use client'
 import styles from './ConvertiteEnExperto.module.css'
 import NavBar from '@/components/Navbar/NavBar'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import SeccionPerfil from '@/components/FormComponents/SeccionPerfil'
 import ModalForm from '@/components/ui/Modals/ModalForm/ModalForm'
 import SeccionTrabajos from '@/components/FormComponents/SeccionTrabajos'
@@ -9,11 +9,12 @@ import separarDatos from '@/utils/separarDatosForm'
 import TerminosYCondiciones from '@/components/TerminosYCondiciones/TerminosYCondiciones'
 import ModalError from '@/components/ui/Modals/ModalError/ModalError'
 import ModalLoading from '@/components/ui/Modals/ModalLoading/ModalLoading'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import SeccionDatosIndependiente from './Formulario/ProfesionalesIndependientes/SeccionDatosIndependiente'
 import { converToProfesional } from '@/services/api/clientes'
 import Empresas from './Formulario/Empresas/Empresas'
 import LogoNetExpertos from '../../Logo/LogoNetExpertos'
+import { getUser } from '@/utils/indexedDataBase'
 
 /**
  * Componente ConvertiteEnExperto
@@ -30,8 +31,22 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
   const [accountType, setAccountType] = useState(null) // Tipo de cuenta seleccionado (empresa o independiente)
   const [errorMessage, setErrorMessage] = useState(null) // Mensaje de error
   const [isLoading, setIsLoading] = useState(false) // Estado de carga
+  const { _id } = useParams()
+  const [currentUser, setCurrentUser] = useState(null)
 
   const router = useRouter()
+
+  useEffect(() => {
+    getUser(_id).then(
+      (response) => {
+        setCurrentUser(response)
+        console.log(response)
+      },
+      (error) => {
+        console.log(error)
+      }
+    )
+  }, [_id])
 
   /**
    * Maneja la presentación del formulario, separa los datos y convierte la imagen de trabajos realizados a base64 si es necesario.
@@ -40,7 +55,7 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     const formData = Object.fromEntries(new FormData(e.target))
-    const jobs = await separarDatos(formData)
+    const jobs = separarDatos(formData)
 
     if (jobs.foto_perfil instanceof File) {
       const reader = new FileReader()
@@ -77,10 +92,33 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
    * Maneja la conversión del usuario a profesional, llamando a la API correspondiente.
    */
   const handleConvertToProfesional = async () => {
-    setIsLoading(true)
+    // setIsLoading(true)
+    // Convertir formDataValues a formdata
+    const formData = new FormData()
+    for (const key in formDataValues) {
+      formData.append(key, formDataValues[key])
+    }
+    console.log(formData)
+    formData.append('rol', 'Profesional')
+    formData.append('numero', formDataValues.telefono)
+    formData.append(
+      'horarios_atencion',
+      `${formDataValues.horario_apertura} - a ${formDataValues.horario_cierre}`
+    )
+    const fotosMeta = formDataValues.fotos_trabajos.map((item) => ({
+      titulo: item.titulo,
+      lugar: item.lugar,
+      fecha: item.fecha,
+    }))
+
+    formData.append('fotos_trabajos_meta', JSON.stringify(fotosMeta))
+    formData.delete('fotos_trabajos')
+    formDataValues.fotos_trabajos.map((item) => {
+      formData.append('fotos_trabajos', item.foto)
+    })
     try {
       const res = await converToProfesional(
-        formDataValues,
+        formData,
         setIsLoading,
         setErrorMessage
       )
@@ -130,7 +168,13 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
               />
             )
           case 2:
-            return <SeccionPerfil onNext={handleNext} onBack={handleBack} />
+            return (
+              <SeccionPerfil
+                currentUser={currentUser}
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )
           case 3:
             return <SeccionTrabajos onNext={handleNext} onBack={handleBack} />
           case 4:
