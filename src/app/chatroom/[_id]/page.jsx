@@ -21,7 +21,8 @@ const Chat = () => {
   const router = useRouter()
   const textareaRef = useRef(null)
   const containerRef = useRef(null)
-  const { ws, messages, setUserId, setMessages, setRole } = useWebSocket()
+  const { ws, messages, setUserId, setMessages, setRole, sendMessage } =
+    useWebSocket()
   const [user, setUser] = useState(null)
   const [showEmojis, setShowEmojis] = useState(false)
 
@@ -80,7 +81,7 @@ const Chat = () => {
       const messageToSend = `${_id}:${currentMessage}:${btoa(image_perfil)}:${
         user.user_data.nombre
       }:${user.user_data.apellido}`
-      ws.send(messageToSend)
+      sendMessage(messageToSend)
       setMessages((prevMessages) => [
         ...prevMessages,
         {
