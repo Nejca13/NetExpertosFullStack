@@ -1,20 +1,23 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { saveCompressedImageToLocalStorage } from '@/utils/minificadorDeImagenes'
 import styles from './MultiImageForm.module.css'
 import cameraImage from '@/assets/images/Camera.png'
+import { compressImageFile } from '@/utils/imageUtils'
 
 const MultiImageForm = ({ index, trabajos }) => {
   const [image, setImage] = useState(null)
   const [error, setError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0] // Solo tomamos el primer archivo seleccionado
-    if (file) {
-      saveCompressedImageToLocalStorage(file, (compressedImage) => {
-        setImage(compressedImage)
-      })
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    try {
+      const compressed = await compressImageFile(file, 800, 'image/webp', 0.6)
+      setImage(URL.createObjectURL(compressed))
+    } catch (err) {
+      console.error('Error al comprimir imagen:', err)
     }
   }
 
