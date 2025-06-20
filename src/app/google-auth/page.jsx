@@ -8,12 +8,16 @@ import ModalLoading from '@/components/ui/Modals/ModalLoading/ModalLoading'
 import Container from '@/components/Containers/Container'
 import { addUser } from '@/utils/indexedDataBase'
 import ModalError from '@/components/ui/Modals/ModalError/ModalError'
+import useStore from '@/store/store'
 
 const Page = () => {
   const [auth, setAuth] = useAuth()
   const [authComponent, setAuthComponent] = useState(null)
   const router = useRouter()
   const [location, setLocation] = useState(null)
+
+  //Zustand store
+  const { currentUser, setCurrentUser } = useStore()
 
   useEffect(() => {
     const storedLocation = JSON.parse(localStorage.getItem('userLocation'))
@@ -43,6 +47,8 @@ const Page = () => {
         token: data.token,
         user_data: data.user_data,
       }
+
+      // IndexDB <--- BORRAR DESPUES
       await addUser(user)
         .then((result) => {
           console.log('Usuario guardado con ID:', result)
@@ -51,6 +57,10 @@ const Page = () => {
         .catch((error) => {
           console.error('Error al guardar el usuario:', error)
         })
+
+      //Zustand
+      setCurrentUser(user)
+      console.log('Guardando usuario en Zustand', currentUser)
     } else {
       const error = await response.json()
       console.error(error)

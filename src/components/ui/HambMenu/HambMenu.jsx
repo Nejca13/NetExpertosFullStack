@@ -12,11 +12,15 @@ import { useState, useEffect, useRef } from 'react'
 import ConvertiteEnExperto from './ConvertiteEnExperto/ConvertiteEnExperto'
 import { useRouter } from 'next/navigation'
 import NotificationBubble from '../NotificationBubble/NotificationBubble'
+import useStore from '@/store/store'
 
 const HambMenu = ({ show, userApp }) => {
   const [menuComponent, setMenuComponent] = useState(null)
   const containerRef = useRef(null)
   const router = useRouter()
+
+  //Zustand store
+  const clearCurrentUser = useStore((state) => state.clearCurrentUser)
 
   const handleOptionClick = (name) => {
     switch (name) {
@@ -38,6 +42,8 @@ const HambMenu = ({ show, userApp }) => {
         break
       case 'Salir':
         userLogout()
+        //Funcion para limpiar el usuario actual en Zustand y del local storage
+        clearCurrentUser()
       default:
         break
     }
