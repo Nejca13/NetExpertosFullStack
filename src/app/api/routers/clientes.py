@@ -1,40 +1,31 @@
 import json
 from fastapi import APIRouter, File, HTTPException, Form, UploadFile
-from pymongo import MongoClient
 import bcrypt
 from datetime import datetime, timedelta
 
+from app.api.config.otp_config import (
+    HOST_EMAIL,
+    HOST_PASSWORD,
+    HOST_SMTP_PORT,
+    HOST_SMTP_SERVER,
+)
+from app.api.core import (
+    CLIENTES_COLLECTION,
+    PROFESIONALES_COLLECTION,
+    TEMP_CLIENTES_COLLECTION,
+)
 from app.api.utils.save_image import save_image
-from ..models.cliente import Cliente
 from bson import ObjectId
 import re
 import random
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
-from typing import List, Dict, Optional
+from typing import List, Optional
 from ..models.foto import Foto
-from ..models.profesional import Profesional
 from pydantic import BaseModel, Field
 from pymongo.errors import PyMongoError
 
-
-# Conexión a la base de datos
-client = MongoClient("mongodb://127.0.0.1:27017")
-db = client.test
-clientes_collection = db.clientes
-profesionales_collection = db.profesionales
-temp_clientes_collection = (
-    db.temp_clientes
-)  # Colección temporal para almacenar clientes antes de verificar OTP
-profesiones_collection = db.profesiones
-
-
-# Configuración del servidor SMTP
-smtp_server = "c2710770.ferozo.com"
-smtp_port = 465  # Puerto estándar para SMTP con cifrado TLS
-email = "verify@netexpertos.com"
-password = "AF/1J6E5kK"
 
 router = APIRouter(
     prefix="/clientes", tags=["clientes"], responses={404: {"message": "No encontrado"}}
@@ -86,19 +77,19 @@ def send_otp_email(username, otp):
     body = f"Su código de verificación es: {otp}"
 
     message = MIMEMultipart()
-    message["From"] = email
+    message["From"] = HOST_EMAIL
     message["To"] = username
     message["Subject"] = subject
     message.attach(MIMEText(body, "plain"))
 
     # Iniciar sesión en el servidor SMTP
-    with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
+    with smtplib.SMTP_SSL(HOST_SMTP_SERVER, HOST_SMTP_PORT) as server:
         # Habilitar cifrado TLS
         server.login(
-            email, password
+            HOST_EMAIL, HOST_PASSWORD
         )  # Iniciar sesión con correo electrónico y contraseña
         server.sendmail(
-            email, username, message.as_string()
+            HOST_EMAIL, username, message.as_string()
         )  # Enviar correo electrónico
 
 
@@ -117,9 +108,9 @@ async def request_registration(
         raise HTTPException(400, "Todos los campos son requeridos")
     if not re.match(PASSWORD_REGEX, password):
         raise HTTPException(400, "La contraseña no cumple con los requisitos")
-    if clientes_collection.find_one({"correo": correo}):
+    if CLIENTES_COLLECTION.find_one({"correo": correo}):
         raise HTTPException(400, "El cliente ya existe")
-    if profesionales_collection.find_one({"correo": correo}):
+    if PROFESIONALES_COLLECTION.find_one({"correo": correo}):
         raise HTTPException(400, "El correo se encuentra en uso")
     if not re.match(LOCATION_REGEX, ubicacion):
         raise HTTPException(400, "La ubicación no cumple con el formato requerido")
@@ -149,7 +140,7 @@ async def request_registration(
         "otp_generated_time": otp_generated_time,
         "fecha_registro": None,
     }
-    temp_clientes_collection.insert_one(temp_doc)
+    TEMP_CLIENTES_COLLECTION.insert_one(temp_doc)
 
     return {
         "message": "OTP enviado al correo electrónico. Verifique para completar el registro.",
@@ -174,7 +165,7 @@ async def convertir_cliente_a_profesional(
     fotos_trabajos: List[UploadFile] = File(None),  # Archivos
 ):
     # 1. Validar existencia de cliente
-    cliente = clientes_collection.find_one({"correo": correo})
+    cliente = CLIENTES_COLLECTION.find_one({"correo": correo})
     if not cliente:
         raise HTTPException(404, "Cliente no encontrado")
 
@@ -231,8 +222,8 @@ async def convertir_cliente_a_profesional(
 
     # 5. Insertar y limpiar
     try:
-        profesionales_collection.insert_one(profesional_dict)
-        clientes_collection.delete_one({"_id": cliente["_id"]})
+        PROFESIONALES_COLLECTION.insert_one(profesional_dict)
+        CLIENTES_COLLECTION.delete_one({"_id": cliente["_id"]})
 
         profesional_dict["_id"] = str(profesional_dict["_id"])
         return {"user_data": profesional_dict}
@@ -242,7 +233,7 @@ async def convertir_cliente_a_profesional(
 
 @router.post("/verify-otp/")
 async def verify_otp(correo: str = Form(...), otp: str = Form(...)):
-    temp_cliente = temp_clientes_collection.find_one({"correo": correo})
+    temp_cliente = TEMP_CLIENTES_COLLECTION.find_one({"correo": correo})
     if not temp_cliente:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
@@ -268,7 +259,7 @@ async def verify_otp(correo: str = Form(...), otp: str = Form(...)):
         )
 
     # Eliminar el OTP y la entrada temporal
-    temp_clientes_collection.delete_one({"correo": correo})
+    TEMP_CLIENTES_COLLECTION.delete_one({"correo": correo})
 
     # Crear el cliente en la colección definitiva
     hashed_password = bcrypt.hashpw(
@@ -281,7 +272,7 @@ async def verify_otp(correo: str = Form(...), otp: str = Form(...)):
     del temp_cliente["otp_generated_time"]
 
     # Insertar el cliente definitivo en la colección y convertir _id a str
-    cliente_id = clientes_collection.insert_one(temp_cliente).inserted_id
+    cliente_id = CLIENTES_COLLECTION.insert_one(temp_cliente).inserted_id
     temp_cliente["_id"] = str(cliente_id)
 
     return {"message": "Cliente verificado y creado exitosamente.", **temp_cliente}
@@ -290,7 +281,7 @@ async def verify_otp(correo: str = Form(...), otp: str = Form(...)):
 @router.get("/")
 async def obtener_clientes():
     lista_clientes = []
-    for cliente in clientes_collection.find():
+    for cliente in CLIENTES_COLLECTION.find():
         cliente["_id"] = str(cliente["_id"])
         cliente["fecha_registro"] = (
             cliente["fecha_registro"].strftime("%Y-%m-%d %H:%M:%S")
@@ -310,7 +301,7 @@ async def buscar_cliente_por_correo(json_data: dict):
             status_code=400, detail="Se requiere el campo 'correo' en los datos JSON"
         )
 
-    profesional_encontrado = clientes_collection.find_one({"correo": correo_cliente})
+    profesional_encontrado = CLIENTES_COLLECTION.find_one({"correo": correo_cliente})
 
     if profesional_encontrado:
         profesional_encontrado["_id"] = str(profesional_encontrado["_id"])
@@ -335,7 +326,7 @@ async def actualizar_cliente(correo: str, campos_actualizados: dict):
 
     campos_actualizacion = {"$set": campos_actualizados}
 
-    resultado = clientes_collection.update_one({"correo": correo}, campos_actualizacion)
+    resultado = CLIENTES_COLLECTION.update_one({"correo": correo}, campos_actualizacion)
 
     if resultado.modified_count == 1:
         return {"message": f"Cliente con correo {correo} actualizado exitosamente"}
@@ -347,7 +338,7 @@ async def actualizar_cliente(correo: str, campos_actualizados: dict):
 
 @router.delete("/{cliente_id}/")
 async def eliminar_cliente(cliente_id: str):
-    resultado = clientes_collection.delete_one({"_id": ObjectId(cliente_id)})
+    resultado = CLIENTES_COLLECTION.delete_one({"_id": ObjectId(cliente_id)})
     if resultado.deleted_count == 1:
         return {"message": "Cliente eliminado exitosamente"}
     else:
@@ -357,13 +348,13 @@ async def eliminar_cliente(cliente_id: str):
 @router.post("/favoritos/agregar/{cliente_id}/")
 async def agregar_favoritos(cliente_id: str, profesionales: List[str]):
     # Verificar si el cliente existe
-    cliente_existente = clientes_collection.find_one({"_id": ObjectId(cliente_id)})
+    cliente_existente = CLIENTES_COLLECTION.find_one({"_id": ObjectId(cliente_id)})
     if not cliente_existente:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
 
     # Verificar si los profesionales existen
     for profesional_id in profesionales:
-        profesional_existente = profesionales_collection.find_one(
+        profesional_existente = PROFESIONALES_COLLECTION.find_one(
             {"_id": ObjectId(profesional_id)}
         )
         if not profesional_existente:
@@ -373,7 +364,7 @@ async def agregar_favoritos(cliente_id: str, profesionales: List[str]):
             )
 
     # Agregar los profesionales a la lista de favoritos del cliente
-    resultado = clientes_collection.update_one(
+    resultado = CLIENTES_COLLECTION.update_one(
         {"_id": ObjectId(cliente_id)},
         {"$addToSet": {"favoritos": {"$each": profesionales}}},
     )
@@ -391,12 +382,12 @@ async def agregar_favoritos(cliente_id: str, profesionales: List[str]):
 @router.post("/favoritos/eliminar/{cliente_id}/")
 async def eliminar_favoritos(cliente_id: str, profesionales: List[str]):
     # Verificar si el cliente existe
-    cliente_existente = clientes_collection.find_one({"_id": ObjectId(cliente_id)})
+    cliente_existente = CLIENTES_COLLECTION.find_one({"_id": ObjectId(cliente_id)})
     if not cliente_existente:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
 
     # Eliminar los profesionales de la lista de favoritos del cliente
-    resultado = clientes_collection.update_one(
+    resultado = CLIENTES_COLLECTION.update_one(
         {"_id": ObjectId(cliente_id)}, {"$pullAll": {"favoritos": profesionales}}
     )
     if resultado.modified_count == 1:
