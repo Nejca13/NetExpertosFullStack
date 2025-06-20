@@ -60,7 +60,7 @@ const Page = () => {
   }
   useEffect(() => {
     handleAuth(auth)
-  }, [location])
+  }, [])
 
   return (
     <Container justifyContent={'flex-start'}>

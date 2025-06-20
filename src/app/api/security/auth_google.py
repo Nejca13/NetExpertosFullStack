@@ -1,11 +1,12 @@
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
-from pymongo import MongoClient
 from datetime import datetime, timedelta
 from pydantic import BaseModel
 import bcrypt
 from jose import JWTError, jwt
 from typing import Optional
+
+from app.api.core import CLIENTES_COLLECTION, PROFESIONALES_COLLECTION
 
 router = APIRouter(prefix="/auth-google", tags=["autenticacion-google"])
 
@@ -24,12 +25,6 @@ GOOGLE_USER_INFO_URI = "https://www.googleapis.com/oauth2/v2/userinfo"
 SECRET_KEY = "8b5c2d3f9ba59c5a66e54f7e"
 ALGORITHM = "HS256"
 
-# Configuración de MongoDB
-client = MongoClient("mongodb://127.0.0.1:27017")
-db = client.test
-clientes_collection = db.clientes
-profesionales_collection = db.profesionales
-
 
 # Modelos de Pydantic
 class User(BaseModel):
@@ -40,9 +35,9 @@ class User(BaseModel):
 
 
 def get_user_by_email(email: str):
-    user_data = clientes_collection.find_one({"correo": email})
+    user_data = CLIENTES_COLLECTION.find_one({"correo": email})
     if not user_data:
-        user_data = profesionales_collection.find_one({"correo": email})
+        user_data = PROFESIONALES_COLLECTION.find_one({"correo": email})
     return user_data
 
 
@@ -87,7 +82,7 @@ def get_or_create_user(user_data):
             detail="No se pudo obtener el correo electrónico del usuario",
         )
 
-    existing_user = clientes_collection.find_one({"correo": email})
+    existing_user = CLIENTES_COLLECTION.find_one({"correo": email})
     if not existing_user:
         user_data = {
             "rol": "Cliente",
@@ -101,7 +96,7 @@ def get_or_create_user(user_data):
             "ubicacion": user_data.get("ubicacion"),
             "fecha_registro": datetime.utcnow(),
         }
-        new_user_id = clientes_collection.insert_one(user_data).inserted_id
+        new_user_id = CLIENTES_COLLECTION.insert_one(user_data).inserted_id
         user_data["_id"] = str(new_user_id)
         token = create_access_token(data={"user_id": str(new_user_id), "email": email})
         return {
@@ -130,7 +125,7 @@ def get_or_create_user(user_data):
 
 @router.post("/login/")
 def login(user_data: dict):
-    existing_profesional = profesionales_collection.find_one(
+    existing_profesional = PROFESIONALES_COLLECTION.find_one(
         {"correo": user_data.get("email")}
     )
     if existing_profesional:

@@ -42,7 +42,7 @@ const NotificacionChat = ({ message, setNotificationMessages }) => {
             JSON.stringify({
               nombre: data.name,
               apellido: data.surname,
-              foto_perfil: atob(data.image),
+              foto_perfil: data.image,
             })
           )
           setNotificationMessages([])
@@ -54,7 +54,7 @@ const NotificacionChat = ({ message, setNotificationMessages }) => {
         <audio src='/sounds/bubble.mp3' id='pop' ref={audioRef}></audio>
         <Image
           className={styles.imagen}
-          src={atob(data.image)}
+          src={data.image}
           width={30}
           height={30}
           alt='imagen de perfil'

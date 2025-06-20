@@ -54,7 +54,7 @@ const Page = () => {
       sendAndroidNotification(
         'NetExpertos',
         `${data.name}: ${data.message}`,
-        atob(data.image)
+        data.image
       )
     }
     return () => {

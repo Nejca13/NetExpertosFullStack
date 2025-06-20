@@ -1,13 +1,20 @@
-from fastapi import APIRouter, HTTPException, Query, Body, Form
-from pymongo import MongoClient
+from fastapi import APIRouter, HTTPException, Query, Form
+
+from app.api.config.otp_config import (
+    HOST_EMAIL,
+    HOST_PASSWORD,
+    HOST_SMTP_PORT,
+    HOST_SMTP_SERVER,
+)
+from app.api.core import (
+    CLIENTES_COLLECTION,
+    PROFESIONALES_COLLECTION,
+    PROFESIONES_COLLECTION,
+    TEMP_PROFESIONALES_COLLECTION,
+)
 from ..models.profesional import Profesional
-from typing import List
-from bson import ObjectId
-from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from fastapi.responses import JSONResponse
 import math
-import json
 from geopy.distance import geodesic
 from datetime import datetime, timedelta
 import bcrypt
@@ -15,16 +22,6 @@ import re
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib, random
-
-# Conexión a la base de datos
-client = MongoClient("mongodb://127.0.0.1:27017")
-db = client.test
-clientes_collection = db.clientes
-profesionales_collection = db.profesionales
-profesiones_collection = db.profesiones
-temp_profesionales_collection = (
-    db.temp_profesionales
-)  # Colección temporal para almacenar profesioanles antes de verificar OTP
 
 
 router = APIRouter(prefix="/profesionales", tags=["profesionales"])
@@ -39,31 +36,25 @@ NUMERO_REGEX = (
 )
 LOCATION_REGEX = r"^(-?([1-8]?\d(\.\d+)?|90(\.0+)?)),\s*(-?((1[0-7]\d(\.\d+)?|1[0-8]0(\.0+)?|\d{1,2}(\.\d+)?)))$"
 
-# Configuración del servidor SMTP
-smtp_server = "c2710770.ferozo.com"
-smtp_port = 465  # Puerto estándar para SMTP con cifrado TLS
-email = "verify@netexpertos.com"
-password = "AF/1J6E5kK"
-
 
 def send_otp_email(username, otp):
     subject = "Código de verificación para registro"
     body = f"Su código de verificación es: {otp}"
 
     message = MIMEMultipart()
-    message["From"] = email
+    message["From"] = HOST_EMAIL
     message["To"] = username
     message["Subject"] = subject
     message.attach(MIMEText(body, "plain"))
 
     # Iniciar sesión en el servidor SMTP
-    with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
+    with smtplib.SMTP_SSL(HOST_SMTP_SERVER, HOST_SMTP_PORT) as server:
         # Habilitar cifrado TLS
         server.login(
-            email, password
+            HOST_EMAIL, HOST_PASSWORD
         )  # Iniciar sesión con correo electrónico y contraseña
         server.sendmail(
-            email, username, message.as_string()
+            HOST_EMAIL, username, message.as_string()
         )  # Enviar correo electrónico
 
 
@@ -119,7 +110,7 @@ async def request_registration(profesional: Profesional):
         )
 
     # Verificar si el profesional ya existe en la base de datos
-    if profesionales_collection.find_one({"correo": profesional.correo}):
+    if PROFESIONALES_COLLECTION.find_one({"correo": profesional.correo}):
         raise HTTPException(status_code=400, detail="El profesional ya existe")
 
     # Verificar el formato de la ubicación
@@ -129,11 +120,11 @@ async def request_registration(profesional: Profesional):
         )
 
     # Verificar si el correo ya está en uso por un cliente
-    if clientes_collection.find_one({"correo": profesional.correo}):
+    if CLIENTES_COLLECTION.find_one({"correo": profesional.correo}):
         raise HTTPException(status_code=400, detail="El correo se encuentra en uso")
 
     # Verificar si la profesión especificada existe
-    profesion_existente = profesiones_collection.find_one(
+    profesion_existente = PROFESIONES_COLLECTION.find_one(
         {"nombre": profesional.rubro_nombre}
     )
     if not profesion_existente:
@@ -177,7 +168,7 @@ async def request_registration(profesional: Profesional):
             "fecha_registro": None,
         }
     )
-    temp_profesionales_collection.insert_one(temp_profesional)
+    TEMP_PROFESIONALES_COLLECTION.insert_one(temp_profesional)
 
     return {
         "message": "OTP enviado al correo electrónico. Verifique para completar el registro."
@@ -186,7 +177,7 @@ async def request_registration(profesional: Profesional):
 
 @router.post("/verify-otp/")
 async def verify_otp(correo: str = Form(...), otp: str = Form(...)):
-    temp_profesional = temp_profesionales_collection.find_one({"correo": correo})
+    temp_profesional = TEMP_PROFESIONALES_COLLECTION.find_one({"correo": correo})
     if not temp_profesional:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
@@ -212,7 +203,7 @@ async def verify_otp(correo: str = Form(...), otp: str = Form(...)):
         )
 
     # Eliminar el OTP y la entrada temporal
-    temp_profesionales_collection.delete_one({"correo": correo})
+    TEMP_PROFESIONALES_COLLECTION.delete_one({"correo": correo})
 
     # Crear el profesioanl en la colección definitiva
     hashed_password = bcrypt.hashpw(
@@ -225,7 +216,7 @@ async def verify_otp(correo: str = Form(...), otp: str = Form(...)):
     del temp_profesional["otp_generated_time"]
 
     # Insertar el cliente definitivo en la colección y convertir _id a str
-    profesional_id = profesionales_collection.insert_one(temp_profesional).inserted_id
+    profesional_id = PROFESIONALES_COLLECTION.insert_one(temp_profesional).inserted_id
     temp_profesional["_id"] = str(profesional_id)
 
     return {"message": "Cliente verificado y creado exitosamente.", **temp_profesional}
@@ -253,7 +244,7 @@ async def obtener_profesionales_cercanos(
         )
 
     # Calcular el total de profesionales para la profesión especificada
-    total_profesionales = profesionales_collection.count_documents(
+    total_profesionales = PROFESIONALES_COLLECTION.count_documents(
         {"profesion_nombre": profesion}
     )
 
@@ -263,7 +254,7 @@ async def obtener_profesionales_cercanos(
 
     # Consultar la base de datos para obtener profesionales de la profesión especificada
     profesionales_cercanos = []
-    for profesional in profesionales_collection.find({"profesion_nombre": profesion}):
+    for profesional in PROFESIONALES_COLLECTION.find({"profesion_nombre": profesion}):
         if profesional.get("ubicacion"):
             # Convertir las coordenadas de la ubicación del profesional de cadenas a flotantes
             lat_pro, long_pro = map(float, profesional["ubicacion"].split(","))
@@ -306,7 +297,7 @@ async def obtener_profesionales(
     limit = page_size
 
     # Obtener profesionales de la base de datos
-    profesionales = profesionales_collection.find()
+    profesionales = PROFESIONALES_COLLECTION.find()
 
     # Lista para almacenar los profesionales con la distancia
     profesionales_con_distancia = []
@@ -351,7 +342,7 @@ async def buscar_profesional_por_correo(json_data: dict):
             status_code=400, detail="Se requiere el campo 'correo' en los datos JSON"
         )
     # Buscar al profesional por su correo en la base de datos
-    profesional_encontrado = profesionales_collection.find_one(
+    profesional_encontrado = PROFESIONALES_COLLECTION.find_one(
         {"correo": correo_profesional}
     )
     if profesional_encontrado:
@@ -393,13 +384,13 @@ async def crear_profesional(profesional: Profesional):
             status_code=400, detail="La contraseña no cumple con los requisitos"
         )
     # Verificar si el profesional ya existe en la base de datos
-    if profesionales_collection.find_one({"correo": profesional.correo}):
+    if PROFESIONALES_COLLECTION.find_one({"correo": profesional.correo}):
         raise HTTPException(status_code=400, detail="El profesional ya existe")
 
-    if clientes_collection.find_one({"correo": profesional.correo}):
+    if CLIENTES_COLLECTION.find_one({"correo": profesional.correo}):
         raise HTTPException(status_code=400, detail="El correo se encuentra en uso")
     # Verificar si la profesión especificada existe
-    profesion_existente = profesiones_collection.find_one(
+    profesion_existente = PROFESIONES_COLLECTION.find_one(
         {"nombre": profesional.rubro_nombre}
     )
     if not profesion_existente:
@@ -437,17 +428,17 @@ async def crear_profesional(profesional: Profesional):
     )  # almacenar la contraseña cifrada en lugar de la original
     profesional_dict["profesion_nombre"] = profesional.profesion_nombre
     profesional_dict["rubro_nombre"] = profesional.rubro_nombre
-    profesional_id = profesionales_collection.insert_one(profesional_dict).inserted_id
+    profesional_id = PROFESIONALES_COLLECTION.insert_one(profesional_dict).inserted_id
     return {"id": str(profesional_id), **profesional.model_dump()}
 
 
 @router.delete("/")
 async def eliminar_profesional_por_correo(correo: str):
     # Buscar al profesional por su correo en la base de datos
-    profesional_encontrado = profesionales_collection.find_one({"correo": correo})
+    profesional_encontrado = PROFESIONALES_COLLECTION.find_one({"correo": correo})
     if profesional_encontrado:
         # Eliminar al profesional de la base de datos
-        profesionales_collection.delete_one({"_id": profesional_encontrado["_id"]})
+        PROFESIONALES_COLLECTION.delete_one({"_id": profesional_encontrado["_id"]})
         return {"message": "Profesional eliminado exitosamente"}
     else:
         raise HTTPException(status_code=404, detail="Profesional no encontrado")
@@ -465,7 +456,7 @@ async def actualizar_profesional(correo: str, campos_actualizados: dict):
     campos_actualizacion = {"$set": campos_actualizados}
 
     # Actualizar el profesional por correo
-    resultado = profesionales_collection.update_one(
+    resultado = PROFESIONALES_COLLECTION.update_one(
         {"correo": correo}, campos_actualizacion
     )
 

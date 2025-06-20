@@ -7,48 +7,6 @@ import defaultImage from '@/assets/images/userImage.png'
 const MessagesCard = ({ item, index, _id }) => {
   const [unSeenMessage, setUnSeenMessage] = useState(false)
   const router = useRouter()
-  // Expresiones regulares para validar URLs y cadenas base64
-  const urlPattern =
-    /^(https?:\/\/)[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?$/
-
-  const base64Pattern =
-    /^data:image\/(png|jpg|jpeg|gif|webp);base64,[A-Za-z0-9+/]+={0,2}$/
-
-  function getValidImageSrc(imageSrc) {
-    const img = imageSrc.filter(
-      (mensaje, index) =>
-        mensaje.remitente_id !== _id &&
-        mensaje.imagen !== '' &&
-        mensaje.imagen !== undefined &&
-        (!Array.isArray(mensaje) || mensaje.length > 0) // Verificar que mensaje no sea un array vacío
-    )
-
-    if (img[0] !== undefined) {
-      const image = window.atob(img[0].imagen)
-
-      return image
-    }
-    console.log(imageSrc)
-    return defaultImage
-  }
-
-  const getInfo = (mensajes) => {
-    const id = mensajes.filter((mensaje, index) => mensaje.remitente_id !== _id)
-
-    return id[0]
-  }
-
-  useEffect(() => {
-    if (getInfo(item.mensajes)?.remitente_id !== undefined) {
-      const mensajesNoLeidos = JSON.parse(localStorage.getItem('messages'))
-      if (mensajesNoLeidos) {
-        const id = getInfo(item.mensajes)?.remitente_id
-        const isUnSeedMessage = mensajesNoLeidos[id]
-
-        setUnSeenMessage(mensajesNoLeidos[id]?.length)
-      }
-    }
-  }, [item])
 
   const obtenerHoraActual = (time) => {
     const ahora = time ? new Date(time) : new Date()
@@ -56,29 +14,54 @@ const MessagesCard = ({ item, index, _id }) => {
     const minutos = String(ahora.getMinutes()).padStart(2, '0')
     return `${horas}:${minutos}`
   }
+
+  const getValidImageSrc = (imagenBase64) => {
+    try {
+      const decoded = window.atob(imagenBase64 || '')
+      return decoded.startsWith('http') ? decoded : defaultImage
+    } catch {
+      return defaultImage
+    }
+  }
+
+  useEffect(() => {
+    const mensajesNoLeidos = JSON.parse(localStorage.getItem('messages'))
+    if (mensajesNoLeidos) {
+      const id = item.ultimo_mensaje.sender_id
+      const isUnseen = mensajesNoLeidos[id]
+      if (isUnseen?.length) {
+        setUnSeenMessage(isUnseen.length)
+      }
+    }
+    console.log(item)
+  }, [item])
+
+  const { sender_id, sender_name, sender_surname, message, timestamp, image } =
+    item.ultimo_mensaje
+
   return (
     <li
       className={styles.li}
       key={index}
       onClick={() => {
         localStorage.setItem(
-          getInfo(item.mensajes).remitente_id,
+          sender_id,
           JSON.stringify({
-            nombre: getInfo(item.mensajes).nombre,
-            apellido: getInfo(item.mensajes).apellido,
-            foto_perfil: getValidImageSrc(item.mensajes),
+            nombre: sender_name,
+            apellido: sender_surname,
+            foto_perfil: item.foto_perfil,
           })
         )
 
         setTimeout(() => {
-          router.push(`/chatroom/${getInfo(item.mensajes).remitente_id}`)
+          router.push(`/chatroom/${sender_id}`)
         }, 200)
       }}
     >
       <div className={styles.containerImage}>
         <Image
           className={styles.image}
-          src={getValidImageSrc(item.mensajes)}
+          src={item.foto_perfil}
           height={60}
           width={60}
           alt='imagen remitente'
@@ -88,14 +71,12 @@ const MessagesCard = ({ item, index, _id }) => {
       <div className={styles.containerText}>
         <div className={styles.containerMensaje}>
           <p className={styles.nombre}>
-            {getInfo(item.mensajes).nombre} {getInfo(item.mensajes).apellido}
+            {item.nombre} {item.apellido}
           </p>
-          <span className={styles.time}>
-            {obtenerHoraActual(item.mensajes[0].time)}
-          </span>
+          <span className={styles.time}>{obtenerHoraActual(timestamp)}</span>
         </div>
         <div className={styles.message}>
-          <p className={styles.mensaje}>{item.mensajes[0].mensaje}</p>
+          <p className={styles.mensaje}>{message}</p>
           {unSeenMessage && (
             <span className={styles.unsee}>{unSeenMessage}</span>
           )}

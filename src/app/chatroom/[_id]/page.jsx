@@ -13,6 +13,7 @@ import { getFirstUser } from '@/utils/indexedDataBase'
 import { getChats } from '@/services/api/chat'
 import { useWebSocket } from '@/app/WebSocketContext'
 import { removeMessagesById } from '@/utils/localStorage'
+import ArrowBackIcon from '@/assets/images/ArrowBack'
 
 const Chat = () => {
   const { _id } = useParams()
@@ -47,11 +48,7 @@ const Chat = () => {
         setRole(user.user_data.rol)
         await getChats(_id, user.user_data._id)
           .then((response) => {
-            setMessages(
-              response?.conversaciones
-                .slice(-3)
-                .flatMap((conversations) => conversations.mensajes)
-            )
+            setMessages(response?.mensajes)
           })
           .catch((error) => console.log(error))
       }
@@ -61,36 +58,39 @@ const Chat = () => {
     }
   }, [user, ws])
 
-  const handleSend = () => {
-    const isFotoPerfilValid = (data) => {
-      // Verificar si el campo existe y es un objeto
-      if (
-        (data && typeof data === 'object') ||
-        (typeof data === 'string' && !Array.isArray(data))
-      ) {
-        // Verificar que el objeto no esté vacío
-        return Object.keys(data).length > 0
-      }
-      return false
+  const scrollToBottom = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight
     }
-    const image_perfil = isFotoPerfilValid(user.user_data.foto_perfil)
-      ? user.user_data.foto_perfil
-      : user.user_data.foto_perfil
+  }
+
+  const handleSend = () => {
+    const image_perfil = user.user_data.foto_perfil
+
     setShowEmojis(false)
+
     if (currentMessage.trim() !== '') {
-      const messageToSend = `${_id}:${currentMessage}:${btoa(image_perfil)}:${
-        user.user_data.nombre
-      }:${user.user_data.apellido}`
+      const messageToSend = {
+        receiver_id: _id,
+        message: currentMessage,
+        image: image_perfil, // codificás como antes
+        sender_name: user.user_data.nombre,
+        sender_surname: user.user_data.apellido,
+      }
+
       sendMessage(messageToSend)
+
       setMessages((prevMessages) => [
         ...prevMessages,
         {
-          remitente_id: user.user_data._id,
-          mensaje: currentMessage,
-          hora: obtenerHoraActual(),
+          sender_id: user.user_data._id,
+          message: currentMessage,
+          timestamp: new Date().toISOString(),
         },
       ])
+
       setCurrentMessage('')
+      scrollToBottom()
 
       const PopMensajeSaliente = document.querySelector('#popMensajeSaliente')
       PopMensajeSaliente.volume = 0.3
@@ -100,6 +100,8 @@ const Chat = () => {
 
   const obtenerHoraActual = (time) => {
     const ahora = time ? new Date(time) : new Date()
+    // Parsear a hora Argentina
+    ahora.setHours(ahora.getHours() - 3)
     const horas = String(ahora.getHours()).padStart(2, '0')
     const minutos = String(ahora.getMinutes()).padStart(2, '0')
     return `${horas}:${minutos}`
@@ -112,17 +114,7 @@ const Chat = () => {
         <>
           <div className={styles.header}>
             <div className={styles.div}>
-              <Image
-                src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABYklEQVR4nO2YsUrDQBiAvxJ0cHLRp3Bxk9AsfQyHDAkFoWTqO/g++gAOxcmHyKTgZoKILsnJQQuhTW0uNO3/y31w2w3fB3/ukoDH4/H8B+6Ab8AA78AVipgvxZvLRuiSn06nJs/zZoR4stFoVFvZNE1NVVXGoiUga5PXEpBtk9cQkP0lLz1gtktecsAM2CkvNWDePCrrut4qvxYwxHoeVN4yHo+Hjtj/2BwCHANEybsGiJN3Cbh1nXlpAR92UxzHouS7BpzZDUEQmLIsjTToEHCxCiiKwmgMOF9t0jpCJ0Cl/SF+at56SZKoO0avgS+JEThcZBHw2Yw49jgtFgvnV4neEWEYinmZi/pEDCz/hiMT12di4IB714DWiI6flPtcr0v5U3qyMU4aP+qjLhGSAzpFSA/YGaEhYOsRq+3nbrQe0ffCOSYbR+xy/aCISUvEI8q4AV6AEngALo8t5PF4PByEX602SwjUn4tkAAAAAElFTkSuQmCC'
-                width={35}
-                height={35}
-                alt='Flecha atras'
-                onClick={() => {
-                  removeMessagesById(_id)
-                  localStorage.removeItem(_id)
-                  router.back()
-                }}
-              />
+              <ArrowBackIcon _id={_id} />
               <Image
                 className={styles.imagenPerfil}
                 src={prof.foto_perfil}
@@ -146,25 +138,23 @@ const Chat = () => {
             {messages.map((message, index) => {
               if (
                 message.id === user.user_data._id ||
-                message.remitente_id === user.user_data._id
+                message.sender_id === user.user_data._id
               ) {
                 return (
                   <p key={index} className={styles.mensajeSaliente}>
-                    {message.mensaje || message.message}
+                    {message.message}
                     <span className={styles.hora}>
-                      {message.time
-                        ? obtenerHoraActual(message.time)
-                        : message.hora}
+                      {obtenerHoraActual(message.timestamp)}
                     </span>
                   </p>
                 )
               }
-              if (message.id === _id || message.remitente_id === _id) {
+              if (message.id === _id || message.sender_id === _id) {
                 return (
                   <p key={index} className={styles.mensajeEntrante}>
-                    {message.mensaje || message.message}
+                    {message.message}
                     <span className={styles.hora}>
-                      {obtenerHoraActual(message.time)}
+                      {obtenerHoraActual(message.timestamp)}
                     </span>
                   </p>
                 )
