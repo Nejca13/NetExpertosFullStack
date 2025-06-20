@@ -41,6 +41,7 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
   const { currentUser, setCurrentUser } = useStore()
 
   useEffect(() => {
+    // IndexDB <--- BORRAR DESPUES
     getUser(_id).then(
       (response) => {
         setActiveUser(response)

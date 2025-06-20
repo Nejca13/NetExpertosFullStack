@@ -29,6 +29,7 @@ export const openDatabase = () => {
   })
 }
 
+// Revisado ✅
 export const addUser = async (userData) => {
   const db = await openDatabase()
   const transaction = await db.transaction(['users'], 'readwrite')
@@ -45,6 +46,7 @@ export const addUser = async (userData) => {
   })
 }
 
+// Revisado ✅
 export const getUser = async (id) => {
   const db = await openDatabase()
   const transaction = db.transaction(['users'], 'readonly')
