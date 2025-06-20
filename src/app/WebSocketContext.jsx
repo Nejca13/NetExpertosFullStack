@@ -53,9 +53,9 @@ export const WebSocketProvider = ({ children }) => {
     return () => ws.current?.close()
   }
 
-  const sendMessage = (msg) => {
+  const sendMessage = (msgObject) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(msg)
+      ws.current.send(JSON.stringify(msgObject)) // 🚨 NECESARIO
     } else {
       console.warn('WebSocket no está listo')
     }
