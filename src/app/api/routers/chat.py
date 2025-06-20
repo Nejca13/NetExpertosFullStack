@@ -1,25 +1,17 @@
-from fastapi import (
-    FastAPI,
-    WebSocket,
-    WebSocketDisconnect,
-    HTTPException,
-    APIRouter,
-    Query,
-    Form,
-)
-from fastapi.middleware.cors import CORSMiddleware
-from typing import Dict, List, Optional
-from pymongo import MongoClient
-from datetime import datetime
 from bson import ObjectId
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from typing import Dict, List
+from datetime import datetime
+
+from app.api.core import (
+    CLIENTES_COLLECTION,
+    CONVERSATIONS_COLLECTION,
+    MESSAGES_COLLECTION,
+    PROFESIONALES_COLLECTION,
+)
+from app.api.models.conversation import ConversationResponse, MessageResponse
 
 router = APIRouter(prefix="/chat", tags=["chat"])
-
-# Conexión a la base de datos
-client = MongoClient("mongodb://127.0.0.1:27017")
-db = client.chat
-conversations_collection = db.conversations
-clients_collection = db.clientes
 
 connected_users: Dict[str, WebSocket] = {}
 
@@ -30,135 +22,143 @@ async def websocket_endpoint(user_id: str, role: str, websocket: WebSocket):
     connected_users[user_id] = websocket
     try:
         while True:
-            data = await websocket.receive_text()
+            data = await websocket.receive_json()
             await process_message(user_id, role, data)
     except WebSocketDisconnect:
-        del connected_users[user_id]
+        connected_users.pop(user_id, None)
 
 
-async def process_message(sender_id: str, role: str, data: str):
-    parts = data.split(":", 4)
-    receiver_id = parts[0]
-    message = parts[1]
-    image = parts[2] if len(parts) > 2 else ""
-    sender_name = parts[3] if len(parts) > 3 else ""
-    sender_surname = parts[4] if len(parts) > 4 else ""
+async def process_message(sender_id: str, role: str, data: dict):
+    receiver_id = data.get("receiver_id")
+    message = data.get("message")
+    image = data.get("image", "")
+    sender_name = data.get("sender_name")
+    sender_surname = data.get("sender_surname")
 
-    try:
-        store_message(
-            sender_id, receiver_id, message, image, sender_name, sender_surname, role
-        )
-    except HTTPException as e:
-        if sender_id in connected_users:
-            sender_ws = connected_users[sender_id]
-            await sender_ws.send_text(f"Error: {e.detail}")
-
-    if receiver_id in connected_users:
-        receiver_ws = connected_users[receiver_id]
-        message_data = {
-            "id": sender_id,
-            "message": message,
-            "image": image,
-            "name": sender_name,
-            "surname": sender_surname,
-            "role": role,
-        }
-        await receiver_ws.send_json(message_data)
-
-
-def store_message(
-    sender_id: str,
-    receiver_id: str,
-    message: str,
-    image: str,
-    sender_name: str,
-    sender_surname: str,
-    role: str,
-):
-    message_data = {
-        "remitente_id": sender_id,
-        "mensaje": message,
-        "imagen": image,
-        "nombre": sender_name,
-        "apellido": sender_surname,
-        "rol": role,
-        "time": datetime.utcnow(),
-    }
-
-    current_date = datetime.utcnow().strftime("%Y-%m-%d")
-    conversation_id = (
-        f"{sender_id}_{receiver_id}_{current_date}"
-        if sender_id < receiver_id
-        else f"{receiver_id}_{sender_id}_{current_date}"
-    )
-
-    conversations_collection.update_one(
-        {"_id": conversation_id, "date": current_date},
+    # Buscar conversación existente entre sender y receiver (solo 2 participantes)
+    conversation = CONVERSATIONS_COLLECTION.find_one(
         {
-            "$setOnInsert": {
-                "participantes": [sender_id, receiver_id],
-                "date": current_date,
-            },
-            "$push": {"mensajes": message_data},
-        },
-        upsert=True,
+            "participants": {"$all": [sender_id, receiver_id]},
+            "participants": {"$size": 2},
+        }
     )
+
+    if not conversation:
+        convo_data = {
+            "participants": [sender_id, receiver_id],
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow(),
+        }
+        result = CONVERSATIONS_COLLECTION.insert_one(convo_data)
+        conversation_id = str(result.inserted_id)
+    else:
+        conversation_id = str(conversation["_id"])
+        CONVERSATIONS_COLLECTION.update_one(
+            {"_id": conversation["_id"]}, {"$set": {"updated_at": datetime.utcnow()}}
+        )
+
+    # Insertar mensaje
+    msg_doc = {
+        "conversation_id": conversation_id,
+        "sender_id": sender_id,
+        "message": message,
+        "image": image,
+        "sender_name": sender_name,
+        "sender_surname": sender_surname,
+        "role": role,
+        "timestamp": datetime.utcnow(),
+    }
+    MESSAGES_COLLECTION.insert_one(msg_doc)
+
+    # Enviar al receptor si está conectado
+    if receiver_id in connected_users:
+        await connected_users[receiver_id].send_json(
+            {
+                "id": sender_id,
+                "message": message,
+                "image": image,
+                "name": sender_name,
+                "surname": sender_surname,
+                "role": role,
+            }
+        )
 
 
 @router.get("/conversaciones/{user_id}/")
-async def get_conversations(
-    user_id: str, date: Optional[str] = Query(None, regex=r"^\d{4}-\d{2}-\d{2}$")
-):
-    query = {"participantes": user_id}
-    if date:
-        query["date"] = date
-    conversations = conversations_collection.find(query)
-    return {"conversaciones": list(conversations)}
-
-
-@router.get("/conversaciones/{user1_id}/{user2_id}/")
-async def get_conversation_between_users(
-    user1_id: str,
-    user2_id: str,
-    date: Optional[str] = Query(None, regex=r"^\d{4}-\d{2}-\d{2}$"),
-):
-    query = {"participantes": {"$all": [user1_id, user2_id]}}
-    if date:
-        query["_id"] = (
-            f"{user1_id}_{user2_id}_{date}"
-            if user1_id < user2_id
-            else f"{user2_id}_{user1_id}_{date}"
+async def get_conversations(user_id: str):
+    conversations = list(
+        CONVERSATIONS_COLLECTION.find(
+            {"participants": {"$in": [user_id]}, "participants": {"$size": 2}}
         )
-    conversations = conversations_collection.find(query)
-    return {"conversaciones": list(conversations)}
+    )
+    conversations_response = [ConversationResponse(**conv) for conv in conversations]
+    return {"conversaciones": conversations_response}
+
+
+@router.get(
+    "/conversaciones/{user1_id}/{user2_id}/",
+)
+async def get_conversation_messages(user1_id: str, user2_id: str):
+    conversation = CONVERSATIONS_COLLECTION.find_one(
+        {"participants": {"$all": [user1_id, user2_id]}, "participants": {"$size": 2}}
+    )
+
+    if not conversation:
+        return {"mensajes": []}
+
+    conversation_id = str(conversation["_id"])
+
+    messages = list(
+        MESSAGES_COLLECTION.find({"conversation_id": conversation_id}).sort(
+            "timestamp", 1
+        )
+    )
+    for msg in messages:
+        msg["_id"] = str(msg["_id"])
+    messages_response = [MessageResponse(**msg) for msg in messages]
+    return {"mensajes": messages_response}
 
 
 @router.get("/ultimo-mensaje/{user_id}/")
 async def get_last_messages(user_id: str):
-    conversations = conversations_collection.find({"participantes": user_id})
+    cursor = CONVERSATIONS_COLLECTION.find({"participants": {"$in": [user_id]}})
+    conversations = list(cursor)
+
     last_messages = []
 
     for conversation in conversations:
-        last_sender_message = None
-        last_receiver_message = None
-        for message in reversed(conversation["mensajes"]):
-            if message["remitente_id"] == user_id and last_sender_message is None:
-                last_sender_message = message
-            elif message["remitente_id"] != user_id and last_receiver_message is None:
-                last_receiver_message = message
-            if last_sender_message and last_receiver_message:
-                break
-
-        other_participant = [p for p in conversation["participantes"] if p != user_id][
-            0
-        ]
-        last_messages.append(
-            {
-                "conversacion_id": conversation["_id"],
-                "otro_participante": other_participant,
-                "ultimo_mensaje_remitente": last_sender_message,
-                "ultimo_mensaje_destinatario": last_receiver_message,
-            }
+        convo_id = str(conversation["_id"])
+        msg_cursor = (
+            MESSAGES_COLLECTION.find({"conversation_id": convo_id})
+            .sort("timestamp", -1)
+            .limit(1)
         )
+        last_msg = next(msg_cursor, None)
+
+        if last_msg:
+            participantes = conversation["participants"]
+            other = next((p for p in participantes if p != user_id), None)
+
+            # Buscar info del otro participante
+            other_user = CLIENTES_COLLECTION.find_one(
+                {"_id": ObjectId(other)}
+            ) or PROFESIONALES_COLLECTION.find_one({"_id": ObjectId(other)})
+
+            other_image = other_user.get("foto_perfil") if other_user else None
+            other_name = other_user.get("nombre", "") if other_user else ""
+            other_surname = other_user.get("apellido", "") if other_user else ""
+
+            last_messages.append(
+                {
+                    "conversacion_id": convo_id,
+                    "otro_participante": other,
+                    "nombre": other_name,
+                    "apellido": other_surname,
+                    "foto_perfil": other_image,
+                    "ultimo_mensaje": MessageResponse(
+                        **{**last_msg, "_id": str(last_msg["_id"])}
+                    ),
+                }
+            )
 
     return {"ultimos_mensajes": last_messages}
