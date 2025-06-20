@@ -1,12 +1,8 @@
 from fastapi import APIRouter, HTTPException, Query
-from pymongo import MongoClient
 from bson import ObjectId
-from ..models.denuncia import Denuncia
 
-client = MongoClient("mongodb://127.0.0.1:27017")
-db = client.test
-denuncias_collection = db.denuncias
-clientes_collection = db.clientes
+from app.api.core import CLIENTES_COLLECTION, DENUNCIAS_COLLECTION
+from ..models.denuncia import Denuncia
 
 router = APIRouter(
     prefix="/denuncias",
@@ -31,7 +27,7 @@ async def crear_denuncia(denuncia: Denuncia):
     if not denuncia.cliente_id or not denuncia.motivo or not denuncia.descripcion:
         raise HTTPException(status_code=400, detail="Todos los campos son requeridos")
 
-    cliente_existente = clientes_collection.find_one(
+    cliente_existente = CLIENTES_COLLECTION.find_one(
         {"_id": ObjectId(denuncia.cliente_id)}
     )
     if not cliente_existente:
@@ -39,7 +35,7 @@ async def crear_denuncia(denuncia: Denuncia):
             status_code=404, detail="El cliente no existe en la base de datos"
         )
 
-    denuncia_insertada = denuncias_collection.insert_one(denuncia.dict())
+    denuncia_insertada = DENUNCIAS_COLLECTION.insert_one(denuncia.dict())
     return {
         "message": "Denuncia creada exitosamente",
         "denuncia_id": str(denuncia_insertada.inserted_id),
@@ -53,8 +49,8 @@ async def obtener_denuncias(
     skip = (page - 1) * page_size
     limit = page_size
 
-    total = denuncias_collection.count_documents({})
-    denuncias = list(denuncias_collection.find().skip(skip).limit(limit))
+    total = DENUNCIAS_COLLECTION.count_documents({})
+    denuncias = list(DENUNCIAS_COLLECTION.find().skip(skip).limit(limit))
 
     if not denuncias:
         return {"message": "No hay denuncias actualmente."}
@@ -82,9 +78,9 @@ async def obtener_denuncias_por_cliente_id(
     limit = page_size
 
     # Obtener las denuncias del cliente por su ID
-    total = denuncias_collection.count_documents({"cliente_id": cliente_id})
+    total = DENUNCIAS_COLLECTION.count_documents({"cliente_id": cliente_id})
     denuncias_cliente = list(
-        denuncias_collection.find({"cliente_id": cliente_id}).skip(skip).limit(limit)
+        DENUNCIAS_COLLECTION.find({"cliente_id": cliente_id}).skip(skip).limit(limit)
     )
 
     if not denuncias_cliente:
@@ -106,7 +102,7 @@ async def obtener_denuncias_por_cliente_id(
 @router.delete("/{denuncia_id}/")
 async def eliminar_denuncia(denuncia_id: str):
     # Eliminar la denuncia por su ID de la base de datos
-    resultado = denuncias_collection.delete_one({"_id": ObjectId(denuncia_id)})
+    resultado = DENUNCIAS_COLLECTION.delete_one({"_id": ObjectId(denuncia_id)})
     if resultado.deleted_count == 1:
         return {"message": f"Denuncia con ID {denuncia_id} eliminada exitosamente."}
     else:
@@ -122,9 +118,9 @@ async def obtener_denuncias_cliente(
     skip = (page - 1) * page_size
     limit = page_size
 
-    total = denuncias_collection.count_documents({"cliente_correo": correo_cliente})
+    total = DENUNCIAS_COLLECTION.count_documents({"cliente_correo": correo_cliente})
     denuncias_cliente = list(
-        denuncias_collection.find({"cliente_correo": correo_cliente})
+        DENUNCIAS_COLLECTION.find({"cliente_correo": correo_cliente})
         .skip(skip)
         .limit(limit)
     )
