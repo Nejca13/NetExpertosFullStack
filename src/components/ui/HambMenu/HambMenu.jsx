@@ -42,6 +42,7 @@ const HambMenu = ({ show, userApp }) => {
         break
       case 'Salir':
         userLogout()
+
         //Funcion para limpiar el usuario actual en Zustand y del local storage
         clearCurrentUser()
       default:
