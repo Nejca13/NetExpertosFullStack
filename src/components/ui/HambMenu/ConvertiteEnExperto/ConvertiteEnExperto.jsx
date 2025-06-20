@@ -38,7 +38,7 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
   const router = useRouter()
 
   //Zustand store
-  const { currentUser } = useStore()
+  const { currentUser, setCurrentUser } = useStore()
 
   useEffect(() => {
     getUser(_id).then(
@@ -128,7 +128,8 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
       const res = await converToProfesional(
         formData,
         setIsLoading,
-        setErrorMessage
+        setErrorMessage,
+        setCurrentUser
       )
       if (res === true) {
         console.log(res)

@@ -111,7 +111,8 @@ export const updateCliente = async (user, updatedData) => {
 export const converToProfesional = async (
   data,
   setIsLoading,
-  setErrorMessage
+  setErrorMessage,
+  setCurrentUser
 ) => {
   setIsLoading(true)
   try {
@@ -124,6 +125,8 @@ export const converToProfesional = async (
       const responseData = await response.json()
       await clearUsers()
       await addUser(responseData)
+      // Actualizar el usuario actual en el store de zustand
+      setCurrentUser(responseData)
       setIsLoading(false)
       window.location.reload()
       return true
