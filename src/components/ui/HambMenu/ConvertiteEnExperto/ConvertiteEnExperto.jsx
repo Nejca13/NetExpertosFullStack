@@ -38,7 +38,7 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
   const router = useRouter()
 
   //Zustand store
-  const { currentUser, setCurrentUser } = useStore()
+  const { currentUser, setCurrentUser, clearCurrentUser } = useStore()
 
   useEffect(() => {
     // IndexDB <--- BORRAR DESPUES
@@ -137,7 +137,9 @@ const ConvertiteEnExperto = ({ user, setMenuComponent }) => {
         setIsLoading(false)
         // logout y borrar datos del usuario
         localStorage.removeItem('user')
-        await clearUsers()
+        await clearUsers() // IndexDB <---- BORRAR DESPUES
+        // Zustand
+        clearCurrentUser()
         router.push('/')
       } else {
         setIsLoading(false) // Asegúrate de que el loading se detenga si no hay recarga
