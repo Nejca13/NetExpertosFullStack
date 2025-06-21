@@ -36,6 +36,7 @@ export default function Home() {
 
   const router = useRouter()
 
+  //IndexDB <---- CHEQUEAR PRIMERO PERO BORRAR DESPUES
   const ifUser = async () => {
     const user = await getFirstUser()
       .then((res) => res)
@@ -55,7 +56,7 @@ export default function Home() {
     try {
       setLoadingMessage('Iniciando sesion...')
       setIsLoading(true)
-      clearUsers()
+      clearUsers() // IndexDB <---- BORRAR DESPUES
       const data = await userLogin(
         formDataValues,
         setErrorMessage,
