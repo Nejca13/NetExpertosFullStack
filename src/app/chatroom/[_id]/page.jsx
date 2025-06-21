@@ -41,6 +41,7 @@ const Chat = () => {
   useEffect(() => {
     removeMessagesById(_id)
     const fetchUser = async () => {
+      //IndexDB <---- CHEQUEAR PERO BORRAR DESPUES
       const user = await getFirstUser()
       setUser(user)
       if (user) {
