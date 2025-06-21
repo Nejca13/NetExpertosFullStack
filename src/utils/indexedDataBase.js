@@ -28,7 +28,6 @@ export const openDatabase = () => {
     }
   })
 }
-
 // Revisado ✅
 export const addUser = async (userData) => {
   const db = await openDatabase()
@@ -45,7 +44,6 @@ export const addUser = async (userData) => {
     }
   })
 }
-
 // Revisado ✅
 export const getUser = async (id) => {
   const db = await openDatabase()
@@ -69,7 +67,7 @@ export const getUser = async (id) => {
     }
   })
 }
-
+// Revisado ✅
 export const clearUsers = async () => {
   console.log('Borrando todos los usuarios en la IndexedDB')
 
@@ -95,7 +93,7 @@ export const clearUsers = async () => {
     throw error
   }
 }
-
+// Revisado ✅
 export const updateUser = async (updatedUserData, id) => {
   console.log('update user')
   const db = await openDatabase()
@@ -132,7 +130,7 @@ export const updateUser = async (updatedUserData, id) => {
     }
   })
 }
-
+// Revisado ✅
 export const getFirstUser = async () => {
   const db = await openDatabase()
   return new Promise((resolve, reject) => {

@@ -93,7 +93,10 @@ export const updateCliente = async (user, updatedData) => {
     if (response.ok) {
       // La solicitud fue exitosa
       const responseData = await response.json()
+
+      // Actualizar el usuario en el IndexedDB <-- BORRAR DESPUES
       await updateUser(updatedData, user._id)
+
       window.location.reload()
       return responseData // Puedes retornar los datos actualizados si lo deseas
     } else {
@@ -112,7 +115,7 @@ export const converToProfesional = async (
   data,
   setIsLoading,
   setErrorMessage,
-  setCurrentUser
+  setCurrentUser // Zustand
 ) => {
   setIsLoading(true)
   try {
@@ -123,10 +126,11 @@ export const converToProfesional = async (
 
     if (response.ok) {
       const responseData = await response.json()
-      await clearUsers()
-      await addUser(responseData)
+      //IndexedDB
+      await clearUsers() //<-- BORRAR DESPUES
+      await addUser(responseData) //<-- BORRAR DESPUES
       // Actualizar el usuario actual en el store de zustand
-      setCurrentUser(responseData)
+      setCurrentUser(responseData) //<-- SETEAMOS EL USUARIO ACTUALIZADO A PROFESIONAL EN ZUSTAND
       setIsLoading(false)
       window.location.reload()
       return true

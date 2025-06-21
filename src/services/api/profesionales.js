@@ -125,7 +125,9 @@ export const updateProfessional = async (user, updatedData) => {
       // La solicitud fue exitosa
       const responseData = await response.json()
 
+      // Actualizar el usuario en el IndexedDB <-- BORRAR DESPUES
       await updateUser(updatedData, user._id)
+
       window.location.reload()
       return responseData // Puedes retornar los datos actualizados si lo deseas
     } else {
