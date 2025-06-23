@@ -15,15 +15,6 @@ const MessagesCard = ({ item, index, _id }) => {
     return `${horas}:${minutos}`
   }
 
-  const getValidImageSrc = (imagenBase64) => {
-    try {
-      const decoded = window.atob(imagenBase64 || '')
-      return decoded.startsWith('http') ? decoded : defaultImage
-    } catch {
-      return defaultImage
-    }
-  }
-
   useEffect(() => {
     const mensajesNoLeidos = JSON.parse(localStorage.getItem('messages'))
     if (mensajesNoLeidos) {

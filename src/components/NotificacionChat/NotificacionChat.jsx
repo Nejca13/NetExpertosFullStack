@@ -30,7 +30,7 @@ const NotificacionChat = ({ message, setNotificationMessages }) => {
         audio.currentTime = 0
       }
     }
-  }, [data.id])
+  }, [])
 
   return (
     data.message && (

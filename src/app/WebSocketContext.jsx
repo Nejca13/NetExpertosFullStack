@@ -36,11 +36,7 @@ export const WebSocketProvider = ({ children }) => {
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data)
       setMessages((prev) => [...prev, data])
-
-      const lastSeen = localStorage.getItem(`lastSeen_${data.id}`) || 0
-      if (lastSeen < data.timestamp) {
-        localStorage.setItem(`lastSeen_${data.id}`, data.timestamp)
-      }
+      // …tu localStorage…
     }
 
     ws.current.onclose = () => {
@@ -59,7 +55,7 @@ export const WebSocketProvider = ({ children }) => {
 
   const sendMessage = (msgObject) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify(msgObject))
+      ws.current.send(JSON.stringify(msgObject)) // 🚨 NECESARIO
     } else {
       console.warn('WebSocket no está listo')
     }
