@@ -149,7 +149,7 @@ const Chat = () => {
                   </p>
                 )
               }
-              if (message.id === _id || message.sender_id === _id) {
+              if (message.id !== _id || message.sender_id !== _id) {
                 return (
                   <p key={index} className={styles.mensajeEntrante}>
                     {message.message}
