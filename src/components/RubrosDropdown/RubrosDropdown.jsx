@@ -29,12 +29,7 @@ const RubrosDropdown = ({ item, index, _id, forceOpen = false }) => {
         onClick={() => setIsOpen(!isOpen)}
       >
         {rubro}
-        <Image
-          src={iconMap[rubro]}
-          width={18}
-          height={18}
-          alt='icono profesion'
-        />
+        {iconMap[rubro]}
       </button>
       {isOpen && (
         <ul className={styles.profesionUl}>

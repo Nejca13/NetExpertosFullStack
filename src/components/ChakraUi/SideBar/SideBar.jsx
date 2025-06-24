@@ -49,7 +49,7 @@ const SideBar = ({ setTypeSection }) => {
                   variant='ghost'
                   justifyContent='flex-start'
                   gap={4}
-                  size='sm'
+                  size='md'
                   onClick={() => {
                     setTypeSection(value)
                     setOpen(false)
