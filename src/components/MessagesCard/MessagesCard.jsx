@@ -36,8 +36,9 @@ const MessagesCard = ({ item, index, _id }) => {
       key={index}
       onClick={() => {
         localStorage.setItem(
-          sender_id,
+          _id,
           JSON.stringify({
+            _id: _id,
             nombre: sender_name,
             apellido: sender_surname,
             foto_perfil: item.foto_perfil,
@@ -45,7 +46,7 @@ const MessagesCard = ({ item, index, _id }) => {
         )
 
         setTimeout(() => {
-          router.push(`/chatroom/${sender_id}`)
+          router.push(`/chatroom/${_id}`)
         }, 200)
       }}
     >
