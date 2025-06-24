@@ -54,6 +54,12 @@ const SideBar = ({ setTypeSection }) => {
                     setTypeSection(value)
                     setOpen(false)
                   }}
+                  css={{
+                    _icon: {
+                      width: '4',
+                      height: '4',
+                    },
+                  }}
                 >
                   {icon}
                   {label}
