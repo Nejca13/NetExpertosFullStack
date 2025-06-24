@@ -107,16 +107,25 @@ const Page = () => {
         <input
           className={styles.searchInput}
           type='search'
-          onChange={(e) =>
+          onChange={(e) => {
+            if (e.target.value === '') {
+              setSearchItems('')
+            }
             setTimeout(() => {
               setSearchItems(e.target.value)
             }, 300)
-          }
+          }}
         />
       </div>
       <div className={styles.divCategorias}>
         {searchFunction(searchItems).map((item, index) => (
-          <RubrosDropdown item={item} index={index} key={index} _id={_id} />
+          <RubrosDropdown
+            item={item}
+            index={index}
+            key={index}
+            _id={_id}
+            forceOpen={!!searchItems}
+          />
         ))}
       </div>
       <div className={styles.destacados}>

@@ -1,14 +1,24 @@
 import Link from 'next/link'
 import styles from './RubrosDropdown.module.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import iconMap from '@/constants/iconosProfesiones'
 
-const RubrosDropdown = ({ item, index, _id }) => {
+const RubrosDropdown = ({ item, index, _id, forceOpen = false }) => {
   const rubro = Object.keys(item)[0]
   const profesion = Object.values(item)[0]
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  // Abrir/cerrar automáticamente desde el padre
+  useEffect(() => {
+    if (forceOpen) {
+      setIsOpen(true)
+    }
+    if (!forceOpen) {
+      setIsOpen(false)
+    }
+  }, [forceOpen])
+
   return (
     <div
       key={index}

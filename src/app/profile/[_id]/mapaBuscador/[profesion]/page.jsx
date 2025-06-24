@@ -38,9 +38,6 @@ const Map = () => {
   //Zustand store
   const { currentUser } = useStore()
 
-  //Comprobar si el usuario actual ya está en el store
-  if (currentUser) console.log(currentUser)
-
   const setUser = async () => {
     // IndexDB <--- BORRAR DESPUES
     const storageUser = await getUser(_id)
