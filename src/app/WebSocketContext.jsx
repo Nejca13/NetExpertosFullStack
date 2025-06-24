@@ -36,7 +36,6 @@ export const WebSocketProvider = ({ children }) => {
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data)
       setMessages((prev) => [...prev, data])
-      // …tu localStorage…
     }
 
     ws.current.onclose = () => {
@@ -56,6 +55,7 @@ export const WebSocketProvider = ({ children }) => {
   const sendMessage = (msgObject) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(JSON.stringify(msgObject)) // 🚨 NECESARIO
+      console.log('Mensaje enviado:', msgObject)
     } else {
       console.warn('WebSocket no está listo')
     }
@@ -64,7 +64,7 @@ export const WebSocketProvider = ({ children }) => {
   return (
     <WebSocketContext.Provider
       value={{
-        ws: ws.current,
+        ws,
         messages,
         setUserId,
         setRole,
