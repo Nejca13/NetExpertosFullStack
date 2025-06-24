@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import styles from './page.module.css'
 import { useParams, useRouter } from 'next/navigation'
-import { getAllConversations, getLastMessages } from '@/services/api/chat'
+import { getLastMessages } from '@/services/api/chat'
 import { useWebSocket } from '@/app/WebSocketContext'
 import Image from 'next/image'
 import MessagesCard from '@/components/MessagesCard/MessagesCard'
@@ -10,24 +10,40 @@ import MessagesCard from '@/components/MessagesCard/MessagesCard'
 const Page = () => {
   const { _id, rol } = useParams()
   const [conversaciones, setConversaciones] = useState([])
+  const [receiverID, setReceiverID] = useState(null)
   const { ws, messages, setUserId, setRole } = useWebSocket()
   const router = useRouter()
 
   useEffect(() => {
     if (_id) {
+      console.log('[Chat] ID del usuario:', _id)
+      console.log('[Chat] Rol del usuario:', rol)
       setUserId(_id)
       setRole(rol)
-      getLastMessages(_id).then((response) => {
-        const ultimos = response?.ultimos_mensajes || []
-        setConversaciones(ultimos)
-      })
+
+      console.log('[Chat] Fetching últimos mensajes...')
+      getLastMessages(_id)
+        .then((response) => {
+          const ultimos = response?.ultimos_mensajes || []
+          console.log('[Chat] Mensajes obtenidos:', ultimos)
+          setConversaciones(ultimos)
+          setReceiverID(ultimos[0]?.otro_participante)
+        })
+        .catch((err) => {
+          console.error('[Chat] Error al obtener mensajes:', err)
+        })
+    } else {
+      console.warn('[Chat] No hay _id disponible en useParams')
     }
   }, [messages])
 
-  const getInfo = (mensajes) => {
-    const id = mensajes.filter((mensaje, index) => mensaje.remitente_id !== _id)
-    return id[0]
-  }
+  useEffect(() => {
+    if (ws) {
+      console.log('[Chat] WebSocket activo:', ws?.readyState)
+    } else {
+      console.warn('[Chat] WebSocket aún no disponible')
+    }
+  }, [ws])
 
   return (
     <>
@@ -40,6 +56,10 @@ const Page = () => {
             height={35}
             alt='Flecha atras'
             onClick={() => {
+              console.log(
+                '[Chat] Volviendo atrás, eliminando localStorage:',
+                _id
+              )
               localStorage.removeItem(_id)
               router.back()
             }}
@@ -48,14 +68,17 @@ const Page = () => {
         </div>
         <ul className={styles.ul}>
           {conversaciones.length > 0 &&
-            conversaciones.map((item, index) => (
-              <MessagesCard
-                key={index}
-                item={item} // contiene: conversacion_id, otro_participante, ultimo_mensaje
-                index={index}
-                _id={_id}
-              />
-            ))}
+            conversaciones?.map((item, index) => {
+              console.log(`[Chat] Render mensaje index ${index}`, item)
+              return (
+                <MessagesCard
+                  key={index}
+                  item={item}
+                  index={index}
+                  _id={receiverID}
+                />
+              )
+            })}
         </ul>
       </div>
     </>
