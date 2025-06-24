@@ -1,8 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { redirect, useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import SimpleLoader from '../Loaders/SimpleLoader'
-import { getFirstUser, getUser } from '@/utils/indexedDataBase'
 import Container from '../Containers/Container'
 import NavBar from '../Navbar/NavBar'
 import FormContainer from '../Containers/FormContainer'
@@ -12,49 +11,19 @@ import useStore from '@/store/store'
 
 export default function isAuth(Component) {
   return function IsAuth(props) {
-    const [isLoading, setIsLoading] = useState(true)
-    const [auth, setAuth] = useState(null)
     const router = useRouter()
-
-    const { _id } = useParams()
-
-    //Zustand store
     const { currentUser } = useStore()
-
-    const setUser = async () => {
-      // IndexDB <--- BORRAR DESPUES
-      const authValue = await getUser(_id)
-      const user = await getFirstUser()
-      if (authValue || user) {
-        setAuth(authValue?.user_data || user.user_data)
-      }
-      //Zustand
-      if (currentUser) {
-        setAuth(currentUser?.user_data)
-      }
-    }
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-      setUser()
-    }, [])
-
-    useEffect(() => {
-      if (auth === null) {
-        setTimeout(() => {
-          setIsLoading(false)
-        }, 5000)
-        // Si auth aún no se ha establecido, no hagas nada
-        return
+      if (!currentUser) {
+        console.warn('[Auth] Usuario no autenticado')
+        setTimeout(() => setIsLoading(false), 2000)
       }
+    }, [currentUser])
 
-      if (!auth) {
-        redirect('/')
-      }
-    }, [auth])
-
-    if (auth === null) {
-      // Si auth aún no se ha establecido, muestra un estado de carga o algo similar
-      return isLoading === true ? (
+    if (!currentUser) {
+      return isLoading ? (
         <div
           style={{
             height: '100vh',
@@ -77,7 +46,7 @@ export default function isAuth(Component) {
                 color: 'var(--color-gris-medio)',
               }}
             >
-              Debes iniciar sesion!
+              Debes iniciar sesión!
             </p>
             <ButtonSignInWithGoogle />
           </FormContainer>
@@ -85,12 +54,7 @@ export default function isAuth(Component) {
       )
     }
 
-    if (!auth) {
-      return null
-    }
-
-    if (typeof window !== 'undefined') {
-      return <Component {...props} />
-    }
+    // Autenticado, renderiza el componente
+    return <Component {...props} />
   }
 }
