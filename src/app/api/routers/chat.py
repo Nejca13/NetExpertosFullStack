@@ -61,6 +61,7 @@ async def process_message(sender_id: str, role: str, data: dict):
     msg_doc = {
         "conversation_id": conversation_id,
         "sender_id": sender_id,
+        "receiver_id": receiver_id,
         "message": message,
         "image": image,
         "sender_name": sender_name,
@@ -74,12 +75,14 @@ async def process_message(sender_id: str, role: str, data: dict):
     if receiver_id in connected_users:
         await connected_users[receiver_id].send_json(
             {
-                "id": sender_id,
+                "sender_id": sender_id,
+                "receiver_id": receiver_id,
                 "message": message,
                 "image": image,
-                "name": sender_name,
-                "surname": sender_surname,
+                "sender_name": sender_name,
+                "sender_surname": sender_surname,
                 "role": role,
+                "timestamp": str(datetime.utcnow()),
             }
         )
 
@@ -98,7 +101,9 @@ async def get_conversations(user_id: str):
 @router.get(
     "/conversaciones/{user1_id}/{user2_id}/",
 )
-async def get_conversation_messages(user1_id: str, user2_id: str):
+async def get_conversation_messages(
+    user1_id: str, user2_id: str, page: int = 1, limit: int = 80
+):
     conversation = CONVERSATIONS_COLLECTION.find_one(
         {"participants": {"$all": [user1_id, user2_id]}, "participants": {"$size": 2}}
     )
@@ -109,9 +114,10 @@ async def get_conversation_messages(user1_id: str, user2_id: str):
     conversation_id = str(conversation["_id"])
 
     messages = list(
-        MESSAGES_COLLECTION.find({"conversation_id": conversation_id}).sort(
-            "timestamp", 1
-        )
+        MESSAGES_COLLECTION.find({"conversation_id": conversation_id})
+        .sort("timestamp", 1)
+        .skip((page - 1) * limit)
+        .limit(limit)
     )
     for msg in messages:
         msg["_id"] = str(msg["_id"])
