@@ -1,42 +1,35 @@
-'use client'
+import { Table } from '@chakra-ui/react'
 
-import {
-  Table as ChakraTable,
-  TableRoot,
-  TableHeader,
-  TableRow,
-  TableColumnHeader,
-  TableBody,
-  TableCell,
-} from '@chakra-ui/react'
-
-const Table = ({ rows = [] }) => {
+const MyTable = ({ rows = [] }) => {
   if (!rows.length) return <p>No hay datos</p>
 
   const keys = Object.keys(rows[0])
 
   return (
-    <TableRoot size='md' variant='outline' rounded='5px' stickyHeader>
-      <TableHeader>
-        <TableRow>
-          {keys.map((key) => (
-            <TableColumnHeader key={key}>
-              {key.charAt(0).toUpperCase() + key.slice(1)}
-            </TableColumnHeader>
-          ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {rows.map((row, rowIndex) => (
-          <TableRow key={rowIndex}>
+    <Table.ScrollArea borderWidth='1px' rounded='md' height='80vh'>
+      <Table.Root size='md' stickyHeader>
+        <Table.Header>
+          <Table.Row bg='bg.subtle'>
             {keys.map((key) => (
-              <TableCell key={key}>{row[key]}</TableCell>
+              <Table.ColumnHeader key={key}>
+                {key.charAt(0).toUpperCase() + key.slice(1)}
+              </Table.ColumnHeader>
             ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </TableRoot>
+          </Table.Row>
+        </Table.Header>
+
+        <Table.Body>
+          {rows.map((row, index) => (
+            <Table.Row key={index}>
+              {keys.map((key) => (
+                <Table.Cell key={key}>{row[key]}</Table.Cell>
+              ))}
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Root>
+    </Table.ScrollArea>
   )
 }
 
-export default Table
+export default MyTable
