@@ -12,7 +12,7 @@
   margin: 5px 0;
   box-shadow: 0 0 6px white;
   overflow: hidden;
-  height: 180px;
+  max-height: 180px;
   transition: all ease 0.7s;
 }
 .button {
@@ -63,7 +63,8 @@
 
 .containerOpen .profesionUl {
   display: flex;
-  height: 150px;
+  max-height: 150px;
+  min-height: fit-content;
   overflow: scroll;
   flex-direction: column;
   width: 100%;
