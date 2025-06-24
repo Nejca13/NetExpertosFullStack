@@ -46,6 +46,7 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
     localStorage.setItem(
       profesional._id,
       JSON.stringify({
+        _id: profesional._id,
         nombre: nombre,
         apellido: apellido,
         foto_perfil: foto_perfil,
