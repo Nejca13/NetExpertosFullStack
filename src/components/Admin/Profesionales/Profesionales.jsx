@@ -5,9 +5,9 @@ import useFetch from '@/hooks/useFetch'
 import { Stack } from '@chakra-ui/react'
 
 const Profesionales = () => {
-  const { data, loading, error } = useFetch('/api/profesionales')
+  // const { data, loading, error } = useFetch('/api/profesionales')
 
-  console.log(data)
+  // console.log(data)
 
   // const filteredData = data?.map((user) => ({
   //   Usuario: (
