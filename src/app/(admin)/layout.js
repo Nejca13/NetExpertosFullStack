@@ -7,8 +7,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html suppressHydrationWarning className='chakra-scope'>
-      <body>
+    <html lang='es' suppressHydrationWarning={true}>
+      <body className='chakra-scope'>
         <Provider>{children}</Provider>
       </body>
     </html>
