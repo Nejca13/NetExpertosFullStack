@@ -16,17 +16,19 @@ import { searchFunction } from './searchFunction'
 import Destacados from '@/components/Map/Destacados/Destacados'
 import { useShowProfesionalCard } from '@/app/profesionalCardContext'
 import ProfesionalCard from '@/components/ProfesionalCard/ProfesionalCard'
-import { useWebSocket } from '@/app/WebSocketContext'
 import NotificacionChat from '@/components/NotificacionChat/NotificacionChat'
+import useStore from '@/store/store'
+import { useWebSocket } from '@/app/WebSocketContext'
 
 const Page = () => {
+  const { ws, messages, setUserId, setRole } = useWebSocket()
   const [showMenu, setShowMenu] = useState(false)
   const [userApp, setUserApp] = useState({})
   const [searchItems, setSearchItems] = useState('')
   const { _id } = useParams()
   const [showProfesionalCard, setShowProfesionalCard] = useShowProfesionalCard()
-  const { ws, messages, setUserId, setRole } = useWebSocket()
   const [notificationMessages, setNotificationMessages] = useState([])
+  const { currentUser, setCurrentUser } = useStore()
 
   useEffect(() => {
     fetchUserData()
@@ -40,7 +42,7 @@ const Page = () => {
   }
 
   useEffect(() => {
-    if (userApp) {
+    if (currentUser) {
       if (messages.length > 0) {
         setNotificationMessages(messages)
       }
@@ -48,7 +50,7 @@ const Page = () => {
         setNotificationMessages([])
       }, 5000)
     }
-    console.log('Mensaje recibido')
+    //console.log('Mensaje recibido')
     const data = messages[messages.length - 1]
     if (data?.message) {
       sendAndroidNotification(
@@ -60,7 +62,7 @@ const Page = () => {
     return () => {
       setNotificationMessages([])
     }
-  }, [messages])
+  }, [messages, ws])
 
   const fetchUserData = async () => {
     const user = await getUser(_id)
@@ -73,6 +75,7 @@ const Page = () => {
     <ContainerBlanco>
       {notificationMessages.length > 0 ? (
         <NotificacionChat
+          currentUser={userApp}
           message={notificationMessages}
           setNotificationMessages={setNotificationMessages}
         />
