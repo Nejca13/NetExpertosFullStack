@@ -1,7 +1,8 @@
+from click import Option
 from pydantic import BaseModel, Field
 from datetime import datetime
 from bson import ObjectId
-from typing import List
+from typing import List, Optional
 
 
 class ConversationModel(BaseModel):
@@ -13,6 +14,7 @@ class ConversationModel(BaseModel):
 class MessageModel(BaseModel):
     conversation_id: str  # mismo tipo que _id de Conversation
     sender_id: str
+    receiver_id: Optional[str] = None  # opcional, si es un mensaje privado
     message: str
     image: str = ""
     sender_name: str
@@ -36,6 +38,7 @@ class MessageResponse(BaseModel):
     id: str = Field(alias="_id")
     conversation_id: str
     sender_id: str
+    receiver_id: Optional[str] = None
     message: str
     image: str = ""
     sender_name: str
