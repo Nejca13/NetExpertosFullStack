@@ -6,24 +6,15 @@ import Cita from '@/assets/icon/Cita'
 import Denuncia from '@/assets/icon/Denuncia'
 import { Button, CloseButton, Drawer, Portal } from '@chakra-ui/react'
 import { useState } from 'react'
-import Profesiones from '@/assets/icon/Profesiones'
-import { ColorModeButton } from '../color-mode'
 import { useRouter } from 'next/navigation'
-import useStore from '@/store/store'
+import Profesion from '@/assets/icon/Profesion'
+import AvatarComponent from '../AvatarComponent/AvatarComponent'
 
-const SideBar = ({ setTypeSection }) => {
+const SideBar = ({ currentUser, items, setTypeSection }) => {
   const [open, setOpen] = useState(false)
-
-  const menuItems = [
-    { icon: <Cliente />, label: 'Clientes', value: 'clientes' },
-    { icon: <Profesional />, label: 'Profesionales', value: 'profesionales' },
-    { icon: <Profesiones />, label: 'Profesiones', value: 'profesiones' },
-    { icon: <Cita />, label: 'Citas', value: 'citas' },
-    { icon: <Denuncia />, label: 'Denuncias', value: 'denuncias' },
-  ]
-
   const router = useRouter()
 
+  const { nombre, apellido, correo, foto_perfil } = currentUser
   return (
     <Drawer.Root
       open={open}
@@ -39,11 +30,16 @@ const SideBar = ({ setTypeSection }) => {
         <Drawer.Backdrop />
         <Drawer.Positioner>
           <Drawer.Content>
-            <Drawer.Header>
-              <Drawer.Title>NetExpertos</Drawer.Title>
+            <Drawer.Header mt='10px'>
+              <AvatarComponent
+                name={nombre + ' ' + apellido}
+                correo={correo}
+                img={foto_perfil}
+                size='xl'
+              />
             </Drawer.Header>
-            <Drawer.Body display='flex' flexDirection='column' gap={6}>
-              {menuItems.map(({ icon, label, value }) => (
+            <Drawer.Body display='flex' flexDirection='column' gap={5}>
+              {items.map(({ icon, label, key }) => (
                 <Button
                   key={label}
                   variant='ghost'
@@ -51,7 +47,7 @@ const SideBar = ({ setTypeSection }) => {
                   gap={4}
                   size='md'
                   onClick={() => {
-                    setTypeSection(value)
+                    setTypeSection(key)
                     setOpen(false)
                   }}
                   css={{
@@ -67,11 +63,7 @@ const SideBar = ({ setTypeSection }) => {
               ))}
             </Drawer.Body>
             <Drawer.Footer>
-              <Button
-                variant='subtle'
-                w='100%'
-                onClick={() => router.push('/')}
-              >
+              <Button w='100%' onClick={() => router.push('/')}>
                 Volver al inicio
               </Button>
             </Drawer.Footer>
