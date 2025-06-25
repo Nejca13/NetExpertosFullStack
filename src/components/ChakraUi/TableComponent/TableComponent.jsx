@@ -1,6 +1,6 @@
 import { Table } from '@chakra-ui/react'
 
-const MyTable = ({ rows = [] }) => {
+const TableComponent = ({ rows = [] }) => {
   if (!rows.length) return <p>No hay datos</p>
 
   const keys = Object.keys(rows[0])
@@ -10,8 +10,11 @@ const MyTable = ({ rows = [] }) => {
       <Table.Root size='md' stickyHeader>
         <Table.Header>
           <Table.Row bg='bg.subtle'>
-            {keys.map((key) => (
-              <Table.ColumnHeader key={key}>
+            {keys.map((key, i) => (
+              <Table.ColumnHeader
+                key={key}
+                textAlign={i === keys.length - 1 ? 'end' : 'start'}
+              >
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </Table.ColumnHeader>
             ))}
@@ -19,10 +22,15 @@ const MyTable = ({ rows = [] }) => {
         </Table.Header>
 
         <Table.Body>
-          {rows.map((row, index) => (
-            <Table.Row key={index}>
-              {keys.map((key) => (
-                <Table.Cell key={key}>{row[key]}</Table.Cell>
+          {rows.map((row, rowIndex) => (
+            <Table.Row key={rowIndex}>
+              {keys.map((key, i) => (
+                <Table.Cell
+                  key={key}
+                  textAlign={i === keys.length - 1 ? 'end' : 'start'}
+                >
+                  {row[key]}
+                </Table.Cell>
               ))}
             </Table.Row>
           ))}
@@ -32,4 +40,4 @@ const MyTable = ({ rows = [] }) => {
   )
 }
 
-export default MyTable
+export default TableComponent
