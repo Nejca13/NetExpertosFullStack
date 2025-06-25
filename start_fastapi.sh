@@ -40,7 +40,7 @@ open_url() {
   if $IS_MAC; then
     open "$url"
   else
-    xdg-open "$url"
+    xdg-open "$url" > /dev/null 2>&1 &
   fi
 }
 
