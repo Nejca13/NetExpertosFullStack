@@ -1,14 +1,12 @@
 'use client'
 
 import AvatarComponent from '@/components/ChakraUi/AvatarComponent/AvatarComponent'
-import Table from '@/components/ChakraUi/Table/Table'
+import TableComponent from '@/components/ChakraUi/TableComponent/TableComponent'
 import useFetch from '@/hooks/useFetch'
 import { Stack } from '@chakra-ui/react'
 
 const Clientes = () => {
   const { data, loading, error } = useFetch('/api/clientes')
-
-  console.log(data)
 
   const filteredData = data?.map((user) => ({
     Clientes: (
@@ -25,7 +23,7 @@ const Clientes = () => {
 
   return (
     <Stack>
-      <Table rows={filteredData} />
+      <TableComponent rows={filteredData} />
     </Stack>
   )
 }
