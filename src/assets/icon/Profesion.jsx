@@ -1,4 +1,4 @@
-const Profesiones = ({
+const Profesion = ({
   width = '24',
   height = '24',
   color = 'currentColor',
@@ -23,4 +23,4 @@ const Profesiones = ({
   </svg>
 )
 
-export default Profesiones
+export default Profesion
