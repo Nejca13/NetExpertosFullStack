@@ -57,14 +57,14 @@ const Page = () => {
         console.log('No se pudo guardar el usuario en Zustand')
       }
       // IndexDB <--- BORRAR DESPUES
-      await addUser(user)
+      /* await addUser(user)
         .then((result) => {
           console.log('Usuario guardado con ID:', result)
           router.push(`/profile/${user.user_data._id}`)
         })
         .catch((error) => {
           console.error('Error al guardar el usuario:', error)
-        })
+        }) */
     } else {
       const error = await response.json()
       console.error(error)

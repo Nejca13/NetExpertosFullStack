@@ -9,7 +9,6 @@ import HambMenu from '@/components/ui/HambMenu/HambMenu'
 import { useEffect, useState } from 'react'
 import HambIcon from '@/components/ui/HambIcon/HambIcon'
 import isAuth from '@/components/Auth/IsAuth'
-import { getUser } from '@/utils/indexedDataBase'
 import RubrosDropdown from '@/components/RubrosDropdown/RubrosDropdown'
 import { useParams } from 'next/navigation'
 import { searchFunction } from './searchFunction'
@@ -65,7 +64,7 @@ const Page = () => {
   }, [messages, ws])
 
   const fetchUserData = async () => {
-    const user = await getUser(_id)
+    const user = currentUser
     setUserApp(user.user_data)
     setUserId(user.user_data._id)
     setRole(user.user_data.rol)
