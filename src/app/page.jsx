@@ -38,9 +38,7 @@ export default function Home() {
 
   //IndexDB <---- CHEQUEAR PRIMERO PERO BORRAR DESPUES
   const ifUser = async () => {
-    const user = await getFirstUser()
-      .then((res) => res)
-      .catch((error) => error)
+    const user = currentUser
     if (user && user.user_data) {
       setIsLoading(false)
       router.push(`/profile/${user.user_data._id}`)
@@ -89,7 +87,7 @@ export default function Home() {
     setIsLoading(true)
     setLoadingMessage('Comprobando sesiones activas...')
     ifUser()
-  }, [])
+  }, [currentUser])
 
   return (
     <Container>
