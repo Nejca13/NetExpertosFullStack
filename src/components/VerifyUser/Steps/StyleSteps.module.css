@@ -1,0 +1,146 @@
+.step_container {
+  flex-grow: 1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 420px;
+}
+
+.step_container h2 {
+  width: 100%;
+  text-align: center;
+  font-size: 25px;
+}
+
+.info_steps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  font-family: var(--font-roboto-regular);
+}
+
+.info_steps .description {
+  width: 100%;
+  font-size: 15px;
+  text-align: start;
+  line-height: 25px;
+}
+
+.info_steps ul {
+  list-style: decimal;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+
+.info_steps ul li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 100;
+  line-height: 25px;
+}
+
+.info_steps small {
+  width: 100%;
+  line-height: 23px;
+  font-size: 14px;
+  border-top: 1px solid rgb(219, 219, 219);
+  padding-top: 15px;
+}
+
+.button_container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button_container button {
+  width: 100% !important;
+}
+
+.info_steps label {
+  border: 2px dashed rgb(216, 216, 216);
+  width: 100%;
+  height: 160px;
+  border-radius: 10px;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.info_steps label:hover {
+  border: 2px dashed rgb(96 165 250);
+  background: rgb(239 246 255);
+}
+
+.info_steps label .preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.info_steps label .preview span {
+  width: 48px;
+  height: 48px;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+}
+
+.info_steps label .preview h3 {
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.info_steps label .preview p {
+  margin-top: 5px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.file_info {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+}
+
+.file_info img {
+  width: 100%;
+  height: 135px;
+  object-fit: contain;
+  object-position: center;
+}
+
+.back_button {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.back_button button {
+  background: transparent;
+  border: none;
+  font-family: var(--font-roboto-regular);
+  color: #545454;
+}
+
+.error_message {
+  width: 100%;
+  font-family: var(--font-roboto-regular);
+  font-size: 14px;
+  color: red;
+  line-height: 20px;
+}
