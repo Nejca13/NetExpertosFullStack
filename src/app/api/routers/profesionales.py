@@ -589,3 +589,81 @@ async def get_profesional_by_id(profesional_id: str):
         raise HTTPException(404, "Profesional no encontrado")
     profesional["_id"] = str(profesional["_id"])
     return profesional
+
+
+# GET con paginado
+@router.get("/dashboard/", response_model=dict)
+async def get_profesionales(
+    page: int = 1,
+    limit: int = 25,
+    nombre: Optional[str] = None,
+    apellido: Optional[str] = None,
+    correo: Optional[str] = None,
+    numero: Optional[str] = None,
+    rubro_nombre: Optional[str] = None,
+    profesion_nombre: Optional[str] = None,
+    ubicacion: Optional[str] = None,
+    plus: Optional[bool] = None,
+    min_calificacion: Optional[float] = None,
+    max_calificacion: Optional[float] = None,
+    min_recomendaciones: Optional[int] = None,
+    max_recomendaciones: Optional[int] = None,
+    from_date: Optional[datetime] = None,
+    to_date: Optional[datetime] = None,
+    sort_type: Optional[str] = "desc",
+):
+    skip = (page - 1) * limit
+    filters = {}
+
+    if nombre:
+        filters["nombre"] = {"$regex": nombre, "$options": "i"}
+    if apellido:
+        filters["apellido"] = {"$regex": apellido, "$options": "i"}
+    if correo:
+        filters["correo"] = correo
+    if numero:
+        filters["numero"] = numero
+    if rubro_nombre:
+        filters["rubro_nombre"] = rubro_nombre
+    if profesion_nombre:
+        filters["profesion_nombre"] = profesion_nombre
+    if ubicacion:
+        filters["ubicacion"] = {"$regex": ubicacion, "$options": "i"}
+    if plus is not None:
+        filters["plus"] = plus
+    if min_calificacion is not None or max_calificacion is not None:
+        filters["calificacion"] = {}
+        if min_calificacion is not None:
+            filters["calificacion"]["$gte"] = min_calificacion
+        if max_calificacion is not None:
+            filters["calificacion"]["$lte"] = max_calificacion
+    if min_recomendaciones is not None or max_recomendaciones is not None:
+        filters["recomendaciones"] = {}
+        if min_recomendaciones is not None:
+            filters["recomendaciones"]["$gte"] = min_recomendaciones
+        if max_recomendaciones is not None:
+            filters["recomendaciones"]["$lte"] = max_recomendaciones
+    if from_date or to_date:
+        filters["fecha_registro"] = {}
+        if from_date:
+            filters["fecha_registro"]["$gte"] = from_date
+        if to_date:
+            filters["fecha_registro"]["$lte"] = to_date
+
+    sort = [("fecha_registro", 1 if sort_type == "asc" else -1)]
+
+    total = PROFESIONALES_COLLECTION.count_documents(filters)
+    cursor = PROFESIONALES_COLLECTION.find(filters).sort(sort).skip(skip).limit(limit)
+    profesionales = cursor.to_list(length=limit)
+
+    # Seguridad: remover contraseñas
+    for prof in profesionales:
+        prof.pop("password", None)
+        prof["id"] = str(prof.pop("_id", ""))  # para que sea JSON friendly
+
+    return {
+        "page": page,
+        "limit": limit,
+        "total": total,
+        "profesionales": profesionales,
+    }

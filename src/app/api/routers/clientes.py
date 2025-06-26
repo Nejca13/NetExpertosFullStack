@@ -399,3 +399,57 @@ async def eliminar_favoritos(cliente_id: str, profesionales: List[str]):
             status_code=500,
             detail="Error al eliminar profesionales de la lista de favoritos",
         )
+
+
+@router.get("/dashboard", response_model=dict)
+async def get_clientes(
+    page: int = 1,
+    limit: int = 25,
+    nombre: Optional[str] = None,
+    apellido: Optional[str] = None,
+    correo: Optional[str] = None,
+    ubicacion: Optional[str] = None,
+    estado: Optional[str] = None,
+    plus: Optional[str] = None,
+    from_date: Optional[datetime] = None,
+    to_date: Optional[datetime] = None,
+    sort_type: Optional[str] = "desc",
+):
+    skip = (page - 1) * limit
+    filters = {}
+
+    if nombre:
+        filters["nombre"] = {"$regex": nombre, "$options": "i"}
+    if apellido:
+        filters["apellido"] = {"$regex": apellido, "$options": "i"}
+    if correo:
+        filters["correo"] = correo
+    if ubicacion:
+        filters["ubicacion"] = {"$regex": ubicacion, "$options": "i"}
+    if estado:
+        filters["estado"] = estado
+    if plus:
+        filters["plus"] = plus
+    if from_date or to_date:
+        filters["fecha_registro"] = {}
+        if from_date:
+            filters["fecha_registro"]["$gte"] = from_date
+        if to_date:
+            filters["fecha_registro"]["$lte"] = to_date
+
+    sort = [("fecha_registro", 1 if sort_type == "asc" else -1)]
+
+    total = CLIENTES_COLLECTION.count_documents(filters)
+    cursor = CLIENTES_COLLECTION.find(filters).sort(sort).skip(skip).limit(limit)
+    clientes = cursor.to_list(length=limit)
+
+    for cliente in clientes:
+        cliente.pop("password", None)
+        cliente["id"] = str(cliente.pop("_id", ""))
+
+    return {
+        "page": page,
+        "limit": limit,
+        "total": total,
+        "clientes": clientes,
+    }
