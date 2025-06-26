@@ -31,6 +31,8 @@ export const WebSocketProvider = ({ children }) => {
 
     ws.current = new WebSocket(`${url}/${id}/${role}/`)
 
+    console.log(`${url}/${id}/${role}/`)
+
     ws.current.onopen = () => console.log('WebSocket connected')
 
     ws.current.onmessage = (event) => {
