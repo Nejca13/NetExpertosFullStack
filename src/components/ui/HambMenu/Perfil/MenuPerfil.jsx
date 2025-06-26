@@ -15,12 +15,14 @@ import crossBlanca from '@/assets/images/cross-blanca.png'
 import { parsearHorarios } from './parsearHorarios'
 import { handleSubmit } from './FormUtils'
 import CargarTrabajos from './CargarTrabajos/CargarTrabajos'
+import { useRouter } from 'next/navigation'
 
 const MenuPerfil = ({ setMenuComponent, user }) => {
   const [newProfileImage, setNewProfileImage] = useState(null)
   const [rubroSeleccionado, setRubroSeleccionado] = useState(user.rubro_nombre)
   const [editMode, setEditMode] = useState(false)
   const [cargarTrabajos, setCargarTrabajos] = useState(false)
+  const router = useRouter()
 
   const handleChangeImage = (files) => {
     const file = files[0]
@@ -28,6 +30,8 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
       setNewProfileImage(compressedImage)
     })
   }
+
+  console.log(user)
 
   return (
     <div className={styles.container}>
@@ -160,7 +164,7 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
               text={'Cargar trabajos'}
               func={(e) => {
                 e.preventDefault()
-                setCargarTrabajos(true)
+                router.push('/profile/profesional/charge-works')
               }}
             />
           )}
