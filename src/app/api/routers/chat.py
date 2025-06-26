@@ -105,9 +105,8 @@ async def get_conversation_messages(
     user1_id: str, user2_id: str, page: int = 1, limit: int = 80
 ):
     conversation = CONVERSATIONS_COLLECTION.find_one(
-        {"participants": {"$all": [user1_id, user2_id]}, "participants": {"$size": 2}}
+        {"participants": {"$all": [user1_id, user2_id], "$size": 2}}
     )
-
     if not conversation:
         return {"mensajes": []}
 
