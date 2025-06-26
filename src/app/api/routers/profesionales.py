@@ -1,4 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query, Form
+import json
+from typing import List, Optional
+from bson import ObjectId
+from fastapi import APIRouter, File, HTTPException, Query, Form, UploadFile
 
 from app.api.config.otp_config import (
     HOST_EMAIL,
@@ -12,6 +15,7 @@ from app.api.core import (
     PROFESIONES_COLLECTION,
     TEMP_PROFESIONALES_COLLECTION,
 )
+from app.api.utils.save_image import save_image
 from ..models.profesional import Profesional
 from pydantic import BaseModel
 import math
@@ -362,48 +366,61 @@ async def buscar_profesional_por_correo(json_data: dict):
 
 
 @router.post("/")
-async def crear_profesional(profesional: Profesional):
+async def crear_profesional(
+    nombre: str = Form(...),
+    apellido: str = Form(...),
+    numero: str = Form(...),
+    correo: str = Form(...),
+    password: str = Form(...),
+    ubicacion: str = Form(...),
+    experiencia_laboral_años: int = Form(...),
+    horarios_atencion: str = Form(...),
+    nacimiento: str = Form(...),
+    profesion_nombre: str = Form(...),
+    rubro_nombre: str = Form(...),
+    acerca_de_mi: str = Form(...),
+    fotos_trabajos_meta: str = Form(...),
+    fotos_trabajos: List[UploadFile] = File(None),
+):
     # Verificar si algún campo obligatorio está vacío
     if (
-        not profesional.nombre
-        or not profesional.apellido
-        or not profesional.numero
-        or not profesional.correo
-        or not profesional.password
-        or not profesional.ubicacion
-        or not profesional.experiencia_laboral_años
-        or not profesional.horarios_atencion
-        or not profesional.nacimiento
-        or not profesional.profesion_nombre
-        or not profesional.rubro_nombre
+        not nombre
+        or not apellido
+        or not numero
+        or not correo
+        or not password
+        or not ubicacion
+        or not experiencia_laboral_años
+        or not horarios_atencion
+        or not nacimiento
+        or not profesion_nombre
+        or not rubro_nombre
     ):
         raise HTTPException(status_code=400, detail="Todos los campos son requeridos")
     # Validar la contraseña con la expresión regular
-    if not re.match(PASSWORD_REGEX, profesional.password):
+    if not re.match(PASSWORD_REGEX, password):
         raise HTTPException(
             status_code=400, detail="La contraseña no cumple con los requisitos"
         )
     # Verificar si el profesional ya existe en la base de datos
-    if PROFESIONALES_COLLECTION.find_one({"correo": profesional.correo}):
+    if PROFESIONALES_COLLECTION.find_one({"correo": correo}):
         raise HTTPException(status_code=400, detail="El profesional ya existe")
 
-    if CLIENTES_COLLECTION.find_one({"correo": profesional.correo}):
+    if CLIENTES_COLLECTION.find_one({"correo": correo}):
         raise HTTPException(status_code=400, detail="El correo se encuentra en uso")
     # Verificar si la profesión especificada existe
-    profesion_existente = PROFESIONES_COLLECTION.find_one(
-        {"nombre": profesional.rubro_nombre}
-    )
+    profesion_existente = PROFESIONES_COLLECTION.find_one({"nombre": rubro_nombre})
     if not profesion_existente:
         raise HTTPException(status_code=400, detail="La profesion no existe")
     # Verificar si el rubro especificado pertenece a la profesión indicada
-    if profesional.profesion_nombre not in profesion_existente.get("descripcion", []):
+    if profesion_nombre not in profesion_existente.get("descripcion", []):
         raise HTTPException(
             status_code=400,
-            detail=f"No existe el rubro '{profesional.profesion_nombre}' en el rubro '{profesional.rubro_nombre}'",
+            detail=f"No existe el rubro '{profesion_nombre}' en el rubro '{rubro_nombre}'",
         )
     try:
         # Intenta parsear la fecha de nacimiento en el formato esperado
-        fecha_nacimiento = datetime.strptime(profesional.nacimiento, "%Y-%m-%d")
+        fecha_nacimiento = datetime.strptime(nacimiento, "%Y-%m-%d")
     except ValueError:
         # Si hay un error al parsear la fecha, lanza una excepción
         raise HTTPException(
@@ -411,25 +428,47 @@ async def crear_profesional(profesional: Profesional):
             detail="El formato de la fecha de nacimiento debe ser año-mes-dia (YYYY-MM-DD)",
         )
     # Formato del número de teléfono
-    if not re.match(NUMERO_REGEX, profesional.numero):
+    if not re.match(NUMERO_REGEX, numero):
         raise HTTPException(
             status_code=400,
             detail="El formato del número de teléfono no es válido para Argentina",
         )
     # Almacenar el rubro como profesión y la subcategoría como rubro
-    if profesional.fecha_registro is None:
-        profesional.fecha_registro = datetime.now()
-    hashed_password = bcrypt.hashpw(
-        profesional.password.encode("utf-8"), bcrypt.gensalt()
-    )
-    profesional_dict = profesional.dict()
+    if fecha_registro is None:
+        fecha_registro = datetime.now()
+    hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    profesional_dict = dict()
     profesional_dict["password"] = hashed_password.decode(
         "utf-8"
     )  # almacenar la contraseña cifrada en lugar de la original
-    profesional_dict["profesion_nombre"] = profesional.profesion_nombre
-    profesional_dict["rubro_nombre"] = profesional.rubro_nombre
+    profesional_dict["profesion_nombre"] = profesion_nombre
+    profesional_dict["rubro_nombre"] = rubro_nombre
+    try:
+        meta_list = json.loads(fotos_trabajos_meta)
+    except json.JSONDecodeError:
+        raise HTTPException(400, "Metadata de fotos inválida")
+    if fotos_trabajos:
+        if len(meta_list) != len(fotos_trabajos):
+            raise HTTPException(400, "Cantidad de imágenes y metadata no coincide")
+    else:
+        meta_list = []
+    fotos_final = []
+    for idx, md in enumerate(meta_list):
+        upload = fotos_trabajos[idx]
+        try:
+            url = await save_image(upload, f"profesionales/{correo}")
+        except ValueError as e:
+            raise HTTPException(400, f"Error en imagen '{upload.filename}': {e}")
+        fotos_final.append(
+            {
+                "titulo": md.get("titulo"),
+                "lugar": md.get("lugar"),
+                "fecha": md.get("fecha"),
+                "foto": url,
+            }
+        )
     profesional_id = PROFESIONALES_COLLECTION.insert_one(profesional_dict).inserted_id
-    return {"id": str(profesional_id), **profesional.model_dump()}
+    return {"id": str(profesional_id), "message": "Profesional creado exitosamente"}
 
 
 @router.delete("/")
@@ -445,24 +484,108 @@ async def eliminar_profesional_por_correo(correo: str):
 
 
 @router.put("/")
-async def actualizar_profesional(correo: str, campos_actualizados: dict):
-    # Verificar si hay campos para actualizar
-    if not campos_actualizados:
-        raise HTTPException(
-            status_code=400, detail="No se han proporcionado campos para actualizar"
+async def actualizar_profesional(
+    correo: str = Form(...),  # identificador
+    nombre: Optional[str] = Form(None),
+    apellido: Optional[str] = Form(None),
+    numero: Optional[str] = Form(None),
+    ubicacion: Optional[str] = Form(None),
+    experiencia_laboral_años: Optional[int] = Form(None),
+    horarios_atencion: Optional[str] = Form(None),
+    nacimiento: Optional[str] = Form(None),
+    profesion_nombre: Optional[str] = Form(None),
+    rubro_nombre: Optional[str] = Form(None),
+    acerca_de_mi: Optional[str] = Form(None),
+    plus: Optional[str] = Form(None),
+    fotos_trabajos_meta: Optional[str] = Form(None),
+    fotos_trabajos_a_eliminar: Optional[str] = Form(None),
+    fotos_trabajos: Optional[List[UploadFile]] = File(None),
+    foto_perfil: Optional[UploadFile] = File(None),
+):
+    profesional = PROFESIONALES_COLLECTION.find_one({"correo": correo})
+    if not profesional:
+        raise HTTPException(404, "Profesional no encontrado")
+
+    update_data = {}
+
+    campos = [
+        "nombre",
+        "apellido",
+        "numero",
+        "ubicacion",
+        "experiencia_laboral_años",
+        "horarios_atencion",
+        "nacimiento",
+        "profesion_nombre",
+        "rubro_nombre",
+        "acerca_de_mi",
+    ]
+
+    for campo in campos:
+        valor = locals()[campo]
+        if valor is not None:
+            update_data[campo] = valor
+
+    if plus:
+        update_data["plus"] = plus.lower() == "true"
+
+    # 📷 Subir nueva foto de perfil si se envía
+    if foto_perfil:
+        url_foto = await save_image(
+            foto_perfil, f"profesionales/{profesional['_id']}/perfil"
         )
+        update_data["foto_perfil"] = url_foto
 
-    # Construir el diccionario de actualización
-    campos_actualizacion = {"$set": campos_actualizados}
+    # 🧩 Manejo de imágenes de trabajos
+    try:
+        metas = json.loads(fotos_trabajos_meta or "[]")
+        urls_a_eliminar = json.loads(fotos_trabajos_a_eliminar or "[]")
+    except json.JSONDecodeError:
+        raise HTTPException(400, "Error al parsear JSON de imágenes")
 
-    # Actualizar el profesional por correo
-    resultado = PROFESIONALES_COLLECTION.update_one(
-        {"correo": correo}, campos_actualizacion
-    )
+    trabajos_actuales = profesional.get("fotos_trabajos", [])
+    trabajos_sin_eliminar = [
+        t for t in trabajos_actuales if t["foto"] not in urls_a_eliminar
+    ]
+    nuevos_trabajos = []
 
-    if resultado.modified_count == 1:
-        return {"message": f"Profesional con correo {correo} actualizado exitosamente"}
-    else:
-        raise HTTPException(
-            status_code=404, detail=f"Profesional con correo {correo} no encontrado"
-        )
+    file_idx = 0
+    for meta in metas:
+        if "foto" in meta and meta["foto"].startswith("http"):
+            nuevos_trabajos.append(meta)
+        else:
+            if fotos_trabajos and file_idx < len(fotos_trabajos):
+                upload = fotos_trabajos[file_idx]
+                url = await save_image(
+                    upload, f"profesionales/{profesional['_id']}/trabajos"
+                )
+                nuevos_trabajos.append(
+                    {
+                        "titulo": meta.get("titulo"),
+                        "lugar": meta.get("lugar"),
+                        "fecha": meta.get("fecha"),
+                        "foto": url,
+                    }
+                )
+                file_idx += 1
+            else:
+                raise HTTPException(400, "Falta imagen para trabajo nuevo")
+
+    update_data["fotos_trabajos"] = trabajos_sin_eliminar + nuevos_trabajos
+
+    # ✅ Aplicar cambios
+    PROFESIONALES_COLLECTION.update_one({"correo": correo}, {"$set": update_data})
+    return {
+        "message": "Profesional actualizado correctamente",
+        "actualizado": update_data,
+    }
+
+
+# Obtener un profesional por ID
+@router.get("/get-profesional-by-id/{profesional_id}/")
+async def get_profesional_by_id(profesional_id: str):
+    profesional = PROFESIONALES_COLLECTION.find_one({"_id": ObjectId(profesional_id)})
+    if not profesional:
+        raise HTTPException(404, "Profesional no encontrado")
+    profesional["_id"] = str(profesional["_id"])
+    return profesional
