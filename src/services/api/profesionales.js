@@ -141,3 +141,20 @@ export const updateProfessional = async (user, updatedData) => {
     throw error // Puedes lanzar el error nuevamente para que quien llame a esta función pueda manejarlo si es necesario
   }
 }
+
+// Obtener un profesional por id
+export const getProfessionalById = async (id) => {
+  try {
+    const response = await fetch(API_URL + `get-profesional-by-id/${id}`)
+    if (!response.ok) {
+      const error = await response.json()
+      console.log(error)
+      throw new Error('Error en la solicitud')
+    }
+    const result = await response.json()
+    return result
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+}
