@@ -7,11 +7,16 @@ import USER from '@/assets/images/ICONOS/ICO-USER.svg'
 import CAMPANA from '@/assets/images/ICONOS/ICO-CAMPANA.svg'
 import CHAT from '@/assets/images/ICONOS/ICO-CHAT.svg'
 import SALIR from '@/assets/images/ICONOS/ICO-SALIR.svg'
+import VERIFICADO from '@/assets/images/ICONOS/ICO-VERIFICADO.svg'
 
 export const hambMenuOptionsExpert = [
   {
     name: 'Perfil',
     icon: USER,
+  },
+  {
+    name: 'Verificar mi cuenta',
+    icon: VERIFICADO,
   },
   {
     name: 'Notificaciones',

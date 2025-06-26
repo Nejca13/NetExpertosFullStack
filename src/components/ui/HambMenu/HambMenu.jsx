@@ -29,6 +29,9 @@ const HambMenu = ({ show, userApp }) => {
           <MenuPerfil setMenuComponent={setMenuComponent} user={userApp} />
         )
         break
+      case 'Verificar mi cuenta':
+        router.push(`/verify-user/${userApp._id}`)
+        break
       case 'Quiero ser un experto':
         setMenuComponent(
           <ConvertiteEnExperto
