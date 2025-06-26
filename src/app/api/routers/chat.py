@@ -113,10 +113,17 @@ async def get_conversation_messages(
 
     conversation_id = str(conversation["_id"])
 
+    total_messages = MESSAGES_COLLECTION.count_documents(
+        {"conversation_id": conversation_id}
+    )
+    last_page = max(1, (total_messages + limit - 1) // limit)
+
+    skip = (last_page - 1) * limit
+
     messages = list(
         MESSAGES_COLLECTION.find({"conversation_id": conversation_id})
         .sort("timestamp", 1)
-        .skip((page - 1) * limit)
+        .skip(skip)
         .limit(limit)
     )
     for msg in messages:
