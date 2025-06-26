@@ -1,5 +1,7 @@
 export const parsearHorarios = (horarios) => {
-  let regex = /de (\d{2}):(\d{2}) - a (\d{2}):(\d{2})/
+  console.log(horarios)
+  let regex = /(?:de\s*)?(\d{2}):(\d{2})\s*-\s*a\s*(\d{2}):(\d{2})/
+
   let match = horarios.match(regex)
   if (!match) {
     // Si el formato de los horarios no es válido, devolvemos false
