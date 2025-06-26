@@ -46,11 +46,14 @@ const NotificacionChat = ({ setNotificationMessages }) => {
           data.sender_id,
           JSON.stringify({
             _id: data.sender_id,
-            nombre: data.name,
-            apellido: data.surname,
+            nombre: data.sender_name,
+            apellido: data.sender_surname,
             foto_perfil: data.image,
           })
         )
+
+        console.log(data)
+
         setNotificationMessages([])
         setTimeout(() => {
           router.push(`/chatroom/${data.sender_id}`)
