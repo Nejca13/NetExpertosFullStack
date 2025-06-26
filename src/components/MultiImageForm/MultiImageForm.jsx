@@ -5,14 +5,18 @@ import cameraImage from '@/assets/images/Camera.png'
 import { compressImageFile } from '@/utils/imageUtils'
 
 const MultiImageForm = ({ index, trabajos }) => {
-  const [image, setImage] = useState(null)
+  const trabajo = trabajos?.[index]
+
+  const [image, setImage] = useState(trabajo?.foto || null)
+  const [titulo, setTitulo] = useState(trabajo?.titulo || '')
+  const [lugar, setLugar] = useState(trabajo?.lugar || '')
+  const [fecha, setFecha] = useState(trabajo?.fecha || '')
   const [error, setError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0]
     if (!file) return
-
     try {
       const compressed = await compressImageFile(file, 800, 'image/webp', 0.6)
       setImage(URL.createObjectURL(compressed))
@@ -20,12 +24,6 @@ const MultiImageForm = ({ index, trabajos }) => {
       console.error('Error al comprimir imagen:', err)
     }
   }
-
-  useEffect(() => {
-    if (trabajos) {
-      setImage(trabajos[0].foto)
-    }
-  }, [])
 
   return (
     <div name={index} className={styles.container}>
@@ -59,15 +57,17 @@ const MultiImageForm = ({ index, trabajos }) => {
           onChange={handleFileChange}
           name={`trabajos_realizados_foto_${index}`}
           id={`trabajos_realizados_foto_${index}`}
-          required
           onInvalid={(e) => {
             setError(true)
             setErrorMessage(e.target.validationMessage)
           }}
-          onInput={(e) => setError(false)}
+          onInput={() => setError(false)}
+          required={!trabajo?.foto && true}
         />
       </label>
+
       {error ? <p className={styles.errorMessage}>{errorMessage}</p> : <p></p>}
+
       <div className={styles.inputContainer}>
         <input
           maxLength={32}
@@ -76,7 +76,9 @@ const MultiImageForm = ({ index, trabajos }) => {
           type='text'
           name={`trabajos_realizados_titulo_${index}`}
           id={`trabajos_realizados_titulo_${index}`}
-          placeholder='Titulo'
+          placeholder='Título'
+          value={titulo}
+          onChange={(e) => setTitulo(e.target.value)}
         />
         <input
           maxLength={32}
@@ -86,15 +88,18 @@ const MultiImageForm = ({ index, trabajos }) => {
           name={`trabajos_realizados_lugar_${index}`}
           id={`trabajos_realizados_lugar_${index}`}
           placeholder='Lugar'
+          value={lugar}
+          onChange={(e) => setLugar(e.target.value)}
         />
         <input
-          maxLength={32}
           required
           className={styles.input}
           type='date'
           name={`trabajos_realizados_fecha_${index}`}
           id={`trabajos_realizados_fecha_${index}`}
           placeholder='Fecha'
+          value={fecha}
+          onChange={(e) => setFecha(e.target.value)}
         />
       </div>
     </div>
