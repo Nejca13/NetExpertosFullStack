@@ -48,6 +48,14 @@ const Page = () => {
         user_data: data.user_data,
       }
 
+      //Zustand
+      if (user) {
+        setCurrentUser(user)
+        router.push(`/profile/${user.user_data._id}`)
+      } else {
+        console.log(data)
+        console.log('No se pudo guardar el usuario en Zustand')
+      }
       // IndexDB <--- BORRAR DESPUES
       await addUser(user)
         .then((result) => {
@@ -57,10 +65,6 @@ const Page = () => {
         .catch((error) => {
           console.error('Error al guardar el usuario:', error)
         })
-
-      //Zustand
-      setCurrentUser(user)
-      console.log('Guardando usuario en Zustand', currentUser)
     } else {
       const error = await response.json()
       console.error(error)
