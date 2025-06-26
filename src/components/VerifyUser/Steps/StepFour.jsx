@@ -61,10 +61,8 @@ const StepFour = ({ setStep, files, setFiles }) => {
             style={{ display: 'none' }}
             onChange={(e) => {
               const file = e.target.files[0]
-              if (file && file.type.startsWith('video/')) {
+              if (file) {
                 setFiles({ ...files, video: file })
-              } else {
-                alert('Solo se permiten archivos de video')
               }
             }}
             required
@@ -97,7 +95,7 @@ const StepFour = ({ setStep, files, setFiles }) => {
       </div>
 
       <div className={styles.button_container}>
-        <Button text={'Enviar'} func={nextStep} />
+        <Button text={'Confirmar datos'} func={nextStep} />
       </div>
       <div className={styles.button_container}>
         <Button
