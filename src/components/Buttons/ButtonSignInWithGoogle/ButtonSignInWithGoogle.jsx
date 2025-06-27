@@ -34,6 +34,7 @@ const ButtonSignInWithGoogle = () => {
   const signInWithGoogle = async () => {
     if (window.AndroidInterface) {
       // Obtener el token de Google
+      console.log('Iniciando sesión con Google desde Android')
       window.AndroidInterface.triggerGoogleLogin()
     } else {
       console.log('AndroidInterface no está disponible')

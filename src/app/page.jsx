@@ -89,6 +89,7 @@ export default function Home() {
     ifUser()
     // ✅ Login desde WebView Android
     if (typeof window !== 'undefined') {
+      console.log('window.AndroidInterface:', window.AndroidInterface)
       window.onGoogleLoginSuccess = async (idToken, email) => {
         const res = await fetch('/api/auth-google/google-auth-v2/login/', {
           method: 'POST',
