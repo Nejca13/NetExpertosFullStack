@@ -9,6 +9,7 @@ import Google from '@/assets/icon/GoogleIcon'
 
 const ButtonSignInWithGoogle = () => {
   const [auth, setAuth] = useAuth()
+  const { currentUser, setCurrentUser } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
@@ -26,9 +27,11 @@ const ButtonSignInWithGoogle = () => {
         const data = await res.json()
         if (data.success) {
           setAuth(data.user)
-          window.location.href = '/dashboard'
+          setCurrentUser(data.user)
+          window.location.href = '/profile/' + data.user._id
         } else {
-          router.push('/completar-registro')
+          console.error('Error during Google login:', data?.error)
+          console.log(data)
         }
       }
     }
