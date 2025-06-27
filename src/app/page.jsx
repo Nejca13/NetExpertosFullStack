@@ -101,7 +101,11 @@ export default function Home() {
 
         const data = await res.json()
         if (data.success) {
-          setCurrentUser(data.user)
+          const user = {
+            token: data.token,
+            user_data: data.user,
+          }
+          setCurrentUser(user)
           window.location.href = '/profile/' + data.user._id
         } else {
           alert('Hubo un error al iniciar sesión con Google.')
