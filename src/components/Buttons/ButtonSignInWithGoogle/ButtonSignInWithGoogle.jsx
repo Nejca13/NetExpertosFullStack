@@ -31,6 +31,15 @@ const ButtonSignInWithGoogle = () => {
     }
   }, [])
 
+  const signInWithGoogle = async () => {
+    if (window.AndroidInterface) {
+      // Obtener el token de Google
+      window.AndroidInterface.triggerGoogleLogin()
+    } else {
+      console.log('AndroidInterface no está disponible')
+    }
+  }
+
   return (
     typeof window !== 'undefined' && (
       <>
@@ -39,7 +48,7 @@ const ButtonSignInWithGoogle = () => {
           <button
             onClick={(e) => {
               e.preventDefault()
-              window.AndroidInterface.triggerGoogleLogin()
+              signInWithGoogle()
             }}
             className={styles.SingInWhithGoogle}
           >
