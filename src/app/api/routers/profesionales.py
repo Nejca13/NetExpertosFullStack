@@ -596,9 +596,7 @@ async def get_profesional_by_id(profesional_id: str):
 async def get_profesionales(
     page: int = 1,
     limit: int = 25,
-    nombre: Optional[str] = None,
-    apellido: Optional[str] = None,
-    correo: Optional[str] = None,
+    query: Optional[str] = None,
     numero: Optional[str] = None,
     rubro_nombre: Optional[str] = None,
     profesion_nombre: Optional[str] = None,
@@ -615,12 +613,12 @@ async def get_profesionales(
     skip = (page - 1) * limit
     filters = {}
 
-    if nombre:
-        filters["nombre"] = {"$regex": nombre, "$options": "i"}
-    if apellido:
-        filters["apellido"] = {"$regex": apellido, "$options": "i"}
-    if correo:
-        filters["correo"] = correo
+    if query:
+        filters["$or"] = [
+            {"nombre": {"$regex": query, "$options": "i"}},
+            {"apellido": {"$regex": query, "$options": "i"}},
+            {"correo": {"$regex": query, "$options": "i"}},
+        ]
     if numero:
         filters["numero"] = numero
     if rubro_nombre:
@@ -652,14 +650,13 @@ async def get_profesionales(
 
     sort = [("fecha_registro", 1 if sort_type == "asc" else -1)]
 
-    total = PROFESIONALES_COLLECTION.count_documents(filters)
+    total = await PROFESIONALES_COLLECTION.count_documents(filters)
     cursor = PROFESIONALES_COLLECTION.find(filters).sort(sort).skip(skip).limit(limit)
-    profesionales = cursor.to_list(length=limit)
+    profesionales = await cursor.to_list(length=limit)
 
-    # Seguridad: remover contraseñas
     for prof in profesionales:
         prof.pop("password", None)
-        prof["id"] = str(prof.pop("_id", ""))  # para que sea JSON friendly
+        prof["id"] = str(prof.pop("_id", ""))
 
     return {
         "page": page,
