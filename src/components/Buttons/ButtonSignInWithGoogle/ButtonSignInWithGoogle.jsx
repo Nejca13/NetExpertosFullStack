@@ -16,7 +16,7 @@ const ButtonSignInWithGoogle = () => {
     // ✅ Login desde WebView Android
     if (typeof window !== 'undefined' && window.AndroidInterface) {
       window.onGoogleLoginSuccess = async (idToken, email) => {
-        const res = await fetch('/api/google-auth-v2/login/', {
+        const res = await fetch('/api/auth-google/google-auth-v2/login/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token: idToken }),
