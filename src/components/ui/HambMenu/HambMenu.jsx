@@ -19,6 +19,7 @@ const HambMenu = ({ show }) => {
   const containerRef = useRef(null)
   const { currentUser } = useStore()
   const router = useRouter()
+  const userApp = currentUser?.user_data || {}
 
   //Zustand store
   const clearCurrentUser = useStore((state) => state.clearCurrentUser)
@@ -27,22 +28,22 @@ const HambMenu = ({ show }) => {
     switch (name) {
       case 'Perfil':
         setMenuComponent(
-          <MenuPerfil setMenuComponent={setMenuComponent} user={currentUser} />
+          <MenuPerfil setMenuComponent={setMenuComponent} user={userApp} />
         )
         break
       case 'Verificar mi cuenta':
-        router.push(`/verify-user/${currentUser?._id}`)
+        router.push(`/verify-user/${userApp._id}`)
         break
       case 'Quiero ser un experto':
         setMenuComponent(
           <ConvertiteEnExperto
             setMenuComponent={setMenuComponent}
-            user={currentUser}
+            user={userApp}
           />
         )
         break
       case 'Mensajes':
-        router.push(`/profile/${currentUser?._id}/${currentUser?.rol}/chats`)
+        router.push(`/profile/${userApp._id}/${userApp.rol}/chats`)
         break
       case 'Salir':
         userLogout()
@@ -81,16 +82,16 @@ const HambMenu = ({ show }) => {
           <div className={styles.div}>
             <Image
               className={styles.image}
-              src={currentUser ? currentUser?.foto_perfil : defaultImage.src}
+              src={userApp ? userApp.foto_perfil : defaultImage.src}
               width={60}
               height={60}
               alt='Imagen de perfil del usuario'
             />
             <div className={styles.divText}>
               <p className={styles.name}>
-                ¡Hola, {currentUser?.nombre.split(' ')[0]}!
+                ¡Hola, {userApp.nombre.split(' ')[0]}!
               </p>
-              <p className={styles.email}>{currentUser?.correo}</p>
+              <p className={styles.email}>{userApp.correo}</p>
             </div>
           </div>
         </div>
