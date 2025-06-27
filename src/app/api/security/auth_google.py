@@ -5,6 +5,9 @@ from pydantic import BaseModel
 import bcrypt
 from jose import JWTError, jwt
 from typing import Optional
+from google.oauth2 import id_token as google_id_token
+from google.auth.transport import requests as google_requests
+from fastapi import Response
 
 from app.api.core import CLIENTES_COLLECTION, PROFESIONALES_COLLECTION
 
@@ -165,3 +168,79 @@ def create_user_response(user_data):
             else None
         )
     return user_data
+
+
+@router.post("/google-auth-v2/login/")
+async def google_login_v2(payload: dict, response: Response):
+    try:
+        id_token_str = payload.get("token")
+        if not id_token_str:
+            raise HTTPException(status_code=400, detail="Token no proporcionado")
+
+        # Verifica el token con el CLIENT_ID tipo Web
+        id_info = google_id_token.verify_oauth2_token(
+            id_token_str,
+            google_requests.Request(),
+            "714395374113-539b12soro38d2srslfjgt07l04m8j4a.apps.googleusercontent.com",
+        )
+
+        email = id_info.get("email")
+        if not email:
+            raise HTTPException(
+                status_code=400, detail="Email no encontrado en el token"
+            )
+
+        # Buscar en clientes o profesionales
+        profesional = PROFESIONALES_COLLECTION.find_one({"correo": email})
+        if profesional:
+            profesional["_id"] = str(profesional["_id"])
+            profesional["fecha_registro"] = (
+                profesional["fecha_registro"].strftime("%Y-%m-%d %H:%M:%S")
+                if profesional.get("fecha_registro")
+                else None
+            )
+            token = create_access_token(
+                data={"user_id": profesional["_id"], "email": email}
+            )
+            return {"success": True, "user": profesional, "token": token}
+
+        # Cliente nuevo o existente
+        cliente = CLIENTES_COLLECTION.find_one({"correo": email})
+        if not cliente:
+            cliente_data = {
+                "rol": "Cliente",
+                "nombre": id_info.get("given_name"),
+                "apellido": id_info.get("family_name"),
+                "correo": email,
+                "foto_perfil": id_info.get("picture"),
+                "password": bcrypt.hashpw(
+                    "Google2024!".encode(), bcrypt.gensalt()
+                ).decode(),
+                "ubicacion": None,
+                "fecha_registro": datetime.utcnow(),
+            }
+            inserted_id = CLIENTES_COLLECTION.insert_one(cliente_data).inserted_id
+            cliente_data["_id"] = str(inserted_id)
+            token = create_access_token(
+                data={"user_id": str(inserted_id), "email": email}
+            )
+            return {
+                "success": False,
+                "message": "Cliente creado, debe completar el registro",
+                "temp_user": cliente_data,
+                "token": token,
+            }
+        else:
+            cliente["_id"] = str(cliente["_id"])
+            cliente["fecha_registro"] = (
+                cliente["fecha_registro"].strftime("%Y-%m-%d %H:%M:%S")
+                if cliente.get("fecha_registro")
+                else None
+            )
+            token = create_access_token(
+                data={"user_id": cliente["_id"], "email": email}
+            )
+            return {"success": True, "user": cliente, "token": token}
+
+    except ValueError as e:
+        raise HTTPException(status_code=401, detail=f"Token inválido: {str(e)}")
