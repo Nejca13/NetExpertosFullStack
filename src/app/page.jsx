@@ -87,6 +87,30 @@ export default function Home() {
     setIsLoading(true)
     setLoadingMessage('Comprobando sesiones activas...')
     ifUser()
+    // ✅ Login desde WebView Android
+    if (typeof window !== 'undefined') {
+      window.onGoogleLoginSuccess = async (idToken, email) => {
+        const res = await fetch('/api/auth-google/google-auth-v2/login/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: idToken }),
+        })
+
+        console.log('Token recibido en React:', idToken)
+
+        const data = await res.json()
+        if (data.success) {
+          setAuth(data.user)
+          setCurrentUser(data.user)
+          window.location.href = '/profile/' + data.user._id
+        } else {
+          alert('Hubo un error al iniciar sesión con Google.')
+
+          console.error('Error during Google login:', data?.error)
+          console.log(data)
+        }
+      }
+    }
   }, [currentUser])
 
   return (
