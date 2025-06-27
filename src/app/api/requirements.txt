@@ -1,6 +1,7 @@
 annotated-types==0.7.0
 anyio==4.8.0
 bcrypt==4.2.1
+cachetools==5.5.2
 certifi==2024.12.14
 charset-normalizer==3.4.1
 click==8.1.8
@@ -11,6 +12,7 @@ fastapi==0.115.6
 fastapi-cli==0.0.7
 geographiclib==2.0
 geopy==2.4.1
+google-auth==2.40.3
 h11==0.14.0
 httpcore==1.0.7
 httptools==0.6.4
@@ -25,6 +27,7 @@ motor==3.6.0
 orjson==3.10.13
 pillow==11.2.1
 pyasn1==0.6.1
+pyasn1_modules==0.4.2
 pydantic==2.10.4
 pydantic-extra-types==2.10.1
 pydantic-settings==2.7.1
