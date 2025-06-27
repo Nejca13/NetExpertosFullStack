@@ -123,8 +123,8 @@ export default function Home() {
             </Link>
           </p>
         </div>
-        <ButtonSignInWithGoogle />
       </FormContainer>
+      <ButtonSignInWithGoogle />
 
       <div className={styles.register}>
         <p className={styles.p}>¡Quiero registrarme!</p>
