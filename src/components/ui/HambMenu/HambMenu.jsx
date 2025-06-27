@@ -14,9 +14,10 @@ import { useRouter } from 'next/navigation'
 import NotificationBubble from '../NotificationBubble/NotificationBubble'
 import useStore from '@/store/store'
 
-const HambMenu = ({ show, userApp }) => {
+const HambMenu = ({ show }) => {
   const [menuComponent, setMenuComponent] = useState(null)
   const containerRef = useRef(null)
+  const { currentUser } = useStore()
   const router = useRouter()
 
   //Zustand store
@@ -26,22 +27,22 @@ const HambMenu = ({ show, userApp }) => {
     switch (name) {
       case 'Perfil':
         setMenuComponent(
-          <MenuPerfil setMenuComponent={setMenuComponent} user={userApp} />
+          <MenuPerfil setMenuComponent={setMenuComponent} user={currentUser} />
         )
         break
       case 'Verificar mi cuenta':
-        router.push(`/verify-user/${userApp._id}`)
+        router.push(`/verify-user/${currentUser?._id}`)
         break
       case 'Quiero ser un experto':
         setMenuComponent(
           <ConvertiteEnExperto
             setMenuComponent={setMenuComponent}
-            user={userApp}
+            user={currentUser}
           />
         )
         break
       case 'Mensajes':
-        router.push(`/profile/${userApp._id}/${userApp.rol}/chats`)
+        router.push(`/profile/${currentUser?._id}/${currentUser?.rol}/chats`)
         break
       case 'Salir':
         userLogout()
@@ -80,16 +81,16 @@ const HambMenu = ({ show, userApp }) => {
           <div className={styles.div}>
             <Image
               className={styles.image}
-              src={userApp ? userApp.foto_perfil : defaultImage.src}
+              src={currentUser ? currentUser?.foto_perfil : defaultImage.src}
               width={60}
               height={60}
               alt='Imagen de perfil del usuario'
             />
             <div className={styles.divText}>
               <p className={styles.name}>
-                ¡Hola, {userApp.nombre.split(' ')[0]}!
+                ¡Hola, {currentUser?.nombre.split(' ')[0]}!
               </p>
-              <p className={styles.email}>{userApp.correo}</p>
+              <p className={styles.email}>{currentUser?.correo}</p>
             </div>
           </div>
         </div>

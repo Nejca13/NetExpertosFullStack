@@ -79,9 +79,7 @@ const Page = () => {
           setNotificationMessages={setNotificationMessages}
         />
       ) : null}
-      {showMenu && (
-        <HambMenu userApp={userApp} show={() => setShowMenu(!showMenu)} />
-      )}
+      {showMenu && <HambMenu show={() => setShowMenu(!showMenu)} />}
 
       <div className={styles.divNavBar}>
         <LogoNetExpertos width={200} height={70} />
