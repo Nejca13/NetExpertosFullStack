@@ -7,10 +7,11 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/userContext'
 import Google from '@/assets/icon/GoogleIcon'
 import styles from './ButtonSignInWithGoogle.module.css'
+import useStore from '@/store/store'
 
 const ButtonSignInWithGoogle = () => {
   const [auth, setAuth] = useAuth()
-  const { currentUser, setCurrentUser } = useAuth()
+  const { currentUser, setCurrentUser } = useStore()
   const router = useRouter()
 
   useEffect(() => {
@@ -31,6 +32,8 @@ const ButtonSignInWithGoogle = () => {
           setCurrentUser(data.user)
           window.location.href = '/profile/' + data.user._id
         } else {
+          alert('Hubo un error al iniciar sesión con Google.')
+
           console.error('Error during Google login:', data?.error)
           console.log(data)
         }
