@@ -41,9 +41,11 @@ const Map = () => {
   const setUser = async () => {
     // IndexDB <--- BORRAR DESPUES
     const storageUser = await getUser(_id)
-    setUserApp(storageUser.user_data)
-    setUserId(storageUser.user_data._id)
-    setRole(storageUser.user_data.rol)
+    if (!storageUser) {
+      setUserApp(storageUser?.user_data)
+      setUserId(storageUser?.user_data._id)
+      setRole(storageUser?.user_data.rol)
+    }
 
     //Zustand
     setUserApp(currentUser?.user_data)
