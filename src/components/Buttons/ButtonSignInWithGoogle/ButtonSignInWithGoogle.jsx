@@ -25,6 +25,10 @@ const ButtonSignInWithGoogle = () => {
         router.push('/google-auth')
       }
     }
+
+    if (window.AndroidInterface) {
+      console.log('AndroidInterface is available:', window.AndroidInterface)
+    }
   }, [])
 
   return (
