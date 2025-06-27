@@ -101,7 +101,6 @@ export default function Home() {
 
         const data = await res.json()
         if (data.success) {
-          setAuth(data.user)
           setCurrentUser(data.user)
           window.location.href = '/profile/' + data.user._id
         } else {
