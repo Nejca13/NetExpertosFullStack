@@ -6,6 +6,7 @@ import { jwtDecode } from 'jwt-decode'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/userContext'
 import Google from '@/assets/icon/GoogleIcon'
+import styles from './ButtonSignInWithGoogle.module.css'
 
 const ButtonSignInWithGoogle = () => {
   const [auth, setAuth] = useAuth()
