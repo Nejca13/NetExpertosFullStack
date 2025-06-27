@@ -5,6 +5,7 @@ import Script from 'next/script'
 import { jwtDecode } from 'jwt-decode'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/userContext'
+import Google from '@/assets/icon/GoogleIcon'
 
 const ButtonSignInWithGoogle = () => {
   const [auth, setAuth] = useAuth()
@@ -47,8 +48,15 @@ const ButtonSignInWithGoogle = () => {
       <>
         {/* ✅ Botón para Android */}
         {window.AndroidInterface && (
-          <button onClick={() => window.AndroidInterface.triggerGoogleLogin()}>
-            Continuar con Google
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              window.AndroidInterface.triggerGoogleLogin()
+            }}
+            className={styles.SingInWhithGoogle}
+          >
+            <Google />
+            <p>Continuar con Google</p>
           </button>
         )}
 
