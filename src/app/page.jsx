@@ -15,6 +15,7 @@ import { addUser, clearUsers, getFirstUser } from '@/utils/indexedDataBase'
 import ModalLoading from '@/components/ui/Modals/ModalLoading/ModalLoading'
 import dynamic from 'next/dynamic'
 import useStore from '@/store/store'
+import useGeolocation from '@/hooks/useGeolocation'
 
 const ButtonSignInWithGoogle = dynamic(
   () =>
@@ -28,6 +29,7 @@ export default function Home() {
   const [showModalError, setShowModalError] = useState(false)
   const [errorMessage, setErrorMessage] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const { location, error } = useGeolocation()
   const [loadingMessage, setLoadingMessage] = useState(
     'Buscando sesiones activas...'
   )
@@ -47,6 +49,11 @@ export default function Home() {
       return user
     }
   }
+
+  useEffect(() => {
+    console.log(location)
+    console.log(error)
+  }, [location])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
