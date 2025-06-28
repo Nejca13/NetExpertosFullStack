@@ -1,28 +1,28 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useParams } from 'next/navigation'
 import MapComponent from '@/components/Map'
 import styles from './page.module.css'
 import Link from 'next/link'
 import HambMenu from '@/components/ui/HambMenu/HambMenu'
 import HambIcon from '@/components/ui/HambIcon/HambIcon'
-import { useParams } from 'next/navigation'
-import { getFilteredAndSortedProfessionalsByDistance } from '@/services/api/profesionales'
-import isAuth from '@/components/Auth/IsAuth'
 import SimpleLoader from '@/components/Loaders/SimpleLoader'
 import ProfesionalCard from '@/components/ProfesionalCard/ProfesionalCard'
-import { getUser } from '@/utils/indexedDataBase'
 import ContainerBlanco from '@/components/Containers/ContainerFondoBlanco'
 import Destacados from '@/components/Map/Destacados/Destacados'
 import Image from 'next/image'
 import Lupa from '@/assets/images/LUPA_NEGRA.svg'
-import { useWebSocket } from '@/app/WebSocketContext'
 import NotificacionChat from '@/components/NotificacionChat/NotificacionChat'
+import { getFilteredAndSortedProfessionalsByDistance } from '@/services/api/profesionales'
+import isAuth from '@/components/Auth/IsAuth'
+import { useWebSocket } from '@/app/WebSocketContext'
 import useStore from '@/store/store'
+import useGeolocation from '@/hooks/useGeolocation'
 
 const Map = () => {
   const { profesion, _id } = useParams()
-  const [location, setLocation] = useState(null)
-  const [error, setError] = useState(null)
+  const { location, error } = useGeolocation()
+
   const [userApp, setUserApp] = useState({})
   const [coord, setCoord] = useState(null)
   const [show, setShow] = useState(false)
@@ -32,90 +32,57 @@ const Map = () => {
   const [isShowPopup, setIsShowPopup] = useState(false)
   const [showMoreInfo, setShowMoreInfo] = useState(false)
   const [kilometrosDeRadio, setKilometrosDeRadio] = useState(15)
-  const { ws, messages, setUserId, setRole } = useWebSocket()
   const [notificationMessages, setNotificationMessages] = useState([])
 
-  //Zustand store
+  const { ws, messages, setUserId, setRole } = useWebSocket()
   const { currentUser } = useStore()
 
-  const setUser = async () => {
-    // IndexDB <--- BORRAR DESPUES
-    const storageUser = await getUser(_id)
-    if (!storageUser) {
-      setUserApp(storageUser?.user_data)
-      setUserId(storageUser?.user_data._id)
-      setRole(storageUser?.user_data.rol)
-    }
-
-    //Zustand
+  useEffect(() => {
     setUserApp(currentUser?.user_data)
     setUserId(currentUser?.user_data._id)
     setRole(currentUser?.user_data.rol)
-  }
+  }, [])
 
   useEffect(() => {
-    setUser()
     if (location) {
       setCoord([location.latitude, location.longitude])
       setLoading(true)
       getFilteredAndSortedProfessionalsByDistance(
         {
-          profesion: profesion,
+          profesion,
           latitud: location.latitude,
           longitud: location.longitude,
-          kilometrosDeRadio: kilometrosDeRadio,
+          kilometrosDeRadio,
         },
         setErrorMsg
       )
-        .then((res) => {
-          setProfessionalsNearby(res)
-          setLoading(false)
-        })
-        .catch((error) => {
-          setErrorMsg('Hubo un error al cargar los profesionales cercanos.')
-          setLoading(false)
-        })
-    } else {
-      const storageLocation = localStorage.getItem('userLocation')
-      if (storageLocation) {
-        setLocation(JSON.parse(storageLocation))
-      } else {
-        console.log('No se pudo obtener la ubicacion /mapaBuscador')
-        setError('No se pudo obtener la ubicacion')
-      }
+        .then(setProfessionalsNearby)
+        .finally(() => setLoading(false))
     }
   }, [location])
-  useEffect(() => {
-    if (userApp) {
-      if (messages.length > 0) {
-        setNotificationMessages(messages)
-      }
-      setTimeout(() => {
-        setNotificationMessages([])
-      }, 5000)
-    }
-  }, [messages])
+
   useEffect(() => {
     if (location) {
       getFilteredAndSortedProfessionalsByDistance(
         {
-          profesion: profesion,
+          profesion,
           latitud: location.latitude,
           longitud: location.longitude,
-          kilometrosDeRadio: kilometrosDeRadio,
+          kilometrosDeRadio,
         },
         setErrorMsg
       )
-        .then((res) => {
-          setProfessionalsNearby(res)
-          setLoading(false)
-        })
-        .catch((error) => {
-          setErrorMsg('Hubo un error al cargar los profesionales cercanos.')
-          setLoading(false)
-        })
+        .then(setProfessionalsNearby)
+        .finally(() => setLoading(false))
     }
   }, [kilometrosDeRadio])
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      setNotificationMessages(messages)
+      setTimeout(() => setNotificationMessages([]), 5000)
+    }
+  }, [messages])
 
   const kilometros = {
     18: 5,
@@ -142,71 +109,62 @@ const Map = () => {
     if (loading) {
       return (
         <ContainerBlanco>
-          <h3
-            style={{
-              alignContent: 'center',
-              margin: 'auto',
-              fontFamily: 'var(--font-roboto-bold)',
-              textAlign: 'center',
-            }}
-          >
+          <h3 className={styles.loadingTitle}>
             <SimpleLoader />
           </h3>
         </ContainerBlanco>
       )
-    } else {
-      return (
-        <div className={styles.containerMap}>
-          <MapComponent
-            coord={coord}
-            profesionales={professionalsNearby.profesionales_cercanos}
-            setIsShowPopup={setIsShowPopup}
-            setKilometrosDeRadio={setKilometrosDeRadio}
-          />
-          <>
-            {errorMsg && (
-              <div className={styles.errorMessage}>
-                <SimpleLoader />
-                <p className={styles.p}>
-                  No se encontro ningun {decodeURIComponent(profesion)}
-                  <p className={styles.e}>
-                    Buscando en un radio de {kilometros[kilometrosDeRadio]} Km
-                  </p>
-                </p>
-              </div>
-            )}
-            {error && (
-              <div className={styles.errorMessage}>
-                <p className={styles.p}>
-                  Para poder usar la aplicación debes activar la ubicación
-                  <p className={styles.e}>
-                    Buscando en un radio de {kilometros[kilometrosDeRadio]} Km
-                  </p>
-                </p>
-              </div>
-            )}
-          </>
-        </div>
-      )
     }
+
+    return (
+      <div className={styles.containerMap}>
+        <MapComponent
+          coord={coord}
+          profesionales={professionalsNearby.profesionales_cercanos}
+          setIsShowPopup={setIsShowPopup}
+          setKilometrosDeRadio={setKilometrosDeRadio}
+        />
+        <>
+          {errorMsg && (
+            <div className={styles.errorMessage}>
+              <SimpleLoader />
+              <p className={styles.p}>
+                No se encontró ningún {decodeURIComponent(profesion)}
+                <p className={styles.e}>
+                  Buscando en un radio de {kilometros[kilometrosDeRadio]} Km
+                </p>
+              </p>
+            </div>
+          )}
+          {error && (
+            <div className={styles.errorMessage}>
+              <p className={styles.p}>
+                Para poder usar la aplicación debes activar la ubicación
+                <p className={styles.e}>
+                  Buscando en un radio de {kilometros[kilometrosDeRadio]} Km
+                </p>
+              </p>
+            </div>
+          )}
+        </>
+      </div>
+    )
   }
 
   return (
     <div className={styles.containerMap}>
-      {notificationMessages.length > 0 ? (
+      {notificationMessages.length > 0 && (
         <NotificacionChat
           message={notificationMessages}
           setNotificationMessages={setNotificationMessages}
         />
-      ) : null}
+      )}
       {show && <HambMenu userApp={userApp} show={() => setShow(!show)} />}
       <div className={styles.menu}>
         <HambIcon
           userApp={userApp}
           messages={messages}
-          show={() => {
-            setShow(!show)
-          }}
+          show={() => setShow(!show)}
         />
       </div>
       {isShowPopup && (
