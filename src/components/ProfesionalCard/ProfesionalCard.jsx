@@ -42,6 +42,8 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
     return
   }
 
+  console.log(profesional)
+
   const contactarProfesional = async () => {
     localStorage.setItem(
       profesional._id,
@@ -161,11 +163,7 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
                 quality={50}
                 height={70}
                 onClick={() => {
-                  if (typeof item.foto === 'string') {
-                    modal(item.foto)
-                  } else {
-                    modal(item.foto.src)
-                  }
+                  modal(item.foto)
                 }}
                 alt='fotos de trabajos realizados'
               />
