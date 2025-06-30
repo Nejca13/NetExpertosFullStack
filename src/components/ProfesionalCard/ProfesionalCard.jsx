@@ -1,20 +1,28 @@
+'use client'
 import Image from 'next/image'
 import styles from './ProfesionalCard.module.css'
 import cross from '@/assets/images/cross-blanca.png'
-import plus from '@/assets/images/iconPlusBlanco.png'
 import ModalImg from './ModalImg/ModalImg'
 import { useRef, useState } from 'react'
 import estrellaGris from '@/assets/images/estrellaGris.svg'
 import estrellaAmarilla from '@/assets/images/estrellaAmarilla.svg'
 import CardInfoPersonal from '../CardInfoPersonal/CardInfoPersonal'
 import { useRouter } from 'next/navigation'
+import Calificacion from '../Calificacion/Calificacion'
+import IconInfo from '@/assets/icon/IconInfo'
+import Verify from '@/assets/icon/Verify'
+import Url from '@/assets/icon/url'
 
 const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
   const [showModalImg, setShowModalImg] = useState(false)
   const [showMoreInfo, setShowMoreInfo] = useState(false)
   const [img, setImg] = useState(null)
-  const router = useRouter()
+  const [favorite, setFavorite] = useState(profesional.favoritos)
   const audioRef = useRef(null)
+  const router = useRouter()
+
+  // Verifica si el profesional esta verificado por ahora hasta que tenga lo tenga el backend
+  const [verify, setVerify] = useState(true)
 
   const {
     _id,
@@ -30,21 +38,26 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
     nacimiento,
     numero,
     foto_perfil,
-    favoritos,
     horarios_atencion,
     recomendaciones,
   } = profesional
-  const [favorite, setFavorite] = useState(favoritos)
 
+  const updateScrollButtons = () => {
+    const el = trabajosRef.current
+    if (!el) return
+
+    const canLeft = el.scrollLeft > 0
+    const canRight = el.scrollLeft + el.clientWidth < el.scrollWidth
+
+    setCanScrollLeft(canLeft)
+    setCanScrollRight(canRight)
+  }
   const modal = (img) => {
     setImg(img)
     setShowModalImg(true)
-    return
   }
 
-  console.log(profesional)
-
-  const contactarProfesional = async () => {
+  const contactarProfesional = () => {
     localStorage.setItem(
       profesional._id,
       JSON.stringify({
@@ -54,10 +67,10 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
         foto_perfil: foto_perfil,
       })
     )
-
     router.push(`/chatroom/${profesional._id}`)
   }
-  return showMoreInfo === true ? (
+
+  return showMoreInfo ? (
     <CardInfoPersonal
       profesional={profesional}
       setShowMoreInfo={setShowMoreInfo}
@@ -70,121 +83,110 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
       )}
 
       <div className={styles.container}>
-        <button
-          className={styles.botonCerrar}
-          onClick={() => setIsShowPopup(false)}
-        >
-          <Image width={25} height={25} src={cross} alt='boton cerrar' />
-        </button>
-        <div className={styles.containerImage}>
-          <Image
-            className={styles.image}
-            src={foto_perfil}
-            width={150}
-            height={150}
-            alt='foto del profesional'
-          />
-        </div>
-        <div className={styles.containerInfo}>
-          <p className={styles.pNombre}>{nombre}</p>
-          <p className={styles.pProfesion}>{profesion_nombre}</p>
-          <span className={styles.spanExperiencia}>
-            Experiencia laboral - {experiencia_laboral_años} años
-          </span>
-        </div>
-        <ul className={styles.ulValoracion}>
-          <li className={styles.li}>
-            {calificacion}
+        {/* Botones fav y close */}
+        <div className={styles.closeAndFavButton}>
+          <button
+            className={styles.buttonAgregarFavoritos}
+            onClick={() => {
+              const pop = document.querySelector('.audio')
+              if (!favorite) pop.play()
+              setFavorite(!favorite)
+            }}
+          >
             <Image
-              src={estrellaAmarilla}
-              width={22}
-              height={22}
+              src={favorite ? estrellaAmarilla : estrellaGris}
+              width={25}
+              height={25}
               alt='icono estrella de valoracion'
             />
-          </li>
-          <li className={styles.li}>{recomendaciones} Reseñas</li>
-          <li className={styles.li}>
-            <button
-              className={styles.buttonAgregarFavoritos}
-              onClick={() => {
-                const pop = document.querySelector('.audio')
-                if (!favorite) {
-                  pop.play()
-                }
-                setFavorite(!favorite)
-              }}
-            >
-              {favorite ? (
-                <>
-                  <Image
-                    src={estrellaAmarilla}
-                    width={22}
-                    height={22}
-                    alt='icono estrella de valoracion'
-                  />
-                  Quitar de favoritos
-                </>
-              ) : (
-                <>
-                  <Image
-                    src={estrellaGris}
-                    width={22}
-                    height={22}
-                    alt='icono estrella de valoracion'
-                  />
-                  Agregar a favoritos
-                </>
-              )}
-            </button>
-          </li>
-        </ul>
-        <button
-          className={styles.buttonMasInfo}
-          onClick={() => setShowMoreInfo(true)}
-        >
-          <Image
-            src={plus}
-            width={23}
-            height={23}
-            className={styles.iconPlus}
-            alt='icono plus'
-          />
-
-          <p style={{ width: '100%' }}>Informacion detallada del profesional</p>
-        </button>
-        <p className={styles.pTrabajosRealizados}>¡Trabajos realizados!</p>{' '}
-        <ul className={styles.ulTrabajosRealizados}>
-          {fotos_trabajos?.map((item, index) => (
-            <li className={styles.li} key={index}>
-              <Image
-                className={styles.image}
-                src={item.foto}
-                width={70}
-                quality={50}
-                height={70}
-                onClick={() => {
-                  modal(item.foto)
-                }}
-                alt='fotos de trabajos realizados'
+          </button>
+          <button
+            className={styles.botonCerrar}
+            onClick={() => setIsShowPopup(false)}
+          >
+            <Image width={18} height={18} src={cross} alt='boton cerrar' />
+          </button>
+        </div>
+        {/* Encabezado del perfil */}
+        <div className={styles.header_profile}>
+          <div className={styles.containerImage}>
+            <Image
+              className={`${styles.image} ${verify ? styles.verify : ''}`}
+              src={foto_perfil}
+              width={130}
+              height={130}
+              alt='foto del profesional'
+            />
+            <i className={styles.icon}>
+              <Verify
+                width='30px'
+                height='30px'
+                color={verify ? '#319bff' : 'rgb(227, 227, 227)'}
               />
-              <p className={styles.p}>
-                <strong>Titulo:</strong> {item.titulo}
-              </p>
-              <p className={styles.p}>
-                <strong>Lugar:</strong> {item.lugar}
-              </p>
-              <p className={styles.p}>
-                <strong>Fecha:</strong> {item.fecha}
-              </p>
-            </li>
-          ))}
-        </ul>
-        <button
-          className={styles.buttonContactar}
-          onClick={contactarProfesional}
-        >
-          Contactar
-        </button>
+            </i>
+          </div>
+
+          <div className={styles.containerInfo}>
+            <p className={styles.pNombre}>{nombre}</p>
+            <p className={styles.pProfesion}>{profesion_nombre}</p>
+            <span className={styles.spanExperiencia}>
+              Experiencia laboral - {experiencia_laboral_años} años
+            </span>
+          </div>
+
+          <div className={styles.rating}>
+            <div className={styles.calificacion}>
+              <Calificacion rating={calificacion} />
+              <span style={{ color: 'black' }}>{calificacion}</span>
+              <span className={styles.reseñas}>
+                ({recomendaciones}) Reseñas
+                <Url color='black' width='18px' height='18px' />
+              </span>
+            </div>
+          </div>
+
+          <div className={styles.containerRubro}>
+            <button
+              className={styles.buttonMasInfo}
+              onClick={() => setShowMoreInfo(true)}
+            >
+              <IconInfo width='16px' height='16px' color='white' />
+              Mas informacion del profesional
+            </button>
+          </div>
+        </div>
+        <div className={styles.containerTrabajos}>
+          <div className={styles.container_title_button}>
+            <span>¡Trabajos realizados!</span>
+            <button>Ver más</button>
+          </div>
+
+          <ul className={styles.ulTrabajosRealizados}>
+            {fotos_trabajos?.slice(0, 4).map((item, index) => (
+              <li className={styles.li} key={index}>
+                <Image
+                  className={styles.image}
+                  src={item.foto}
+                  width={65}
+                  quality={50}
+                  height={65}
+                  onClick={() => {
+                    if (typeof item.foto === 'string') {
+                      modal(item.foto)
+                    } else {
+                      modal(item.foto.src)
+                    }
+                  }}
+                  alt='fotos de trabajos realizados'
+                />
+                <p className={styles.p}>{item.titulo}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className={styles.containerButton}>
+          <button onClick={contactarProfesional}>Contactar</button>
+        </div>{' '}
       </div>
     </section>
   )
