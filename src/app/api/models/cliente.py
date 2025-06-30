@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import Optional, List, Annotated
+from pydantic import BaseModel, field_validator
+from typing import Optional, List
 from datetime import datetime
 
 
@@ -15,8 +15,9 @@ class Cliente(BaseModel):
     password: str
     ubicacion: str
     fecha_registro: Optional[datetime] = None
-    # Campos relacionados con el OTP
-    otp_code: Optional[str] = None  # Código de verificación OTP
-    otp_generated_time: Optional[datetime] = (
-        None  # Fecha y hora en que se generó el OTP
-    )
+    otp_code: Optional[str] = None
+    otp_generated_time: Optional[datetime] = None
+
+    @field_validator("nombre", "apellido", "correo", "ubicacion")
+    def normalize_text(cls, v):
+        return v.strip().lower()
