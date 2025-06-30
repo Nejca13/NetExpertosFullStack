@@ -25,14 +25,14 @@ async def crear_cita(cita: Cita):
     cliente_id = ObjectId(cita.cliente_id)
     profesional_id = ObjectId(cita.profesional_id)
 
-    cliente = await CLIENTES_COLLECTION.find_one({"_id": cliente_id})
-    profesional = await PROFESIONALES_COLLECTION.find_one({"_id": profesional_id})
+    cliente = CLIENTES_COLLECTION.find_one({"_id": cliente_id})
+    profesional = PROFESIONALES_COLLECTION.find_one({"_id": profesional_id})
     if not cliente:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
     if not profesional:
         raise HTTPException(status_code=404, detail="Profesional no encontrado")
 
-    cita_existente = await CITAS_COLLECTION.find_one(
+    cita_existente = CITAS_COLLECTION.find_one(
         {
             "profesional_id": str(profesional_id),
             "fecha": cita.fecha.isoformat(),
@@ -52,7 +52,7 @@ async def crear_cita(cita: Cita):
         "hora": cita.hora.isoformat(),
         "calificacion": None,
     }
-    result = await CITAS_COLLECTION.insert_one(nueva_cita)
+    result = CITAS_COLLECTION.insert_one(nueva_cita)
     nueva_cita["_id"] = str(result.inserted_id)
 
     return nueva_cita
@@ -63,7 +63,7 @@ async def calificar_cita(calificacion: CitaCalificar):
     cliente_id = ObjectId(calificacion.cliente_id)
     profesional_id = ObjectId(calificacion.profesional_id)
 
-    cita = await CITAS_COLLECTION.find_one(
+    cita = CITAS_COLLECTION.find_one(
         {
             "cliente_id": str(cliente_id),
             "profesional_id": str(profesional_id),
@@ -74,7 +74,7 @@ async def calificar_cita(calificacion: CitaCalificar):
     if not cita:
         raise HTTPException(status_code=404, detail="Cita no encontrada")
 
-    await CITAS_COLLECTION.update_one(
+    CITAS_COLLECTION.update_one(
         {"_id": cita["_id"]}, {"$set": {"calificacion": calificacion.calificacion}}
     )
 
@@ -90,12 +90,12 @@ async def calificar_cita(calificacion: CitaCalificar):
         suma_calificaciones / total_calificaciones if total_calificaciones > 0 else 0
     )
 
-    await PROFESIONALES_COLLECTION.update_one(
+    PROFESIONALES_COLLECTION.update_one(
         {"_id": profesional_id},
         {"$set": {"calificacion_promedio": promedio_calificacion}},
     )
 
-    cita_actualizada = await CITAS_COLLECTION.find_one({"_id": cita["_id"]})
+    cita_actualizada = CITAS_COLLECTION.find_one({"_id": cita["_id"]})
     return Cita(**cita_actualizada)
 
 
@@ -104,7 +104,7 @@ async def cancelar_cita(cliente_id: str, profesional_id: str, fecha: str, hora: 
     cliente_id = ObjectId(cliente_id)
     profesional_id = ObjectId(profesional_id)
 
-    cita = await CITAS_COLLECTION.find_one(
+    cita = CITAS_COLLECTION.find_one(
         {
             "cliente_id": str(cliente_id),
             "profesional_id": str(profesional_id),
@@ -115,19 +115,19 @@ async def cancelar_cita(cliente_id: str, profesional_id: str, fecha: str, hora: 
     if not cita:
         raise HTTPException(status_code=404, detail="Cita no encontrada")
 
-    await CITAS_COLLECTION.delete_one({"_id": cita["_id"]})
+    CITAS_COLLECTION.delete_one({"_id": cita["_id"]})
 
     return {"message": "Cita cancelada exitosamente"}
 
 
 @router.get("/citas_profesional/{correo}/")
 async def obtener_citas_profesional(correo: str):
-    profesional = await PROFESIONALES_COLLECTION.find_one({"correo": correo})
+    profesional = PROFESIONALES_COLLECTION.find_one({"correo": correo})
     if not profesional:
         raise HTTPException(status_code=404, detail="Profesional no encontrado")
 
     profesional_id = str(profesional["_id"])
-    citas = await CITAS_COLLECTION.find({"profesional_id": profesional_id}).to_list(
+    citas = CITAS_COLLECTION.find({"profesional_id": profesional_id}).to_list(
         length=None
     )
 
@@ -139,12 +139,12 @@ async def obtener_citas_profesional(correo: str):
 
 @router.get("/citas_cliente/{correo}/")
 async def obtener_citas_cliente(correo: str):
-    cliente = await CLIENTES_COLLECTION.find_one({"correo": correo})
+    cliente = CLIENTES_COLLECTION.find_one({"correo": correo})
     if not cliente:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
 
     cliente_id = str(cliente["_id"])
-    citas = await CITAS_COLLECTION.find({"cliente_id": cliente_id}).to_list(length=None)
+    citas = CITAS_COLLECTION.find({"cliente_id": cliente_id}).to_list(length=None)
 
     if not citas:
         return {"message": "No se encontraron citas para este cliente"}
@@ -155,20 +155,16 @@ async def obtener_citas_cliente(correo: str):
 @router.patch("/modificar_cita/{cita_id}/")
 async def modificar_cita(cita_id: str, nueva_fecha: str = None, nueva_hora: str = None):
     # Verificar si la cita existe
-    cita = await CITAS_COLLECTION.find_one({"_id": cita_id})
+    cita = CITAS_COLLECTION.find_one({"_id": cita_id})
     if not cita:
         raise HTTPException(status_code=404, detail="Cita no encontrada")
 
     # Actualizar la fecha y/o hora si se proporcionan valores nuevos
     if nueva_fecha:
-        await CITAS_COLLECTION.update_one(
-            {"_id": cita_id}, {"$set": {"fecha": nueva_fecha}}
-        )
+        CITAS_COLLECTION.update_one({"_id": cita_id}, {"$set": {"fecha": nueva_fecha}})
     if nueva_hora:
-        await CITAS_COLLECTION.update_one(
-            {"_id": cita_id}, {"$set": {"hora": nueva_hora}}
-        )
+        CITAS_COLLECTION.update_one({"_id": cita_id}, {"$set": {"hora": nueva_hora}})
 
     # Obtener la cita actualizada
-    cita_actualizada = await CITAS_COLLECTION.find_one({"_id": cita_id})
+    cita_actualizada = CITAS_COLLECTION.find_one({"_id": cita_id})
     return cita_helper(cita_actualizada)
