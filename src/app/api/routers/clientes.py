@@ -401,7 +401,7 @@ async def eliminar_favoritos(cliente_id: str, profesionales: List[str]):
         )
 
 
-@router.get("/dashboard", response_model=dict)
+@router.get("/dashboard/", response_model=dict)
 async def get_clientes(
     page: int = 1,
     limit: int = 25,
