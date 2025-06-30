@@ -437,9 +437,9 @@ async def get_clientes(
 
     sort = [("fecha_registro", 1 if sort_type == "asc" else -1)]
 
-    total = await CLIENTES_COLLECTION.count_documents(filters)
+    total = CLIENTES_COLLECTION.count_documents(filters)
     cursor = CLIENTES_COLLECTION.find(filters).sort(sort).skip(skip).limit(limit)
-    clientes = await cursor.to_list(length=limit)
+    clientes = cursor.to_list(length=limit)
 
     for cliente in clientes:
         cliente.pop("password", None)

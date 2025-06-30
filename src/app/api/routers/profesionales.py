@@ -650,9 +650,9 @@ async def get_profesionales(
 
     sort = [("fecha_registro", 1 if sort_type == "asc" else -1)]
 
-    total = await PROFESIONALES_COLLECTION.count_documents(filters)
+    total = PROFESIONALES_COLLECTION.count_documents(filters)
     cursor = PROFESIONALES_COLLECTION.find(filters).sort(sort).skip(skip).limit(limit)
-    profesionales = await cursor.to_list(length=limit)
+    profesionales = cursor.to_list(length=limit)
 
     for prof in profesionales:
         prof.pop("password", None)
