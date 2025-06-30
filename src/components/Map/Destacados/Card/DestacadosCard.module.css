@@ -6,7 +6,7 @@
 }
 
 .destacadosLi .image {
-  border: 3px solid var(--color-amarillo);
+  border: 3px solid #fdd302;
   padding: 2px;
   border-radius: 100%;
   object-fit: cover;
@@ -19,7 +19,7 @@
   font-size: 11px;
 }
 .destacadosLi .pDescripcion {
-  color: var(--color-amarillo);
+  color: #c0a000;
   font-family: var(--font-helvetica-italic);
   font-size: 10px;
   text-wrap: nowrap;

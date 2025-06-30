@@ -126,6 +126,9 @@
 }
 
 .containerInfo .pProfesion {
+  width: 100%;
+  max-width: 300px;
+  text-wrap: nowrap;
   font-size: 14px;
   color: white;
   width: min-content;
@@ -250,12 +253,14 @@
 .containerTrabajos ul {
   list-style: none;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   width: 100%;
+  gap: 20px;
 }
 
 .containerTrabajos ul li {
+  height: 100%;
   max-width: 70px;
   display: flex;
   flex-direction: column;
