@@ -17,7 +17,11 @@ import { getFilteredAndSortedProfessionalsByDistance } from '@/services/api/prof
 import isAuth from '@/components/Auth/IsAuth'
 import { useWebSocket } from '@/app/WebSocketContext'
 import useStore from '@/store/store'
+<<<<<<< HEAD
 import useGeolocation from '@/hooks/useGeolocation'
+=======
+import Search from '@/assets/icon/Search'
+>>>>>>> 48c7191 (Update color variable for consistency, add Search icon to profile page, and implement Calificacion component for rating display)
 
 const Map = () => {
   const { profesion, _id } = useParams()
@@ -176,7 +180,8 @@ const Map = () => {
       {renderMapComponent()}
       <Destacados setIsShowPopup={setIsShowPopup} />
       <Link href={`/profile/${_id}`} className={styles.button}>
-        <Image src={Lupa} width={20} height={20} alt='icono lupa' /> Buscar
+        <Search stroke='3.5' width='18px' height='18px' color='black' />
+        Buscar
       </Link>
     </div>
   )
