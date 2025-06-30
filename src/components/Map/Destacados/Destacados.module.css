@@ -1,26 +1,36 @@
 .destacados {
   width: 100dvw;
   border-radius: 10px 10px 0 0;
-  background-color: var(--color-gris);
+  background: #ffffff;
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 1) 43%,
+    rgba(255, 255, 255, 0.75) 84%,
+    rgba(255, 255, 255, 0) 100%
+  );
   position: absolute;
   bottom: 0;
   left: 0;
   z-index: 800;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
 }
 .destacados .title {
   background-color: var(--color-amarillo);
   text-align: center;
-  font-family: var(--font-roboto-italic);
+  font-family: var(--font-roboto-bold);
   font-weight: bold;
-  font-size: 16px;
-  padding: 2px 0;
+  padding: 8px 0px;
+  font-size: 14px;
   align-content: center;
   color: var(--color-gris-medio);
-  border-radius: 10px;
-  width: 100%;
-  .span {
-    font-family: var(--font-roboto-italic);
-  }
+  border-radius: 30px;
+  color: black;
+  width: 90%;
+  box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.4),
+    /* luz arriba */ inset 0 -2px 5px rgba(0, 0, 0, 0.15);
 }
 .destacadosUl {
   position: relative;

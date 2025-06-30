@@ -6,13 +6,15 @@
 }
 
 .destacadosLi .image {
-  border-radius: 100%;
   border: 3px solid var(--color-amarillo);
+  padding: 2px;
+  border-radius: 100%;
   object-fit: cover;
   margin-top: 5px;
+  box-shadow: var(--box-shadow);
 }
 .destacadosLi .pName {
-  color: var(--color-blanco);
+  color: black;
   font-family: var(--font-roboto-bold);
   font-size: 11px;
 }
@@ -27,6 +29,6 @@
 }
 
 .destacadosLi .pDescripcion .spanCalificacion {
-  color: var(--color-blanco);
+  color: black;
   font-family: var(--font-roboto-bold);
 }
