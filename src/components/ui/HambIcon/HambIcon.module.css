@@ -1,5 +1,15 @@
 .container {
   position: relative;
+  margin: 10px;
+}
+.container button {
+  border: none;
+  background: var(--color-amarillo);
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  box-shadow: var(--box-shadow);
+  border-radius: 10px 0px 0 10px;
 }
 .notifications {
   position: absolute;

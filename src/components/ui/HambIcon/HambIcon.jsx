@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import styles from './HambIcon.module.css'
 import MAIL from '@/assets/images/ICONOS/ICO-MAIL.svg'
 import { useRouter } from 'next/navigation'
+import IconmMenu from '@/assets/icon/HamMenu'
 
 const HambIcon = ({ show, userApp, messages }) => {
   const [notifications, setNotifications] = useState(false)
@@ -38,14 +39,9 @@ const HambIcon = ({ show, userApp, messages }) => {
           />
         </span>
       )}
-      <Image
-        onClick={show}
-        style={{ cursor: 'pointer' }}
-        src={hamb}
-        width={50}
-        height={50}
-        alt='menu'
-      />
+      <button onClick={show} style={{ cursor: 'pointer' }}>
+        <IconmMenu color='black' />
+      </button>
     </div>
   )
 }
