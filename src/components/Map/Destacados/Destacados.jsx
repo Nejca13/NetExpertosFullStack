@@ -7,7 +7,7 @@ const Destacados = ({ setIsShowPopup }) => {
   return (
     <div className={styles.destacados}>
       <p className={styles.title}>
-        Expertos <span className={styles.span}>plus!</span>
+        Expertos <span className={styles.span}>destacados!</span>
       </p>
       <ul className={styles.destacadosUl}>
         <InfiniteLooper speed={60} direction='left'>

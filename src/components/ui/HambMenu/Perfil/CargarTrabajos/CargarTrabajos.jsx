@@ -48,7 +48,7 @@ const CargarTrabajos = () => {
   }, [currentUser])
 
   const agregarTrabajo = () => {
-    if (trabajos.length >= 6) return alert('Máximo 6 trabajos')
+    if (trabajos.length >= 6) return console.log('Máximo 6 trabajos')
     setTrabajos([...trabajos, {}])
   }
 
@@ -108,15 +108,15 @@ const CargarTrabajos = () => {
       })
       const data = await res.json()
       if (res.ok) {
-        alert('Trabajos actualizados correctamente')
+        console.log('Trabajos actualizados correctamente')
         console.log('Trabajos actualizados:', data)
         reloadUser()
       } else {
-        alert(data.detail || 'Error al actualizar')
+        console.log(data.detail || 'Error al actualizar')
       }
     } catch (err) {
       console.error(err)
-      alert('Error en la solicitud')
+      console.log('Error en la solicitud')
     }
   }
 

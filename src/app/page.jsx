@@ -119,7 +119,7 @@ export default function Home() {
           setCurrentUser(user)
           window.location.href = '/profile/' + data.user._id
         } else {
-          alert('Hubo un error al iniciar sesión con Google.')
+          console.log('Hubo un error al iniciar sesión con Google.')
 
           console.error('Error during Google login:', data?.error)
           console.log(data)

@@ -42,7 +42,6 @@ function useGeolocation() {
         (error) => {
           console.error('Error al obtener ubicación:', error)
           setError(error.message)
-          alert('No se pudo obtener tu ubicación actual.')
         },
         {
           enableHighAccuracy: true,

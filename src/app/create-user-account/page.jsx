@@ -94,7 +94,7 @@ const Page = () => {
           if (data.password === data.password2) {
             handleSubmit(e)
           } else {
-            alert('Las contraseñas deben ser identicas')
+            console.log('Las contraseñas deben ser identicas')
           }
         }}
         method={'POST'}

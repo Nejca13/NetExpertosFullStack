@@ -29,7 +29,7 @@ const Page = () => {
           text={'RECUPERAR CONTRASEÑA'}
           action={(e) => {
             e.preventDefault()
-            alert('Email con los pasos de recuperacion enviado!')
+            console.log('Email con los pasos de recuperacion enviado!')
           }}
         />
       </FormContainer>

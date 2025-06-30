@@ -16,7 +16,7 @@ const SeccionPerfil = ({ onNext, onBack, activeUser }) => {
     if (storedLocation) {
       setLocation(storedLocation)
     } else {
-      alert(
+      console.log(
         'Obtener la ubicación actual es necesario para el correcto funcionamiento de la aplicación!'
       )
     }
@@ -30,7 +30,7 @@ const SeccionPerfil = ({ onNext, onBack, activeUser }) => {
         if (data.password === data.password2) {
           onNext(e)
         } else {
-          alert('Las contraseñas deben ser identicas')
+          console.log('Las contraseñas deben ser identicas')
         }
       }}
     >

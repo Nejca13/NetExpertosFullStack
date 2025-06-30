@@ -32,7 +32,7 @@ const SeccionTrabajos = ({ onNext, onBack }) => {
             if (arr.length < 6) {
               setArr([...arr, 1])
             } else {
-              alert('Alcanzaste el maximo de imagenes para mostrar!')
+              console.log('Alcanzaste el maximo de imagenes para mostrar!')
             }
           }}
         >
