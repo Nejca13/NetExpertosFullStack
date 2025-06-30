@@ -155,7 +155,7 @@ export const converToProfesional = async (
   }
 }
 
-export const getClientes = async ({
+export const getClientesDashboard = async ({
   page = 1,
   limit = 25,
   nombre = null,
@@ -182,7 +182,7 @@ export const getClientes = async ({
   if (to_date) searchParams.append('to_date', to_date)
   if (sort_type) searchParams.append('sort_type', sort_type)
 
-  const url = `${API_URL}clientes/dashboard?${searchParams.toString()}`
+  const url = `${API_URL}/dashboard?${searchParams.toString()}`
 
   try {
     const response = await fetch(url, { method: 'GET' })

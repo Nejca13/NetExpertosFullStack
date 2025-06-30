@@ -2,11 +2,12 @@
 
 import AvatarComponent from '@/components/ChakraUi/AvatarComponent/AvatarComponent'
 import TableComponent from '@/components/ChakraUi/TableComponent/TableComponent'
-import useFetch from '@/hooks/useFetch'
+import { useClientesDashboard } from '@/hooks/useClientDashboard'
 import { Stack } from '@chakra-ui/react'
 
 const Clientes = () => {
-  const { data, loading, error } = useFetch('/api/clientes')
+  const { data, loading, error } = useClientesDashboard()
+  console.log(data)
 
   const filteredData = data?.map((user) => ({
     Clientes: (
