@@ -4,6 +4,10 @@ from datetime import datetime
 from ..models.foto import Foto
 
 
+def to_camel_case(text: str) -> str:
+    return " ".join(word.capitalize() for word in text.strip().lower().split())
+
+
 class Profesional(BaseModel):
     rol: str = "Profesional"
     plus: Optional[bool] = False
@@ -27,8 +31,11 @@ class Profesional(BaseModel):
     otp_code: Optional[str] = None
     otp_generated_time: Optional[datetime] = None
 
-    @field_validator(
-        "nombre", "apellido", "correo", "ubicacion", "rubro_nombre", "profesion_nombre"
-    )
+    # Camel Case
+    @field_validator("nombre", "apellido")
+    def camel_case_fields(cls, v):
+        return to_camel_case(v) if isinstance(v, str) else v
+
+    @field_validator("correo", "ubicacion", "rubro_nombre", "profesion_nombre")
     def normalize_text(cls, v):
         return v.strip().lower() if isinstance(v, str) else v
