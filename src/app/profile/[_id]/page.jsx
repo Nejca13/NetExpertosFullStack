@@ -18,6 +18,7 @@ import ProfesionalCard from '@/components/ProfesionalCard/ProfesionalCard'
 import NotificacionChat from '@/components/NotificacionChat/NotificacionChat'
 import useStore from '@/store/store'
 import { useWebSocket } from '@/app/WebSocketContext'
+import Search from '@/assets/icon/Search'
 
 const Page = () => {
   const { ws, messages, setUserId, setRole } = useWebSocket()
@@ -93,13 +94,7 @@ const Page = () => {
       </div>
       <div className={styles.divBuscador}>
         <div className={styles.logoLupa}>
-          <Image
-            className={styles.lupa}
-            src={lupa}
-            width={20}
-            height={20}
-            alt='Lupa Buscador'
-          />
+          <Search width='20px' height='20px' />
         </div>
         <input
           className={styles.searchInput}
