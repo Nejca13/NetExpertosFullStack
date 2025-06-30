@@ -53,6 +53,10 @@ export default function Home() {
   useEffect(() => {
     console.log(location)
     console.log(error)
+
+    if (location) {
+      localStorage.setItem('userLocation', JSON.stringify(location))
+    }
   }, [location])
 
   const handleSubmit = async (e) => {
