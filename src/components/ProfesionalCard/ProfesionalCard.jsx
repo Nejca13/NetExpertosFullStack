@@ -42,16 +42,6 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
     recomendaciones,
   } = profesional
 
-  const updateScrollButtons = () => {
-    const el = trabajosRef.current
-    if (!el) return
-
-    const canLeft = el.scrollLeft > 0
-    const canRight = el.scrollLeft + el.clientWidth < el.scrollWidth
-
-    setCanScrollLeft(canLeft)
-    setCanScrollRight(canRight)
-  }
   const modal = (img) => {
     setImg(img)
     setShowModalImg(true)
@@ -170,13 +160,7 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
                   width={65}
                   quality={50}
                   height={65}
-                  onClick={() => {
-                    if (typeof item.foto === 'string') {
-                      modal(item.foto)
-                    } else {
-                      modal(item.foto.src)
-                    }
-                  }}
+                  onClick={() => modal(item.foto)}
                   alt='fotos de trabajos realizados'
                 />
                 <p className={styles.p}>{item.titulo}</p>
