@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation'
 import Calificacion from '../Calificacion/Calificacion'
 import IconInfo from '@/assets/icon/IconInfo'
 import Verify from '@/assets/icon/Verify'
-import Url from '@/assets/icon/url'
+import Url from '@/assets/icon/Url'
 
 const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
   const [showModalImg, setShowModalImg] = useState(false)
