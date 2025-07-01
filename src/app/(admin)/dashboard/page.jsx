@@ -62,7 +62,7 @@ const DashboardPage = () => {
   if (!hasHydrated) return null
 
   return (
-    <Stack padding='15px 20px 20px 20px'>
+    <Stack padding='15px 20px 20px 20px' minH='100vh'>
       <HStack justify='space-between' align='center' fontWeight='600'>
         NetExpertos Dashboard
         <Flex>
