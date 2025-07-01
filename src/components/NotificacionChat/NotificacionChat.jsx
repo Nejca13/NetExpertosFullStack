@@ -1,10 +1,10 @@
 'use client'
+import React, { useEffect, useRef } from 'react'
 import Image from 'next/image'
-import styles from './NotificacionChat.module.css'
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef } from 'react'
 import { useWebSocket } from '@/app/WebSocketContext'
 import useStore from '@/store/store'
+import styles from './NotificacionChat.module.css'
 
 const NotificacionChat = ({ setNotificationMessages }) => {
   const { currentUser } = useStore()
@@ -13,35 +13,70 @@ const NotificacionChat = ({ setNotificationMessages }) => {
   const { messages } = useWebSocket()
   const data = messages[messages.length - 1]
 
+  // ID de la conversación y estado "leído"
+  const convoId = data?.conversation_id
+  const readMessages = JSON.parse(localStorage.getItem('chat_leidos') || '{}')
+  const isLeido = convoId ? Boolean(readMessages[convoId]?.leido) : false
+
+  // Mensaje propio?
   const senderId = data?.message?.sender_id || data?.sender_id
   const isOwnMessage = senderId === currentUser?.user_data?._id
 
-  useEffect(() => {
-    if (!data || isOwnMessage) return
+  // Evito render si no hay data, si es propio o ya está leído
+  if (!data || !data.message || isOwnMessage || isLeido) {
+    console.log('[Noti] No muestro noti porque:', {
+      noData: !data,
+      noMsg: !data?.message,
+      own: isOwnMessage,
+      leido: isLeido,
+    })
+    return null
+  }
 
-    const audio = audioRef.current
-    const playAudio = () => {
-      setTimeout(() => {
-        audio?.play().catch((e) => console.error('Error playing audio', e))
-      }, 400)
+  // Efecto que marca como leído y reproduce sonido
+  useEffect(() => {
+    console.log('[Noti] useEffect disparado', { convoId, isOwnMessage })
+
+    if (!convoId || isOwnMessage) return
+
+    const stored = JSON.parse(localStorage.getItem('chat_leidos') || '{}')
+    if (stored[convoId]?.leido) {
+      console.log('[Noti] Ya marcado como leído, salgo.')
+      return
     }
 
-    playAudio()
+    stored[convoId] = {
+      lastMessageTimestamp: data.timestamp,
+      leido: true,
+    }
+    localStorage.setItem('chat_leidos', JSON.stringify(stored))
+    console.log('[Noti] Marked as read:', stored)
+
+    const audio = audioRef.current
+    console.log('[Noti] Reproduciendo audio...')
+    setTimeout(() => {
+      audio
+        ?.play()
+        .then(() => console.log('[Noti] Audio OK'))
+        .catch((e) => console.error('[Noti] Error audio', e))
+    }, 400)
 
     return () => {
       if (audio) {
         audio.pause()
         audio.currentTime = 0
+        console.log('[Noti] Audio reset')
       }
     }
-  }, [data, isOwnMessage])
+  }, [convoId, isOwnMessage, data.timestamp])
 
-  if (!data || !data.message || isOwnMessage) return null
-
+  // Render de la notificación
   return (
     <div
       className={styles.container}
       onClick={() => {
+        console.log('[Noti] Click en noti, abriendo chat', { convoId, data })
+        // Guardar perfil del otro
         localStorage.setItem(
           data.sender_id,
           JSON.stringify({
@@ -51,8 +86,12 @@ const NotificacionChat = ({ setNotificationMessages }) => {
             foto_perfil: data.image,
           })
         )
-
-        console.log(data)
+        // Limpiar marca de leído
+        const lm = JSON.parse(localStorage.getItem('chat_leidos') || '{}')
+        console.log('[Noti] Antes delete:', lm)
+        delete lm[convoId]
+        localStorage.setItem('chat_leidos', JSON.stringify(lm))
+        console.log('[Noti] Después delete:', lm)
 
         setNotificationMessages([])
         setTimeout(() => {
@@ -60,13 +99,13 @@ const NotificacionChat = ({ setNotificationMessages }) => {
         }, 200)
       }}
     >
-      <audio src='/sounds/bubble.mp3' id='pop' ref={audioRef}></audio>
+      <audio src='/sounds/bubble.mp3' ref={audioRef} />
       <Image
         className={styles.imagen}
         src={data.image}
         width={30}
         height={30}
-        alt='imagen de perfil'
+        alt='Perfil'
       />
       <p className={styles.mensaje}>{data.message}</p>
     </div>
