@@ -4,8 +4,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100vh;
-  width: 100vw;
+  height: 100dvh;
+  width: 100dvw;
   background-image: url('../.../../../../assets/images/FondoAmarillo.jpg');
 }
 
@@ -47,7 +47,6 @@
 }
 
 .chats {
-  flex: 1;
   height: 100dvh;
   width: 100dvw;
   display: flex;
@@ -56,7 +55,6 @@
   scrollbar-width: none;
   gap: 10px;
   padding: 20px 5px;
-  padding-bottom: 120px;
 }
 
 .mensajeEntrante {
@@ -89,18 +87,18 @@
 }
 
 .containerInput {
-  position: fixed;
-  bottom: env(safe-area-inset-bottom, 0); /* notch/teclado iOS/Android */
-  left: 50%;
-  transform: translateX(-50%);
   width: 90%;
+  position: relative;
+  min-height: fit-content;
+  align-self: center;
   display: flex;
   align-items: center;
   gap: 20px;
-  padding: 10px;
-  background: white;
-  border-radius: 26px 26px 0 0;
-  z-index: 100;
+  justify-content: center;
+  border-radius: 26px;
+  background-color: white;
+  margin-bottom: 10px;
+  padding: 0 10px;
 }
 
 .input {
