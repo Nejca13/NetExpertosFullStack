@@ -1,12 +1,26 @@
-import { Table } from '@chakra-ui/react'
+import { Center, Spinner, Table, Text } from '@chakra-ui/react'
 
-const TableComponent = ({ rows = [] }) => {
-  if (!rows.length) return <p>No hay datos</p>
+const TableComponent = ({ rows = [], loading }) => {
+  //Muestra el spinner primero
+  if (loading) {
+    return (
+      <Center flexGrow='1' borderWidth='1px' rounded='md'>
+        <Spinner size='xl' />
+      </Center>
+    )
+  }
+
+  if (!rows.length)
+    return (
+      <Center flexGrow='1' borderWidth='1px' rounded='md'>
+        <Text>No existen datos para mostrar</Text>
+      </Center>
+    )
 
   const keys = Object.keys(rows[0])
 
   return (
-    <Table.ScrollArea borderWidth='1px' rounded='md' height='80vh'>
+    <Table.ScrollArea borderWidth='1px' rounded='md' flexGrow='1'>
       <Table.Root size='md' stickyHeader>
         <Table.Header>
           <Table.Row bg='bg.subtle'>
