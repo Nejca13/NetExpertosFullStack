@@ -34,9 +34,11 @@ const Chat = () => {
     }
 
     const lastMessage = messages[messages.length - 1]
+    const convo_id = lastMessage?.conversation_id
     if (lastMessage) {
       const chatLeidos = JSON.parse(localStorage.getItem('chat_leidos') || '{}')
-      chatLeidos[_id] = {
+      // key = conversation id (_id de useParams, es el participante/prof
+      chatLeidos[convo_id] = {
         lastMessageTimestamp: lastMessage.timestamp,
         leido: true,
       }
