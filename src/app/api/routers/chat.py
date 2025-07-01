@@ -45,6 +45,12 @@ async def process_message(sender_id: str, role: str, data: dict):
     )
 
     if not conversation:
+        reversed_participants = sorted([receiver_id, sender_id])
+        conversation = CONVERSATIONS_COLLECTION.find_one(
+            {"participants": {"$eq": reversed_participants}}
+        )
+
+    if not conversation:
         # 3) Si no existe, creamos nueva
         convo_data = {
             "participants": participants,
