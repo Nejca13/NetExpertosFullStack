@@ -73,7 +73,7 @@ const Chat = () => {
     try {
       const response = await getChats(_id, currentUser.user_data._id)
       const nuevosMensajes = response?.mensajes
-      setMessages((prev) => [...prev, ...nuevosMensajes])
+      setMessages(nuevosMensajes)
       scrollToBottom()
     } catch (error) {
       console.log(error)
