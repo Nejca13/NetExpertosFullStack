@@ -158,9 +158,7 @@ export const converToProfesional = async (
 export const getClientesDashboard = async ({
   page = 1,
   limit = 25,
-  nombre = null,
-  apellido = null,
-  correo = null,
+  query = null,
   ubicacion = null,
   estado = null,
   plus = null,
@@ -172,9 +170,7 @@ export const getClientesDashboard = async ({
 
   if (page) searchParams.append('page', page.toString())
   if (limit) searchParams.append('limit', limit.toString())
-  if (nombre) searchParams.append('nombre', nombre)
-  if (apellido) searchParams.append('apellido', apellido)
-  if (correo) searchParams.append('correo', correo)
+  if (query) searchParams.append('query', query)
   if (ubicacion) searchParams.append('ubicacion', ubicacion)
   if (estado) searchParams.append('estado', estado)
   if (plus) searchParams.append('plus', plus)
