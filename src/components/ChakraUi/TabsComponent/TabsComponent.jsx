@@ -1,4 +1,4 @@
-import { Tabs, HStack, Icon, Text } from '@chakra-ui/react'
+import { Tabs, HStack, Icon, Text, Flex } from '@chakra-ui/react'
 
 const TabsComponent = ({ tabs, value, onValueChange }) => {
   return (
@@ -6,6 +6,9 @@ const TabsComponent = ({ tabs, value, onValueChange }) => {
       variant='line'
       value={value}
       onValueChange={(e) => onValueChange(e.value)}
+      flexGrow='1'
+      display='flex'
+      flexDir='column'
     >
       <Tabs.List display={{ base: 'none', md: 'flex' }}>
         {tabs.map(({ key, label, icon }) => (
@@ -28,7 +31,7 @@ const TabsComponent = ({ tabs, value, onValueChange }) => {
       </Tabs.List>
 
       {tabs.map(({ key, component }) => (
-        <Tabs.Content key={key} value={key}>
+        <Tabs.Content key={key} value={key} display='flex' flexGrow='1'>
           {component}
         </Tabs.Content>
       ))}
