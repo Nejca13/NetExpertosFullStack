@@ -2,14 +2,17 @@
 import { getClientesDashboard } from '@/services/api/clientes'
 import { useEffect, useState, useCallback } from 'react'
 
-export const useClientesDashboard = (initialFilters = {}) => {
-  const [filters, setFilters] = useState({
+export const useClientesDashboard = () => {
+  const defaultFilters = {
     page: 1,
     limit: 25,
     sort_type: 'desc',
-    ...initialFilters,
-  })
+    query: '',
+    from_date: null,
+    to_date: null,
+  }
 
+  const [filters, setFilters] = useState(defaultFilters)
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -40,12 +43,17 @@ export const useClientesDashboard = (initialFilters = {}) => {
     }))
   }
 
+  const resetFilters = () => {
+    setFilters(defaultFilters)
+  }
+
   return {
     data,
     loading,
     error,
     filters,
     updateFilters,
+    resetFilters,
     refetch: fetchData,
   }
 }
