@@ -82,7 +82,7 @@ const SeccionPerfil = ({ onNext, onBack, activeUser }) => {
         placeholder={'correo@empresa.com'}
         id={'correo'}
         name={'correo'}
-        value={activeUser.user_data.correo}
+        value={activeUser?.user_data.correo}
         errorMessage={'Debe ingresar un correo valido.'}
       />
       <TextArea
