@@ -46,31 +46,45 @@ async def register_token(data: FcmTokenIn):
 
 @router.post("/send-notification/")
 async def send_notification(data: NotificationIn):
+    # Debug: mostrar datos recibidos
+    print(f"[DEBUG] send_notification called with data: {data.dict(by_alias=True)}")
+
     # Obtener tokens
     cursor = FMC_TOKENS_COLLECTION.find({}, {"_id": 0, "token": 1})
-    tokens = cursor.to_list(length=None)
+    tokens = await cursor.to_list(length=None)
+    print(f"[DEBUG] Tokens encontrados en la base de datos: {tokens}")
     if not tokens:
+        print("[DEBUG] No hay tokens registrados, abortando")
         raise HTTPException(status_code=400, detail="No hay tokens registrados")
 
     # Guardar notificación
-    NOTIFICACIONES_COLLECTION.insert_one(data.dict(by_alias=True))
+    result_insert = NOTIFICACIONES_COLLECTION.insert_one(data.dict(by_alias=True))
+    print(f"[DEBUG] Notificación insertada con ID: {result_insert.inserted_id}")
 
     success = 0
     failure = 0
+    # Iterar sobre tokens y enviar mensajes
     for entry in tokens:
         token = entry.get("token")
+        print(f"[DEBUG] Enviando notificación a token: {token}")
         msg = messaging.Message(
             notification=messaging.Notification(title=data.title, body=data.body),
             token=token,
         )
         try:
-            messaging.send(msg)
+            response = messaging.send(msg)
+            print(f"[DEBUG] Mensaje enviado correctamente, response: {response}")
             success += 1
         except Exception as e:
-            print(f"Error enviando a {token}: {e}")
-            FMC_TOKENS_COLLECTION.delete_one({"token": token})
+            print(f"[ERROR] Error enviando a {token}: {e}")
+            delete_result = FMC_TOKENS_COLLECTION.delete_one({"token": token})
+            print(
+                f"[DEBUG] Token eliminado: {delete_result.deleted_count} documento(s)"
+            )
             failure += 1
 
+    summary = {"sent": success, "failed": failure}
+    print(f"[DEBUG] Resumen: {summary}")
     return {"message": f"Enviadas: {success}, fallidas: {failure}"}
 
 
