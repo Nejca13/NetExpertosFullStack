@@ -21,3 +21,10 @@ PROFESIONALES_COLLECTION = db.profesionales
 TEMP_CLIENTES_COLLECTION = db.temp_clientes
 TEMP_PROFESIONALES_COLLECTION = db.temp_profesionales
 DENUNCIAS_COLLECTION = db.denuncias
+
+# FCM
+FMC_TOKENS_COLLECTION = db.fcm_tokens
+FMC_TOKENS_COLLECTION.create_index("token", unique=True)
+
+# Notificaciones
+NOTIFICACIONES_COLLECTION = db.notificaciones
