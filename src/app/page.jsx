@@ -116,6 +116,9 @@ export default function Home() {
             token: data.token,
             user_data: data.user,
           }
+          if (window.AndroidInterface) {
+            window.AndroidInterface.enviarToken(user?.id)
+          }
           setCurrentUser(user)
           window.location.href = '/profile/' + data.user._id
         } else {

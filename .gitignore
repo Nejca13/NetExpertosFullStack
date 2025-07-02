@@ -4,3 +4,5 @@ node_modules
 *__pycache__
 /src/app/api/venv
 /media
+
+src/app/api/keys/*.json
