@@ -205,6 +205,7 @@
 
 .container_title_button {
   width: 100%;
+  min-height: 42px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -253,7 +254,6 @@
 .containerTrabajos ul {
   list-style: none;
   display: flex;
-  justify-content: flex-start;
   align-items: center;
   width: 100%;
   gap: 20px;

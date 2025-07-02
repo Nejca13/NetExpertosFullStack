@@ -12,6 +12,8 @@ import Calificacion from '../Calificacion/Calificacion'
 import IconInfo from '@/assets/icon/IconInfo'
 import Verify from '@/assets/icon/Verify'
 import Url from '@/assets/icon/Url'
+import Modal from '../Modal/Modal'
+import ModalTrabajos from './ModalTrabajos/ModalTrabajos'
 
 const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
   const [showModalImg, setShowModalImg] = useState(false)
@@ -23,6 +25,9 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
 
   // Verifica si el profesional esta verificado por ahora hasta que tenga lo tenga el backend
   const [verify, setVerify] = useState(true)
+
+  //estado para abrir el modal
+  const [showModalTrabajos, setShowModalTrabajos] = useState(false)
 
   const {
     _id,
@@ -148,10 +153,28 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
         <div className={styles.containerTrabajos}>
           <div className={styles.container_title_button}>
             <span>¡Trabajos realizados!</span>
-            <button>Ver más</button>
+            {fotos_trabajos.length > 4 && (
+              <button onClick={() => setShowModalTrabajos(true)}>
+                Ver más
+              </button>
+            )}
+
+            <Modal
+              isModalOpen={showModalTrabajos}
+              onClose={() => setShowModalTrabajos(false)}
+            >
+              <ModalTrabajos fotos_trabajos={fotos_trabajos} />
+            </Modal>
           </div>
 
-          <ul className={styles.ulTrabajosRealizados}>
+          <ul
+            className={styles.ulTrabajosRealizados}
+            style={
+              fotos_trabajos.length > 3
+                ? { justifyContent: 'center' }
+                : { justifyContent: 'flex-start' }
+            }
+          >
             {fotos_trabajos?.slice(0, 4).map((item, index) => (
               <li className={styles.li} key={index}>
                 <Image
