@@ -1,14 +1,39 @@
-.container {
-  position: absolute;
-  z-index: 3000;
-  width: 100dvw;
-  height: 100dvh;
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(5px);
+  z-index: 9998;
 }
 
-.image {
-  border: 5px solid var(--color-amarillo);
+.modal {
+  width: 100%;
+  position: relative;
+}
+
+.modal img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: var(--color-danger);
+  width: 30px;
+  height: 30px;
+  z-index: 20;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
