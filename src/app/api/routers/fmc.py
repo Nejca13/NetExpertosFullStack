@@ -51,7 +51,7 @@ async def send_notification(data: NotificationIn):
 
     # Obtener tokens
     cursor = FMC_TOKENS_COLLECTION.find({}, {"_id": 0, "token": 1})
-    tokens = await cursor.to_list(length=None)
+    tokens = cursor.to_list(length=None)
     print(f"[DEBUG] Tokens encontrados en la base de datos: {tokens}")
     if not tokens:
         print("[DEBUG] No hay tokens registrados, abortando")
