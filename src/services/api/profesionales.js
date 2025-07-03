@@ -158,3 +158,71 @@ export const getProfessionalById = async (id) => {
     throw error
   }
 }
+
+export const getProfesionalesDashboard = async ({
+  page = 1,
+  limit = 25,
+  sort_type = 'desc',
+  query = null,
+  numero = null,
+  rubro_nombre = null,
+  profesion_nombre = null,
+  ubicacion = null,
+  plus = null,
+  min_calificacion = null,
+  max_calificacion = null,
+  min_recomendaciones = null,
+  max_recomendaciones = null,
+  from_date = null,
+  to_date = null,
+}) => {
+  const searchParams = new URLSearchParams()
+
+  if (page) searchParams.append('page', page.toString())
+  if (limit) searchParams.append('limit', limit.toString())
+  if (sort_type) searchParams.append('sort_type', sort_type)
+  if (query) searchParams.append('query', query)
+  if (numero) searchParams.append('numero', numero)
+  if (rubro_nombre) searchParams.append('rubro_nombre', rubro_nombre)
+  if (profesion_nombre)
+    searchParams.append('profesion_nombre', profesion_nombre)
+  if (ubicacion) searchParams.append('ubicacion', ubicacion)
+  if (plus) searchParams.append('plus', plus)
+  if (min_calificacion)
+    searchParams.append('min_calificacion', min_calificacion)
+  if (max_calificacion)
+    searchParams.append('max_calificacion', max_calificacion)
+  if (min_recomendaciones)
+    searchParams.append('min_recomendaciones', min_recomendaciones)
+  if (max_recomendaciones)
+    searchParams.append('max_recomendaciones', max_recomendaciones)
+  if (from_date) searchParams.append('from_date', from_date)
+  if (to_date) searchParams.append('to_date', to_date)
+
+  const url = `${API_URL}/dashboard?${searchParams.toString()}`
+
+  try {
+    const response = await fetch(url, { method: 'GET' })
+
+    if (!response.ok) {
+      const error = await response.json()
+      console.error('Error al obtener los profesionales:', error)
+      return {
+        success: false,
+        error: error.detail || 'Error desconocido',
+      }
+    }
+
+    const data = await response.json()
+    return {
+      success: true,
+      data,
+    }
+  } catch (error) {
+    console.error('Error de red:', error)
+    return {
+      success: false,
+      error,
+    }
+  }
+}
