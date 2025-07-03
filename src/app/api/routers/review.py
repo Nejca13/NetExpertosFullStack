@@ -1,13 +1,11 @@
 # app/rutas/resenas.py
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query
 from pymongo import ASCENDING, DESCENDING
 from app.api.core import REVIEWS_COLLECTION
 from bson import ObjectId
 from datetime import datetime
-from typing import List
 
 from app.api.models.review import CrearResena, ResenaEnBD, RespuestaProfesional
-from app.api.security.auth import get_current_user
 
 router = APIRouter(prefix="/reviews", tags=["Reseñas"])
 
