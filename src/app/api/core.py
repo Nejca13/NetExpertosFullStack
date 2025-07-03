@@ -21,6 +21,7 @@ PROFESIONALES_COLLECTION = db.profesionales
 TEMP_CLIENTES_COLLECTION = db.temp_clientes
 TEMP_PROFESIONALES_COLLECTION = db.temp_profesionales
 DENUNCIAS_COLLECTION = db.denuncias
+REVIEWS_COLLECTION = db.reseñas
 
 # FCM
 FMC_TOKENS_COLLECTION = db.fcm_tokens
