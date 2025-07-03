@@ -1,34 +1,70 @@
 # app/rutas/resenas.py
 from fastapi import APIRouter, HTTPException, Query
 from pymongo import ASCENDING, DESCENDING
-from app.api.core import REVIEWS_COLLECTION
+from app.api.core import (
+    REVIEWS_COLLECTION,
+    PROFESIONALES_COLLECTION,
+    CLIENTES_COLLECTION,
+)
 from bson import ObjectId
 from datetime import datetime
+from fastapi import Query
+from fastapi.responses import JSONResponse
+from pymongo import DESCENDING, ASCENDING
+import math
 
 from app.api.models.review import CrearResena, ResenaEnBD, RespuestaProfesional
 
 router = APIRouter(prefix="/reviews", tags=["Reseñas"])
 
 
-@router.post("/", response_model=ResenaEnBD)
-async def crear_resena(resena: CrearResena, user_id: str):
+@router.post("/")
+async def crear_resena(resena: CrearResena, client_id: str):
     ya_existe = REVIEWS_COLLECTION.find_one(
-        {"id_usuario": user_id, "id_profesional": resena.id_profesional}
+        {"id_cliente": client_id, "id_profesional": resena.id_profesional}
     )
     if ya_existe:
         raise HTTPException(
             status_code=400, detail="Ya enviaste una reseña a este profesional."
         )
 
-    nueva_resena = ResenaEnBD(**resena.dict(), fecha_creacion=datetime.utcnow())
-    REVIEWS_COLLECTION.insert_one(nueva_resena.dict())
-    return nueva_resena
+    profesional = PROFESIONALES_COLLECTION.find_one(
+        {"_id": ObjectId(resena.id_profesional)}
+    )
+    if not profesional:
+        raise HTTPException(status_code=404, detail="Profesional no encontrado")
 
+    cliente = CLIENTES_COLLECTION.find_one({"_id": ObjectId(resena.id_cliente)})
+    if not cliente:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
 
-from fastapi import Query
-from fastapi.responses import JSONResponse
-from pymongo import DESCENDING, ASCENDING
-import math
+    nombre_cliente = (
+        f"{cliente.get('nombre', '')} {cliente.get('apellido', '')}".strip()
+    )
+    foto_cliente = cliente.get("foto_perfil")
+
+    nombre_profesional = (
+        f"{profesional.get('nombre', '')} {profesional.get('apellido', '')}".strip()
+    )
+    foto_profesional = profesional.get("foto_perfil")
+
+    nueva_resena = ResenaEnBD(
+        **resena.dict(),
+        nombre_cliente=nombre_cliente,
+        foto_cliente=foto_cliente,
+        nombre_profesional=nombre_profesional,
+        foto_profesional=foto_profesional,
+        fecha_creacion=datetime.utcnow(),
+    )
+
+    result = REVIEWS_COLLECTION.insert_one(nueva_resena.dict())
+
+    # Recuperar el documento con el _id generado
+    inserted_doc = REVIEWS_COLLECTION.find_one({"_id": result.inserted_id})
+
+    # Convertir _id a string para que sea serializable
+    inserted_doc["_id"] = str(inserted_doc["_id"])
+    return inserted_doc
 
 
 @router.get("/{id_profesional}/")
@@ -59,11 +95,41 @@ async def listar_resenas(
         .limit(limit)
     )
 
-    resenas = [ResenaEnBD(**r) for r in cursor]
+    pipeline = [
+        {"$match": {"id_profesional": id_profesional}},
+        {
+            "$group": {
+                "_id": "$id_profesional",
+                "promedio": {"$avg": "$puntuacion"},
+                "cantidad": {"$sum": 1},
+            }
+        },
+    ]
+
+    resultado = list(REVIEWS_COLLECTION.aggregate(pipeline))
+    if not resultado:
+        return {"id_profesional": id_profesional, "promedio": 0, "cantidad": 0}
+
+    res = resultado[0]
+
+    resenas = []
+
+    for r in cursor:
+        r["_id"] = str(r["_id"])
+        r["fecha_creacion"] = str(r["fecha_creacion"])
+        if r.get("respuesta_profesional") and r["respuesta_profesional"].get(
+            "fecha_respuesta"
+        ):
+            r["respuesta_profesional"]["fecha_respuesta"] = str(
+                r["respuesta_profesional"]["fecha_respuesta"]
+            )
+        resenas.append(r)
 
     return JSONResponse(
         content={
-            "resenas": [r.model_dump(mode="json") for r in resenas],
+            "resenas": resenas,
+            "promedio": res["promedio"],
+            "cantidad": res["cantidad"],
             "page": page,
             "limit": limit,
             "total_items": total_items,
