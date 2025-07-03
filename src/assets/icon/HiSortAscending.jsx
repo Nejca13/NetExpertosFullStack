@@ -1,7 +1,7 @@
 const HiSortAscending = ({
   width = '24',
   height = '24',
-  color = 'white',
+  color = 'currentColor',
   className = '',
 }) => (
   <svg
@@ -9,7 +9,6 @@ const HiSortAscending = ({
     fill={color}
     strokeWidth='0'
     viewBox='0 0 20 20'
-    ariaHidden='true'
     height={height}
     width={width}
     xmlns='http://www.w3.org/2000/svg'

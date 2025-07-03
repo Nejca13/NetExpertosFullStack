@@ -1,7 +1,7 @@
 const LuSearch = ({
   width = '24',
   height = '24',
-  color = 'white',
+  color = 'currentColor',
   className = '',
 }) => (
   <svg
