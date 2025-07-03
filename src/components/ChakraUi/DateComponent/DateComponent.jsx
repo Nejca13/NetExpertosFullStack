@@ -1,4 +1,5 @@
 'use client'
+import LuSearch from '@/assets/icon/LuSearch'
 import MdCalendarToday from '@/assets/icon/MdCalendarToday'
 import { Button, Field, Input, Menu, Portal, Stack } from '@chakra-ui/react'
 import { useState } from 'react'
@@ -60,7 +61,20 @@ const DateComponent = ({ updateFilters }) => {
                   />
                 </Field.Root>
 
-                <Button w='100%' size='sm' type='submit' loading={loading}>
+                <Button
+                  variant='surface'
+                  w='100%'
+                  size='sm'
+                  type='submit'
+                  loading={loading}
+                  css={{
+                    _icon: {
+                      width: '3',
+                      height: '3',
+                    },
+                  }}
+                >
+                  <LuSearch />
                   Buscar
                 </Button>
               </Stack>

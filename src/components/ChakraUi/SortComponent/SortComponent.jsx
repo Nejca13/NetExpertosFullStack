@@ -2,7 +2,6 @@
 
 import HiSortAscending from '@/assets/icon/HiSortAscending'
 import { Button, Menu, Portal } from '@chakra-ui/react'
-import { useState } from 'react'
 
 export const SortComponent = ({ filters, updateFilters }) => {
   return (

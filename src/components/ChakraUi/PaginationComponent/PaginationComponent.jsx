@@ -3,12 +3,13 @@
 import { ButtonGroup, IconButton, Pagination } from '@chakra-ui/react'
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 
-const PaginationComponent = () => {
+const PaginationComponent = ({ total, page, limit, updateFilters }) => {
   return (
     <Pagination.Root
-      count={20}
-      pageSize={2}
-      defaultPage={1}
+      count={total}
+      page={page}
+      pageSize={limit}
+      onPageChange={(e) => updateFilters({ page: e.page })}
       display='flex'
       justifyContent='flex-end'
     >

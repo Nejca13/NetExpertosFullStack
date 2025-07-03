@@ -1,7 +1,23 @@
+'use client'
+import { useRef } from 'react'
 import LuSearch from '@/assets/icon/LuSearch'
 import { Input, InputGroup } from '@chakra-ui/react'
 
 const SearchComponent = ({ name, id, placeholder, filters, updateFilters }) => {
+  const timeoutRef = useRef(null)
+
+  const handleChange = (e) => {
+    const value = e.target.value
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      updateFilters({ query: value })
+    }, 600)
+  }
+
   return (
     <InputGroup
       maxW='300px'
@@ -18,9 +34,9 @@ const SearchComponent = ({ name, id, placeholder, filters, updateFilters }) => {
         name={name}
         id={id}
         placeholder={placeholder}
-        onChange={(e) => updateFilters({ query: e.target.value })}
+        onChange={handleChange}
         size='sm'
-        value={filters?.query || ''}
+        defaultValue={filters?.query || ''}
       />
     </InputGroup>
   )
