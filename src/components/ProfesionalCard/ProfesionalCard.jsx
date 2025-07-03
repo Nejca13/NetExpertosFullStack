@@ -14,6 +14,7 @@ import Verify from '@/assets/icon/Verify'
 import Url from '@/assets/icon/Url'
 import Modal from '../Modal/Modal'
 import ModalTrabajos from './ModalTrabajos/ModalTrabajos'
+import Link from 'next/link'
 
 const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
   const [showModalImg, setShowModalImg] = useState(false)
@@ -133,10 +134,10 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
             <div className={styles.calificacion}>
               <Calificacion rating={calificacion} />
               <span style={{ color: 'black' }}>{calificacion}</span>
-              <span className={styles.reseñas}>
+              <Link href={`/reviews/${_id}`} className={styles.reseñas}>
                 ({recomendaciones}) Reseñas
                 <Url color='black' width='18px' height='18px' />
-              </span>
+              </Link>
             </div>
           </div>
 
