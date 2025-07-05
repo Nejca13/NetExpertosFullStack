@@ -134,10 +134,16 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
             <div className={styles.calificacion}>
               <Calificacion rating={calificacion} />
               <span style={{ color: 'black' }}>{calificacion}</span>
-              <Link href={`/reviews/${_id}`} className={styles.reseñas}>
-                ({recomendaciones}) Reseñas
-                <Url color='black' width='18px' height='18px' />
-              </Link>
+              {recomendaciones === 0 ? (
+                <span className={styles.reseñas}>
+                  ({recomendaciones}) Reseñas
+                </span>
+              ) : (
+                <Link href={`/reviews/${_id}`} className={styles.reseñas}>
+                  ({recomendaciones}) Reseñas
+                  <Url color='black' width='18px' height='18px' />
+                </Link>
+              )}
             </div>
           </div>
 
