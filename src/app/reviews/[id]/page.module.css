@@ -2,29 +2,209 @@
   min-height: 100vh;
   width: 100%;
   font-family: var(--font-roboto-regular);
+  background-image: url('./../../../assets/images/FondoBlanco.png');
+  background-size: 150%;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 16px;
+}
+.back_button_title {
+  width: 100%;
+  position: relative;
+  padding: 25px 16px 10px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+}
+
+.back_button_title button {
+  position: absolute;
+  left: 16px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+}
+
+.back_button_title span {
+  font-family: var(--font-roboto-bold);
+  font-size: 20px;
 }
 
 .header {
-  padding: 16px;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  padding: 0px 0px 25px 0px;
+  background: white;
+  border-bottom-right-radius: 30px;
+  border-bottom-left-radius: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.267);
 }
 
-.header .back_button_title {
+.rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+.rating strong {
+  font-size: 25px;
+  font-family: var(--font-roboto-bold);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+.rating img {
+  border-radius: 9999px;
+  object-fit: cover;
+  object-position: center;
+  padding: 2px;
+}
+
+.reseñas {
+  font-family: var(--font-roboto-bold);
+}
+
+.body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0px 16px;
+  margin-top: 15px;
+  gap: 10px;
+  flex-grow: 1;
+}
+
+.body .button_control {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 40px;
+  justify-content: space-between;
 }
 
-.header .back_button_title button {
-  border: none;
-  display: flex;
-  align-items: center;
-  background: transparent;
-}
-
-.header .back_button_title span {
+.button_control span {
   font-family: var(--font-roboto-bold);
   font-size: 18px;
-  color: rgb(17 24 39);
+}
+
+.button_control select {
+  border: none;
+  border-radius: 30px;
+  padding: 8px 10px;
+  appearance: none;
+  color: white;
+  background: var(--color-amarillo);
+  font-family: var(--font-roboto-bold);
+  letter-spacing: 0.2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1;
+}
+
+.reviews .resena {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.267);
+  padding: 16px;
+  background: white;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.resena .info_cliente {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.resena .info_cliente img {
+  border-radius: 9999px;
+  border: 3px solid #319bff;
+}
+
+.info_cliente .date {
+  color: grey;
+}
+
+.resena .cliente {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.cliente .reating_cliente span {
+  font-family: var(--font-roboto-bold);
+}
+
+.cliente .reating_cliente small {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-roboto-bold);
+}
+
+.resena .coment {
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.resena .response {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.resena .response button {
+  border: none;
+  background: transparent;
+  color: rgb(41, 41, 41);
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  gap: 4px;
+  color: grey;
+}
+
+.content_modal {
+  width: 100%;
+  min-height: 100vh;
+  padding: 60px 16px 16px 16px;
+  display: flex;
+}
+
+.content_modal .content {
+  width: 100%;
+  flex-grow: 1;
+  background: white;
+  border-radius: 30px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.content_modal .content h2 {
+  font-family: var(--font-roboto-bold);
+  font-size: 18px;
 }
