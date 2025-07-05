@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback } from 'react'
 export const useReviewsProfesional = (id_profesional) => {
   const defaultFilters = {
     page: 1,
-    limit: 10,
+    limit: 2,
     ordenar_por: 'fecha_creacion',
     orden: 'desc',
   }
