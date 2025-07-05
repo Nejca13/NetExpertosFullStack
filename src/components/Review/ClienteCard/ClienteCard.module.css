@@ -1,0 +1,50 @@
+.resena {
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.267); */
+  padding: 16px;
+  background: white;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  font-family: var(--font-roboto-regular);
+}
+
+.resena .info_cliente {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.resena .info_cliente img {
+  border-radius: 9999px;
+  border: 2px solid #319bff;
+}
+
+.info_cliente .date {
+  color: grey;
+}
+
+.resena .cliente {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.cliente .reating_cliente span {
+  font-family: var(--font-roboto-bold);
+}
+
+.cliente .reating_cliente small {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-roboto-bold);
+}
+
+.resena .coment {
+  font-size: 15px;
+  line-height: 20px;
+}
