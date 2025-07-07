@@ -28,7 +28,6 @@ const ReviewProfesional = () => {
   const { data, loading, error, filters, updateFilters } =
     useReviewsProfesional(profesionalId)
 
-  console.log(data)
   //Porcentaje del usuario en la imagen
   const getBorderStyle = (rating) => {
     const percent = (rating / 5) * 100
@@ -61,7 +60,6 @@ const ReviewProfesional = () => {
   if (loading) return <div>Cargando reseñas...</div>
   if (error) return <div>Error: {error}</div>
 
-  console.log(selectedReview)
   return (
     <div className={styles.container}>
       <div className={styles.back_button_title}>
