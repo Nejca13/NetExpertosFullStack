@@ -16,9 +16,7 @@ from .security import auth_classic, auth_google
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.staticfiles import StaticFiles
 
-
 app = FastAPI()
-app.router.multipart_max_length = 10 * 1024 * 1024  # 10 MB
 
 app.add_middleware(
     CORSMiddleware,
