@@ -55,9 +55,12 @@ const Page = () => {
     formData.append('nombre', nombre)
     formData.append('apellido', apellido)
 
+    console.log(Object.fromEntries(formData))
+
     // 5. Llamar a tu API con FormData directamente
-    createUser(formData, setOnError, setLoading)
+    await createUser(formData, setOnError, setLoading)
       .then((res) => {
+        console.log(res)
         if (res === true) {
           // redirigir una vez creado
           router.push(`/verifyAccount/cliente/${formData.get('correo')}`)
