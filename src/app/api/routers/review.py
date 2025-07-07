@@ -48,6 +48,15 @@ async def crear_resena(resena: CrearResena, client_id: str):
     )
     foto_profesional = profesional.get("foto_perfil")
 
+    # Actualizar profesional
+    profesional["recomendaciones"] = profesional.get("recomendaciones", 0) + 1
+    profesional["calificacion"] = (
+        profesional.get("calificacion", 0) + resena.puntuacion
+    ) / profesional.get("recomendaciones", 1)
+    PROFESIONALES_COLLECTION.update_one(
+        {"_id": ObjectId(resena.id_profesional)}, {"$set": profesional}
+    )
+
     nueva_resena = ResenaEnBD(
         **resena.dict(),
         nombre_cliente=nombre_cliente,
