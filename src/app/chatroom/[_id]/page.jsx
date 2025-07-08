@@ -55,6 +55,9 @@ const Chat = () => {
   useEffect(() => {
     const storedProf = localStorage.getItem(_id)
     if (storedProf) setProf(JSON.parse(storedProf))
+    if (!storedProf) {
+      console.log('DEBUG No se pudo obtener el profesional')
+    }
   }, [_id])
 
   const scrollToBottom = useCallback(() => {
@@ -89,8 +92,7 @@ const Chat = () => {
 
   useEffect(() => {
     if (!user) {
-      const fetchedUser = currentUser
-      setUser(fetchedUser)
+      setUser(currentUser)
       return
     }
 
@@ -100,6 +102,22 @@ const Chat = () => {
       setRole(user.user_data.rol)
       try {
         const response = await getChats(_id, user.user_data._id)
+        console.log('DEBUG', response)
+        if (!prof) {
+          // obtener datos desde los mensajes filtrando los que no tengan el id de user
+          const mensajesFiltrados = response?.mensajes.filter((mensaje) => {
+            return mensaje.sender_id !== user.user_data._id
+          })
+          const data = mensajesFiltrados[0]
+          const profesional = {
+            _id: data.sender_id,
+            nombre: data.sender_name,
+            apellido: data.sender_surname,
+            foto_perfil: data.image,
+          }
+          console.log(data)
+          setProf(profesional)
+        }
         if (response?.mensajes.length === 0) {
           await recuperarConversacionEntreDosIds()
         }
