@@ -100,6 +100,9 @@ async def process_message(sender_id: str, role: str, data: dict):
                 title=f"{sender_name or ''} {sender_surname or ''}".strip(),
                 body=message,
                 type="chat",
+                user_id=receiver_id,
+                conversation_id=conversation_id,
+                image_url=image,
             )
             await enviar_notificacion_a_usuario(noti, receiver_id)
             print(f"[LOG] Push enviada a user {receiver_id}")
