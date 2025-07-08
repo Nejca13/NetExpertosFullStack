@@ -38,44 +38,6 @@ export const WebSocketProvider = ({ children }) => {
     ws.current.onmessage = async (event) => {
       const data = JSON.parse(event.data)
       setMessages((prev) => [...prev, data])
-
-      const {
-        conversation_id,
-        message,
-        sender_name,
-        sender_surname,
-        image,
-        sender_id,
-      } = data
-
-      const currentPath = window.location.pathname
-      const isCurrentChat = currentPath.includes(`/chatroom/${conversation_id}`)
-
-      if (!isCurrentChat) {
-        const fullName = `${sender_name || ''} ${sender_surname || ''}`.trim()
-
-        // Construir body para enviar al backend
-        const notificationPayload = {
-          title: fullName,
-          body: message,
-          type: 'chat', // opcional
-        }
-
-        try {
-          await fetch(
-            `/api/fcm/send-notification-to-user/?user_id=${data.receiver_id}`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(notificationPayload),
-            }
-          )
-        } catch (err) {
-          console.error('Error enviando push al backend', err)
-        }
-      }
     }
 
     ws.current.onclose = () => {
