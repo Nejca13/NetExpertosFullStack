@@ -164,7 +164,7 @@ async def get_last_messages(user_id: str):
                 "participants.1": {"$exists": True},  # hay al menos 2
                 "participants.2": {"$exists": False},  # NO hay más de 2
             }
-        )
+        ).sort("updated_at", -1)
     )
 
     conv_ids = [str(conv["_id"]) for conv in convs]
@@ -211,11 +211,19 @@ async def get_last_messages(user_id: str):
 async def get_last_message_between_two_users(user1_id: str, user2_id: str):
     # Buscar conversación exacta entre esos dos usuarios
     conversation = CONVERSATIONS_COLLECTION.find_one(
-        {"participants": {"$all": [user1_id, user2_id], "$size": 2}}
+        {"participants": [user1_id, user2_id]},
+        sort=[("updated_at", -1)],
     )
 
     if not conversation:
-        return {"ultimo_mensaje": None}
+        # si querés intentar el orden inverso (aunque $all no lo necesita)
+        conversation = CONVERSATIONS_COLLECTION.find_one(
+            {"participants": [user2_id, user1_id]},
+            sort=[("updated_at", -1)],
+        )
+
+    if not conversation:
+        return {"success": False, "error": "No se encontraron conversaciones"}
 
     convo_id = str(conversation["_id"])
 
