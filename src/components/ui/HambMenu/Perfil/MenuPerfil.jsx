@@ -16,6 +16,8 @@ import { parsearHorarios } from './parsearHorarios'
 import { handleSubmit } from './FormUtils'
 import CargarTrabajos from './CargarTrabajos/CargarTrabajos'
 import { useRouter } from 'next/navigation'
+import Pencil from '@/assets/icon/Pencil'
+import Camera from '@/assets/icon/Camera'
 
 const MenuPerfil = ({ setMenuComponent, user }) => {
   const [newProfileImage, setNewProfileImage] = useState(null)
@@ -35,12 +37,33 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
 
   return (
     <div className={styles.container}>
-      <button
-        className={styles.botonCerrar}
-        onClick={() => setMenuComponent(null)}
-      >
-        <Image src={crossBlanca} width={20} height={20} alt='boton de cerrar' />
-      </button>
+      <div className={styles.edit_and_close_button}>
+        <button
+          className={styles.edit_button}
+          onClick={(e) => {
+            e.preventDefault()
+            setEditMode(!editMode)
+          }}
+        >
+          {editMode ? (
+            'Cancelar'
+          ) : (
+            <Pencil color='#b2b2b2' width='28px' height='28px' />
+          )}
+        </button>
+        <span>Editar perfil</span>
+        <button
+          className={styles.botonCerrar}
+          onClick={() => setMenuComponent(null)}
+        >
+          <Image
+            src={crossBlanca}
+            width={18}
+            height={18}
+            alt='boton de cerrar'
+          />
+        </button>
+      </div>
       <form
         disabled
         className={styles.form}
@@ -57,8 +80,8 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
                     ? user.foto_perfil
                     : user.foto_perfil
                 }
-                width={50}
-                height={50}
+                width={130}
+                height={130}
                 className={[editMode ? styles.image : styles.imageDisabled]}
                 alt='Foto de perfil'
               />
@@ -70,10 +93,14 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
                 onChange={(e) => handleChangeImage(e.target.files)}
                 hidden
               />
+              {editMode && (
+                <div className={styles.icon_camera}>
+                  <i>
+                    <Camera color='black' width='20px' height='20px' />
+                  </i>
+                </div>
+              )}
             </label>
-            <div className={styles.nombre}>
-              <h3>¡Edita tu perfil!</h3>
-            </div>
           </div>
           <div className={styles.containerInputs}>
             <InputPerfil
@@ -142,15 +169,6 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
           </div>
         </fieldset>
         <div className={styles.containerButtons}>
-          <Button
-            backgroundColor={editMode ? 'var(--color-danger)' : 'white'}
-            textColor={editMode ? 'white' : 'var(--color-gris-medio)'}
-            text={editMode ? 'Cancelar' : 'Editar'}
-            func={(e) => {
-              e.preventDefault()
-              setEditMode(!editMode)
-            }}
-          />
           {editMode ? (
             <ButtonSubmit
               backgroundColor={'white'}
