@@ -49,7 +49,7 @@ async def register_token(data: FcmTokenIn):
 @router.post("/send-notification/")
 async def send_notification(data: NotificationIn):
     # Debug: mostrar datos recibidos
-    print(f"[DEBUG] send_notification called with data: {data.dict(by_alias=True)}")
+    print(f"[DEBUG] send_notification called with data: {data.dict()}")
 
     # Obtener tokens
     cursor = FMC_TOKENS_COLLECTION.find({}, {"_id": 0, "token": 1})
@@ -60,7 +60,7 @@ async def send_notification(data: NotificationIn):
         raise HTTPException(status_code=400, detail="No hay tokens registrados")
 
     # Guardar notificación
-    result_insert = NOTIFICACIONES_COLLECTION.insert_one(data.dict(by_alias=True))
+    result_insert = NOTIFICACIONES_COLLECTION.insert_one(data.dict())
     print(f"[DEBUG] Notificación insertada con ID: {result_insert.inserted_id}")
 
     success = 0
