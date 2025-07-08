@@ -25,7 +25,7 @@ const ExpertMapMarker = ({ profesional, status }) => {
     <div className={styles.pin1}>
       <div className={[status === true && styles.online]}></div>
       <div className={styles.rating}>
-        <p>{calificacion}</p>{' '}
+        <p>{calificacion.toFixed(1)}</p>{' '}
         <Image
           src={ESTRELLA}
           width={13}
