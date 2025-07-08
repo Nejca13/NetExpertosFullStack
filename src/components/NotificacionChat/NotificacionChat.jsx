@@ -22,7 +22,7 @@ const NotificacionChat = ({ setNotificationMessages }) => {
   const senderId = data?.message?.sender_id || data?.sender_id
   const isOwnMessage = senderId === currentUser?.user_data?._id
 
-  // Evito render si no hay data, si es propio o ya está leído
+  /* // Evito render si no hay data, si es propio o ya está leído
   if (!data || !data.message || isOwnMessage || isLeido) {
     console.log('[Noti] No muestro noti porque:', {
       noData: !data,
@@ -31,7 +31,7 @@ const NotificacionChat = ({ setNotificationMessages }) => {
       leido: isLeido,
     })
     return null
-  }
+  } */
 
   // Efecto que marca como leído y reproduce sonido
   useEffect(() => {
@@ -61,6 +61,7 @@ const NotificacionChat = ({ setNotificationMessages }) => {
         .catch((e) => console.error('[Noti] Error audio', e))
     }, 400)
 
+    console.log(data)
     return () => {
       if (audio) {
         audio.pause()
@@ -78,9 +79,10 @@ const NotificacionChat = ({ setNotificationMessages }) => {
         console.log('[Noti] Click en noti, abriendo chat', { convoId, data })
         // Guardar perfil del otro
         localStorage.setItem(
-          data.sender_id,
+          data.conversation_id,
           JSON.stringify({
             _id: data.sender_id,
+            conversation_id: data.conversation_id,
             nombre: data.sender_name,
             apellido: data.sender_surname,
             foto_perfil: data.image,
@@ -95,7 +97,7 @@ const NotificacionChat = ({ setNotificationMessages }) => {
 
         setNotificationMessages([])
         setTimeout(() => {
-          router.push(`/chatroom/${data.sender_id}`)
+          router.push(`/chatroom/${data.conversation_id}`)
         }, 200)
       }}
     >
