@@ -106,23 +106,14 @@ async def get_conversations(user_id: str):
 
 
 @router.get(
-    "/conversaciones/{user1_id}/{user2_id}/",
+    "/conversaciones/chatroom/{conversacion_id}/",
 )
 async def get_conversation_messages(
-    user1_id: str, user2_id: str, page: int = 1, limit: int = 80
+    conversacion_id: str, page: int = 1, limit: int = 80
 ):
     # Buscamos la conversación
-    conversation = CONVERSATIONS_COLLECTION.find_one(
-        {"participants": {"$all": [user1_id, user2_id], "$size": 2}}
-    )
-
-    # Si no existe, probamos con el orden inverso
-
-    if not conversation:
-        conversation = CONVERSATIONS_COLLECTION.find_one(
-            {"participants": {"$all": [user2_id, user1_id], "$size": 2}}
-        )
-
+    conversation = CONVERSATIONS_COLLECTION.find_one({"_id": ObjectId(conversacion_id)})
+    print(f"Conversación encontrada: {conversation}")
     if not conversation:
         return {"mensajes": []}
 
@@ -198,3 +189,43 @@ async def get_last_messages(user_id: str):
         )
 
     return {"ultimos_mensajes": last_messages}
+
+
+@router.get("/last-message/between-two-users/{user1_id}/{user2_id}/")
+async def get_last_message_between_two_users(user1_id: str, user2_id: str):
+    # Buscar conversación exacta entre esos dos usuarios
+    conversation = CONVERSATIONS_COLLECTION.find_one(
+        {"participants": {"$all": [user1_id, user2_id], "$size": 2}}
+    )
+
+    if not conversation:
+        return {"ultimo_mensaje": None}
+
+    convo_id = str(conversation["_id"])
+
+    # Buscar el último mensaje en esa conversación
+    msg = MESSAGES_COLLECTION.find_one(
+        {"conversation_id": convo_id},
+        sort=[("timestamp", -1)],
+    )
+
+    if not msg:
+        return {"ultimo_mensaje": None}
+
+    p0, p1 = conversation["participants"]
+    other_id = p0 if p1 == user1_id else p1
+
+    other_user = CLIENTES_COLLECTION.find_one(
+        {"_id": ObjectId(other_id)}
+    ) or PROFESIONALES_COLLECTION.find_one({"_id": ObjectId(other_id)})
+    if msg is None:
+        return {"success": False, "error": "No se encontraron mensajes"}
+    return {
+        "success": True,
+        "conversacion_id": convo_id,
+        "otro_participante": other_id,
+        "nombre": other_user.get("nombre", "") if other_user else "",
+        "apellido": other_user.get("apellido", "") if other_user else "",
+        "foto_perfil": other_user.get("foto_perfil") if other_user else None,
+        "ultimo_mensaje": MessageResponse(**{**msg, "_id": str(msg["_id"])}),
+    }
