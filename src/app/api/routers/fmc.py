@@ -104,6 +104,42 @@ async def get_notifications(page: int = 1, limit: int = 5):
     }
 
 
+# Enviar notificacion a un usuario especifico
+@router.post("/send-notification-to-user/")
+async def send_notification_to_user(data: NotificationIn, user_id: str):
+    data.user_id = user_id
+
+    # Filtrar los tokens por usuario
+    cursor = FMC_TOKENS_COLLECTION.find({"userId": user_id}, {"_id": 0, "token": 1})
+    tokens = await cursor.to_list(length=None)
+
+    if not tokens:
+        raise HTTPException(
+            status_code=404, detail="El usuario no tiene tokens registrados"
+        )
+
+    # Guardar la notificación
+    NOTIFICACIONES_COLLECTION.insert_one(data.dict(by_alias=True))
+
+    success = 0
+    failure = 0
+
+    for entry in tokens:
+        token = entry["token"]
+        msg = messaging.Message(
+            notification=messaging.Notification(title=data.title, body=data.body),
+            token=token,
+        )
+        try:
+            messaging.send(msg)
+            success += 1
+        except Exception as e:
+            FMC_TOKENS_COLLECTION.delete_one({"token": token})
+            failure += 1
+
+    return {"message": f"Enviadas: {success}, fallidas: {failure}"}
+
+
 """ @router.post("/request-membership/")
 async def request_membership(user_id: str):
     user = User.get(PydanticObjectId(user_id))
