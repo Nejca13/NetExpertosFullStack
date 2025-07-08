@@ -5,7 +5,7 @@ import Image from 'next/image'
 import TEL from '@/assets/images/ICONOS/ICO-TEL.svg'
 import SEND from '@/assets/images/ICONOS/ICO-SEND.svg'
 import EMOJI from '@/assets/images/ICONOS/ICO-EMOJI.svg'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import SlideToUnlock from '@/components/SlideToUnlock/SlideToUnlock'
 import IsAuth from '@/components/Auth/IsAuth'
 import EmojiPicker from 'emoji-picker-react'
@@ -26,6 +26,7 @@ const Chat = () => {
     useWebSocket()
   const [user, setUser] = useState(null)
   const [showEmojis, setShowEmojis] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     textareaRef.current?.focus()
@@ -73,8 +74,12 @@ const Chat = () => {
   const updateChats = useCallback(async () => {
     if (!currentUser) return
     try {
-      const response = await getChats(_id, currentUser.user_data._id)
+      const response = await getChats(_id)
       const nuevosMensajes = response?.mensajes
+      console.log(nuevosMensajes.length)
+      if (nuevosMensajes.length === 0) {
+        await recuperarConversacionEntreDosIds()
+      }
       setMessages(nuevosMensajes)
       scrollToBottom()
     } catch (error) {
@@ -95,6 +100,9 @@ const Chat = () => {
       setRole(user.user_data.rol)
       try {
         const response = await getChats(_id, user.user_data._id)
+        if (response?.mensajes.length === 0) {
+          await recuperarConversacionEntreDosIds()
+        }
         setMessages(response?.mensajes)
       } catch (error) {
         console.log(error)
@@ -136,6 +144,38 @@ const Chat = () => {
     scrollToBottom,
     updateChats,
   ])
+
+  const recuperarConversacionEntreDosIds = async () => {
+    try {
+      const new_response = await fetch(
+        `/api/chat/last-message/between-two-users/${currentUser.user_data._id}/${_id}/`
+      )
+      const data = await new_response.json()
+      console.log(data)
+      if (data.success) {
+        const {
+          apellido,
+          nombre,
+          foto_perfil,
+          conversacion_id,
+          otro_participante,
+        } = data
+        localStorage.setItem(
+          conversacion_id,
+          JSON.stringify({
+            _id: otro_participante,
+            conversation_id: conversacion_id,
+            nombre: nombre,
+            apellido: apellido,
+            foto_perfil: foto_perfil,
+          })
+        )
+        router.replace(`/chatroom/${conversacion_id}`)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <div className={styles.container}>
