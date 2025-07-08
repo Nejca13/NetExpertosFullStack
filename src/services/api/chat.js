@@ -1,7 +1,7 @@
 const API_URL = '/api/chat/conversaciones/'
 
-export const getChats = async (id1, id2) => {
-  const response = await fetch(API_URL + id1 + '/' + id2, {
+export const getChats = async (id) => {
+  const response = await fetch(API_URL + 'chatroom/' + id, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
