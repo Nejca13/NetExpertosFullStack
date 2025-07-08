@@ -8,8 +8,29 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding-bottom: 16px;
 }
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 6px solid #cecece;
+  border-bottom-color: var(--color-amarillo);
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .back_button_title {
   width: 100%;
   position: relative;
@@ -73,6 +94,22 @@
   font-family: var(--font-roboto-bold);
 }
 
+.button_resena {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: none;
+  background-color: #319bff;
+  color: white;
+  font-size: 14px;
+  font-family: var(--font-roboto-bold);
+  box-shadow: inset 0 1px 0 0 hsla(0, 0%, 100%, 0.2),
+    0 2px 8px 0 rgba(0, 0, 0, 0.16);
+}
+
 .body {
   width: 100%;
   display: flex;
@@ -111,6 +148,7 @@
 }
 
 .reviews {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;

@@ -15,6 +15,7 @@ import Pagination from '@/components/Review/Pagination/Pagination'
 
 const ReviewProfesional = () => {
   const [selectedReview, setSelectedReview] = useState(null)
+  const [profesional, setProfesional] = useState(null)
   const [openModal, setOpenModal] = useState(false)
   const params = useParams()
   const router = useRouter()
@@ -39,9 +40,7 @@ const ReviewProfesional = () => {
     }
   }
 
-  //Paginado
-  const totalPages = Math.ceil(data?.total_items || 0 / filters.limit)
-
+  //Funcion para cambiar de pagina
   const handlePageChange = (page) => {
     updateFilters({ page })
   }
@@ -57,7 +56,12 @@ const ReviewProfesional = () => {
     setOpenModal(false)
   }
 
-  if (loading) return <div>Cargando reseñas...</div>
+  if (loading)
+    return (
+      <div className={styles.container}>
+        <span className={styles.loader}></span>
+      </div>
+    )
   if (error) return <div>Error: {error}</div>
 
   return (
