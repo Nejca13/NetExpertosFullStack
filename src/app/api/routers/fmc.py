@@ -111,7 +111,7 @@ async def send_notification_to_user(data: NotificationIn, user_id: str):
 
     # Filtrar los tokens por usuario
     cursor = FMC_TOKENS_COLLECTION.find({"userId": user_id}, {"_id": 0, "token": 1})
-    tokens = await cursor.to_list(length=None)
+    tokens = cursor.to_list(length=None)
 
     if not tokens:
         raise HTTPException(
