@@ -7,6 +7,8 @@ from app.api.core import FMC_TOKENS_COLLECTION, NOTIFICACIONES_COLLECTION
 import firebase_admin
 from firebase_admin import messaging, credentials
 
+from app.api.utils.notifications import enviar_notificacion_a_usuario
+
 # Inicializar Firebase Admin
 cred = credentials.Certificate("src/app/api/keys/netexpertos-firebase.json")
 firebase_admin.initialize_app(cred)
@@ -107,47 +109,7 @@ async def get_notifications(page: int = 1, limit: int = 5):
 # Enviar notificacion a un usuario especifico
 @router.post("/send-notification-to-user/")
 async def send_notification_to_user(data: NotificationIn, user_id: str):
-    print(
-        f"[LOG] Enviando notificación a user_id={user_id} con datos: {data.dict(by_alias=True)}"
-    )
-
-    # Filtrar los tokens por usuario
-    cursor = FMC_TOKENS_COLLECTION.find({"userId": user_id}, {"_id": 0, "token": 1})
-    tokens = cursor.to_list(length=None)
-    print(f"[LOG] Tokens encontrados para usuario {user_id}: {tokens}")
-
-    if not tokens:
-        print(f"[WARN] No hay tokens registrados para el usuario {user_id}")
-        raise HTTPException(
-            status_code=404, detail="El usuario no tiene tokens registrados"
-        )
-
-    # Guardar la notificación
-    result_insert = NOTIFICACIONES_COLLECTION.insert_one(data.dict(by_alias=True))
-    print(f"[LOG] Notificación guardada con ID: {result_insert.inserted_id}")
-
-    success = 0
-    failure = 0
-
-    for entry in tokens:
-        token = entry["token"]
-        print(f"[LOG] Enviando notificación al token: {token}")
-        msg = messaging.Message(
-            notification=messaging.Notification(title=data.title, body=data.body),
-            token=token,
-        )
-        try:
-            response = messaging.send(msg)
-            print(f"[LOG] Mensaje enviado correctamente: {response}")
-            success += 1
-        except Exception as e:
-            print(f"[ERROR] Error enviando a token {token}: {e}")
-            delete_result = FMC_TOKENS_COLLECTION.delete_one({"token": token})
-            print(f"[LOG] Token eliminado: {delete_result.deleted_count} documento(s)")
-            failure += 1
-
-    print(f"[LOG] Resumen: Enviadas={success}, Fallidas={failure}")
-    return {"message": f"Enviadas: {success}, fallidas: {failure}"}
+    return await enviar_notificacion_a_usuario(data, user_id)
 
 
 """ @router.post("/request-membership/")
