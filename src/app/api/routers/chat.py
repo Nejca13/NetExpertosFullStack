@@ -11,6 +11,7 @@ from app.api.core import (
     PROFESIONALES_COLLECTION,
 )
 from app.api.models.conversation import ConversationResponse, MessageResponse
+from app.api.utils.notifications import NotificationIn, enviar_notificacion_a_usuario
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -39,19 +40,18 @@ async def process_message(sender_id: str, role: str, data: dict):
     # 1) Normalizamos participantes
     participants = sorted([sender_id, receiver_id])
 
-    # 2) Buscamos conversación EXACTA de esos 2 IDs
+    # 2) Buscar conversación
     conversation = CONVERSATIONS_COLLECTION.find_one(
         {"participants": {"$eq": participants}}
     )
 
     if not conversation:
-        reversed_participants = sorted([receiver_id, sender_id])
         conversation = CONVERSATIONS_COLLECTION.find_one(
-            {"participants": {"$eq": reversed_participants}}
+            {"participants": {"$eq": sorted([receiver_id, sender_id])}}
         )
 
+    # 3) Crear o actualizar conversación
     if not conversation:
-        # 3) Si no existe, creamos nueva
         convo_data = {
             "participants": participants,
             "created_at": datetime.utcnow(),
@@ -60,7 +60,6 @@ async def process_message(sender_id: str, role: str, data: dict):
         result = CONVERSATIONS_COLLECTION.insert_one(convo_data)
         conversation_id = str(result.inserted_id)
     else:
-        # 4) Si existe, actualizamos updated_at y usamos su _id
         CONVERSATIONS_COLLECTION.update_one(
             {"_id": conversation["_id"]}, {"$set": {"updated_at": datetime.utcnow()}}
         )
@@ -68,7 +67,7 @@ async def process_message(sender_id: str, role: str, data: dict):
 
     ts = datetime.utcnow()
 
-    # 5) Insertar mensaje
+    # 4) Insertar mensaje
     msg_doc = {
         "conversation_id": conversation_id,
         "sender_id": sender_id,
@@ -83,15 +82,29 @@ async def process_message(sender_id: str, role: str, data: dict):
     new_msg = MESSAGES_COLLECTION.insert_one(msg_doc)
     msg_id = str(new_msg.inserted_id)
 
-    # 6) Payload para WebSocket
+    # 5) Payload para WebSocket
     payload = {
         **msg_doc,
         "_id": msg_id,
         "timestamp": ts.isoformat(),
     }
+
     ws = connected_users.get(receiver_id)
     if ws:
         await ws.send_json(payload)
+
+    # 6) Enviar push si el receptor no está conectado
+    if not ws:
+        try:
+            noti = NotificationIn(
+                title=f"{sender_name or ''} {sender_surname or ''}".strip(),
+                body=message,
+                type="chat",
+            )
+            await enviar_notificacion_a_usuario(noti, receiver_id)
+            print(f"[LOG] Push enviada a user {receiver_id}")
+        except Exception as e:
+            print(f"[ERROR] Falló el envío de push: {e}")
 
 
 @router.get("/conversaciones/{user_id}/")
