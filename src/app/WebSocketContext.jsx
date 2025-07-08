@@ -35,22 +35,27 @@ export const WebSocketProvider = ({ children }) => {
 
     ws.current.onopen = () => console.log('WebSocket connected')
 
+    const sendAndroidNotification = (title, message, imageUrl) => {
+      if (window.Android && typeof Android.sendNotification === 'function') {
+        Android.sendNotification(title, message, imageUrl)
+      } else {
+        console.log('Android interface not available.')
+      }
+    }
+
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data)
       setMessages((prev) => [...prev, data])
 
-      const { conversation_id, text, sender_name, sender_image } = data
+      const { conversation_id, message, sender_name, sender_surname, image } =
+        data
 
       const currentPath = window.location.pathname
-      console.log(currentPath)
       const isCurrentChat = currentPath.includes(`/chatroom/${conversation_id}`)
 
       if (!isCurrentChat) {
-        if (window.Android?.sendNotification) {
-          window.Android.sendNotification(sender_name, text, sender_image || '')
-        } else {
-          console.log('Android interface not available.')
-        }
+        const fullName = `${sender_name || ''} ${sender_surname || ''}`.trim()
+        sendAndroidNotification(fullName, message, image || '')
       }
     }
 

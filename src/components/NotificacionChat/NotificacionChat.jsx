@@ -59,7 +59,7 @@ const NotificacionChat = ({ setNotificationMessages }) => {
         ?.play()
         .then(() => console.log('[Noti] Audio OK'))
         .catch((e) => console.error('[Noti] Error audio', e))
-    }, 400)
+    }, 1000)
 
     console.log(data)
     return () => {
