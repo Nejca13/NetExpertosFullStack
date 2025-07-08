@@ -15,10 +15,13 @@ import Url from '@/assets/icon/Url'
 import Modal from '../Modal/Modal'
 import ModalTrabajos from './ModalTrabajos/ModalTrabajos'
 import Link from 'next/link'
+import Pencil from '@/assets/icon/Pencil'
+import ModalCreateReview from './ModalCreateReview/ModalCreateReview'
 
 const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
   const [showModalImg, setShowModalImg] = useState(false)
   const [showMoreInfo, setShowMoreInfo] = useState(false)
+  const [showMoreReview, setShowMoreReview] = useState(false)
   const [img, setImg] = useState(null)
   const [favorite, setFavorite] = useState(profesional.favoritos)
   const audioRef = useRef(null)
@@ -133,7 +136,7 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
           <div className={styles.rating}>
             <div className={styles.calificacion}>
               <Calificacion rating={calificacion} />
-              <span style={{ color: 'black' }}>{calificacion}</span>
+              <span style={{ color: 'black' }}>{calificacion.toFixed(1)}</span>
               {recomendaciones === 0 ? (
                 <span className={styles.reseñas}>
                   ({recomendaciones}) Reseñas
@@ -153,8 +156,19 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
               onClick={() => setShowMoreInfo(true)}
             >
               <IconInfo width='16px' height='16px' color='white' />
-              Mas informacion del profesional
+              Mas informacion
             </button>
+            <button onClick={() => setShowMoreReview(true)}>
+              <Pencil width='16px' height='16px' color='white' /> Dejar una
+              reseña
+            </button>
+
+            <Modal
+              isModalOpen={showMoreReview}
+              onClose={() => setShowMoreReview(false)}
+            >
+              <ModalCreateReview _id={_id} />
+            </Modal>
           </div>
         </div>
         <div className={styles.containerTrabajos}>
@@ -200,7 +214,7 @@ const ProfesionalCard = ({ profesional, setIsShowPopup }) => {
         </div>
         <div className={styles.containerButton}>
           <button onClick={contactarProfesional}>Contactar</button>
-        </div>{' '}
+        </div>
       </div>
     </section>
   )
