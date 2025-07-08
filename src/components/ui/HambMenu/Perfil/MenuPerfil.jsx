@@ -18,6 +18,7 @@ import CargarTrabajos from './CargarTrabajos/CargarTrabajos'
 import { useRouter } from 'next/navigation'
 import Pencil from '@/assets/icon/Pencil'
 import Camera from '@/assets/icon/Camera'
+import Verify from '@/assets/icon/Verify'
 
 const MenuPerfil = ({ setMenuComponent, user }) => {
   const [newProfileImage, setNewProfileImage] = useState(null)
@@ -25,6 +26,9 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
   const [editMode, setEditMode] = useState(false)
   const [cargarTrabajos, setCargarTrabajos] = useState(false)
   const router = useRouter()
+
+  // Verifica si el profesional esta verificado por ahora hasta que tenga lo tenga el backend
+  const [verify, setVerify] = useState(true)
 
   const handleChangeImage = (files) => {
     const file = files[0]
@@ -48,7 +52,7 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
           {editMode ? (
             'Cancelar'
           ) : (
-            <Pencil color='#b2b2b2' width='28px' height='28px' />
+            <Pencil color='#b2b2b2' width='25px' height='25px' />
           )}
         </button>
         <span>Editar perfil</span>
@@ -83,6 +87,11 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
                 width={130}
                 height={130}
                 className={[editMode ? styles.image : styles.imageDisabled]}
+                style={
+                  verify
+                    ? { border: '5px solid #319bff' }
+                    : { border: '5px solid rgb(211, 211, 211)' }
+                }
                 alt='Foto de perfil'
               />
               <input
@@ -100,16 +109,27 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
                   </i>
                 </div>
               )}
+              {!editMode && (
+                <i className={styles.icon}>
+                  <Verify
+                    width='30px'
+                    height='30px'
+                    color={verify ? '#319bff' : 'rgb(211, 211, 211)'}
+                  />
+                </i>
+              )}
             </label>
+            <input
+              className={
+                editMode ? styles.input_name : styles.input_name_disable
+              }
+              defaultValue={`${user.nombre} ${user.apellido}`}
+              id='nombre_apellido'
+              name='nombre_apellido'
+              type='text'
+            />
           </div>
           <div className={styles.containerInputs}>
-            <InputPerfil
-              defaultValue={`${user.nombre} ${user.apellido}`}
-              label={'Nombre'}
-              id={'nombre_apellido'}
-              name={'nombre_apellido'}
-              type={'text'}
-            />
             {user.rol === 'Profesional' && (
               <InputPerfil
                 defaultValue={user.nacimiento}

@@ -6,7 +6,7 @@
   width: 100vw;
   position: absolute;
   z-index: 10000;
-  background-color: white;
+  background-image: url('./../../../../assets/images/FondoBlanco.png');
   font-family: var(--font-roboto-regular);
 }
 
@@ -24,7 +24,7 @@
 
 .edit_and_close_button span {
   font-family: var(--font-roboto-bold);
-  font-size: 18px;
+  font-size: 20px;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -53,7 +53,6 @@
 
 .form {
   width: 100%;
-  padding: 70px 20px 20px 20px;
 }
 
 .fieldset {
@@ -66,6 +65,19 @@
 }
 
 .containerFile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 70px 20px 20px 20px;
+  background: white;
+  border-bottom-right-radius: 30px;
+  border-bottom-left-radius: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.267);
+}
+
+.containerFile label {
   position: relative;
   z-index: 1;
 }
@@ -74,7 +86,6 @@
   border-radius: 100%;
   object-fit: cover;
   object-position: center 0px;
-  border: 6px solid #319bff;
   box-shadow: var(--box-shadow);
 }
 
@@ -82,8 +93,8 @@
   border-radius: 100%;
   object-fit: cover;
   object-position: center 0px;
-  border: 5px solid #b2b2b2;
-  box-shadow: var(--box-shadow);
+  border: 6px solid rgb(227, 227, 227);
+  /* box-shadow: var(--box-shadow); */
 }
 
 .icon_camera {
@@ -99,10 +110,50 @@
 .icon_camera i {
   display: flex;
   align-items: center;
-  background: white;
+  background: rgb(211, 211, 211);
   padding: 5px;
   border-radius: 50%;
   box-shadow: var(--box-shadow);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  z-index: 2;
+}
+
+.icon::before {
+  box-shadow: var(--box-shadow);
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: white;
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.input_name {
+  margin-top: 5px;
+  padding: 8px 0px;
+  border: 1px solid rgb(197, 197, 197);
+  text-align: center;
+  font-size: 20px;
+  font-family: var(--font-roboto-bold);
+  border-radius: 5px;
+}
+
+.input_name_disable {
+  border: none;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  font-size: 25px;
+  color: black;
+  font-family: var(--font-roboto-bold);
 }
 
 /* 
