@@ -63,7 +63,7 @@ export const WebSocketProvider = ({ children }) => {
 
         try {
           await fetch(
-            `/api/fcm/send-notification-to-user/?user_id=${data.receiver_id}/`,
+            `/api/fcm/send-notification-to-user/?user_id=${data.receiver_id}`,
             {
               method: 'POST',
               headers: {
