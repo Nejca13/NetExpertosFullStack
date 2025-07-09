@@ -5,8 +5,8 @@
   height: 100%;
   backdrop-filter: blur(4px);
   position: absolute;
-  align-items: flex-end;
   top: 0;
+  align-items: flex-end;
   z-index: 1100;
 }
 
