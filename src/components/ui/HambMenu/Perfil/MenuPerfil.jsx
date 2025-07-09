@@ -1,16 +1,9 @@
 import Image from 'next/image'
 import styles from './MenuPerfil.module.css'
 import { useState } from 'react'
-import {
-  InputPerfil,
-  SelectPerfil,
-  TextAreaPerfil,
-} from './InputPerfil/InputPerfil'
 import rubros from '@/constants/rubros'
 import profesionesPorRubro from '@/constants/profesionesPorRubro'
 import { saveCompressedImageToLocalStorage } from '@/utils/minificadorDeImagenes'
-import Button from '@/components/Buttons/Button/Button'
-import ButtonSubmit from '@/components/Buttons/ButtonSubmit/ButtonSubmit'
 import crossBlanca from '@/assets/images/cross-blanca.png'
 import { parsearHorarios } from './parsearHorarios'
 import { handleSubmit } from './FormUtils'
@@ -19,6 +12,14 @@ import { useRouter } from 'next/navigation'
 import Pencil from '@/assets/icon/Pencil'
 import Camera from '@/assets/icon/Camera'
 import Verify from '@/assets/icon/Verify'
+import UserIcon from '@/assets/icon/UserIcon'
+import BriefcaseIcon from '@/assets/icon/BriefcaseIcon'
+import ClockIcon from '@/assets/icon/ClockIcon'
+import {
+  InputPerfil,
+  SelectPerfil,
+  TextAreaPerfil,
+} from '@/components/InputProfile/InputPerfil/InputPerfil'
 
 const MenuPerfil = ({ setMenuComponent, user }) => {
   const [newProfileImage, setNewProfileImage] = useState(null)
@@ -36,8 +37,6 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
       setNewProfileImage(compressedImage)
     })
   }
-
-  console.log(user)
 
   return (
     <div className={styles.container}>
@@ -119,48 +118,69 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
                 </i>
               )}
             </label>
-            <input
-              className={
-                editMode ? styles.input_name : styles.input_name_disable
-              }
-              defaultValue={`${user.nombre} ${user.apellido}`}
-              id='nombre_apellido'
-              name='nombre_apellido'
-              type='text'
-            />
           </div>
           <div className={styles.containerInputs}>
             {user.rol === 'Profesional' && (
-              <InputPerfil
-                defaultValue={user.nacimiento}
-                label={'Fecha de nacimiento'}
-                id={'nacimiento'}
-                name={'nacimiento'}
-                type={'date'}
-              />
+              <div className={styles.input_group}>
+                <span>
+                  <UserIcon color='#319bff' size='20px' />
+                  Información personal
+                </span>
+                <InputPerfil
+                  defaultValue={`${user.nombre} ${user.apellido}`}
+                  label={'Nombre y apellido'}
+                  id={'nombre_apellido'}
+                  name={'nombre_apellido'}
+                  type={'text'}
+                />
+                <InputPerfil
+                  defaultValue={user.nacimiento}
+                  label={'Fecha de nacimiento'}
+                  id={'nacimiento'}
+                  name={'nacimiento'}
+                  type={'date'}
+                />
+                <TextAreaPerfil
+                  defaultValue={user.acerca_de_mi}
+                  id={'acerca_de_mi'}
+                  label={'Acerca de mí'}
+                  name={'acerca_de_mi'}
+                  type={'text'}
+                />
+              </div>
             )}
 
             {user.rol === 'Profesional' && (
-              <SelectPerfil
-                data={rubros}
-                id={'rubro_nombre'}
-                name={'rubro_nombre'}
-                text={'Rubro'}
-                defaultValue={user.rubro_nombre}
-                func={(e) => setRubroSeleccionado(e.target.value)}
-              />
-            )}
-            {rubroSeleccionado && (
-              <SelectPerfil
-                data={profesionesPorRubro[rubroSeleccionado]}
-                defaultValue={user.profesion_nombre}
-                id={'profesion'}
-                name={'profesion_nombre'}
-                text={'Profesión'}
-              />
+              <div className={styles.input_group}>
+                <span>
+                  <BriefcaseIcon color='rgb(22 163 74)' size='20px' />
+                  Información profesional
+                </span>
+                <SelectPerfil
+                  data={rubros}
+                  id={'rubro_nombre'}
+                  name={'rubro_nombre'}
+                  text={'Rubro'}
+                  defaultValue={user.rubro_nombre}
+                  func={(e) => setRubroSeleccionado(e.target.value)}
+                />
+                {rubroSeleccionado && (
+                  <SelectPerfil
+                    data={profesionesPorRubro[rubroSeleccionado]}
+                    defaultValue={user.profesion_nombre}
+                    id={'profesion'}
+                    name={'profesion_nombre'}
+                    text={'Profesión'}
+                  />
+                )}
+              </div>
             )}
             {user.rol === 'Profesional' && (
-              <div className={styles.divHorariosDeAtencion}>
+              <div className={styles.input_group}>
+                <span>
+                  <ClockIcon color='rgb(147 51 234)' size='20px' />
+                  Horarios de trabajo
+                </span>
                 <InputPerfil
                   type={'time'}
                   label={'Horario apertura'}
@@ -177,35 +197,36 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
                 />
               </div>
             )}
-            {user.rol === 'Profesional' && (
-              <TextAreaPerfil
-                defaultValue={user.acerca_de_mi}
-                id={'acerca_de_mi'}
-                label={'Acerca de mí'}
-                name={'acerca_de_mi'}
-                type={'text'}
-              />
-            )}
           </div>
         </fieldset>
         <div className={styles.containerButtons}>
-          {editMode ? (
-            <ButtonSubmit
-              backgroundColor={'white'}
-              textColor={'var(--color-gris-medio)'}
-              text={'Guardar cambios'}
-            />
-          ) : (
-            <Button
-              backgroundColor={'var(--color-amarillo)'}
-              textColor={'var(--color-gris-medio)'}
-              text={'Cargar trabajos'}
-              func={(e) => {
-                e.preventDefault()
-                router.push('/profile/profesional/charge-works')
-              }}
-            />
+          {editMode && (
+            <div className={styles.button_save_cancel}>
+              <button type='submit' style={{ background: '#319bff' }}>
+                Guardar cambios
+              </button>
+              <button
+                style={{ background: 'var(--color-danger)' }}
+                type='button'
+                onClick={(e) => {
+                  e.preventDefault()
+                  setEditMode(!editMode)
+                }}
+              >
+                Cancelar
+              </button>
+            </div>
           )}
+          <button
+            className={styles.cargarTrabajos}
+            type='button'
+            onClick={(e) => {
+              e.preventDefault()
+              router.push('/profile/profesional/charge-works')
+            }}
+          >
+            Cargar trabajos
+          </button>
 
           {cargarTrabajos ? (
             <CargarTrabajos setCargarTrabajos={setCargarTrabajos} user={user} />
