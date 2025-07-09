@@ -111,9 +111,9 @@ export const getFilteredAndSortedProfessionalsByDistance = async (
 
 export const updateProfessional = async (user, updatedData) => {
   try {
-    const mailEncode = encodeURIComponent(user.correo.trim())
+    // const mailEncode = encodeURIComponent(user.correo.trim())
 
-    const response = await fetch(API_URL + `?correo=${mailEncode}`, {
+    const response = await fetch(API_URL, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
