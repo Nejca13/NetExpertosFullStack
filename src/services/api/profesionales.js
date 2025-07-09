@@ -115,21 +115,19 @@ export const updateProfessional = async (user, updatedData) => {
 
     const response = await fetch(API_URL, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedData),
+      body: updatedData,
     })
 
     if (response.ok) {
       // La solicitud fue exitosa
-      const responseData = await response.json()
+      const data = await response.json()
+      console.log(data)
 
-      // Actualizar el usuario en el IndexedDB <-- BORRAR DESPUES
-      await updateUser(updatedData, user._id)
-
-      window.location.reload()
-      return responseData // Puedes retornar los datos actualizados si lo deseas
+      return {
+        success: true,
+        message: 'Profesional actualizado exitosamente',
+        data: data.profesional,
+      }
     } else {
       // La solicitud no fue exitosa
       const errorMessage = await response.text()
