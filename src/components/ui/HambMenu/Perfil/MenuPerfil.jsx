@@ -1,3 +1,4 @@
+'use client'
 import Image from 'next/image'
 import styles from './MenuPerfil.module.css'
 import { useState } from 'react'
@@ -20,22 +21,30 @@ import {
   SelectPerfil,
   TextAreaPerfil,
 } from '@/components/InputProfile/InputPerfil/InputPerfil'
+import useStore from '@/store/store'
 
 const MenuPerfil = ({ setMenuComponent, user }) => {
   const [newProfileImage, setNewProfileImage] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
   const [rubroSeleccionado, setRubroSeleccionado] = useState(user.rubro_nombre)
   const [editMode, setEditMode] = useState(false)
   const [cargarTrabajos, setCargarTrabajos] = useState(false)
+  const { setCurrentUser, currentUser } = useStore()
   const router = useRouter()
 
   // Verifica si el profesional esta verificado por ahora hasta que tenga lo tenga el backend
   const [verify, setVerify] = useState(true)
 
-  const handleChangeImage = (files) => {
+  const handleChangeImage = async (files) => {
     const file = files[0]
-    saveCompressedImageToLocalStorage(file, (compressedImage) => {
-      setNewProfileImage(compressedImage)
-    })
+    await saveCompressedImageToLocalStorage(
+      file,
+      (compressedImageBase64, compressedImage) => {
+        setNewProfileImage(compressedImage)
+        setImagePreview(compressedImageBase64)
+        console.log(compressedImage)
+      }
+    )
   }
 
   return (
@@ -68,21 +77,26 @@ const MenuPerfil = ({ setMenuComponent, user }) => {
         </button>
       </div>
       <form
-        disabled
         className={styles.form}
-        onSubmit={(e) => handleSubmit(e, user, newProfileImage)}
+        onSubmit={async (e) =>
+          await handleSubmit(
+            e,
+            user,
+            newProfileImage,
+            setCurrentUser,
+            currentUser
+          ).then((res) => {
+            if (res.success) {
+              setMenuComponent(null)
+            }
+          })
+        }
       >
         <fieldset className={styles.fieldset} disabled={!editMode}>
           <div className={styles.containerFile}>
             <label htmlFor='foto_perfil'>
               <Image
-                src={
-                  newProfileImage
-                    ? newProfileImage
-                    : user.rol === 'Profesional'
-                    ? user.foto_perfil
-                    : user.foto_perfil
-                }
+                src={imagePreview ? imagePreview : user.foto_perfil}
                 width={130}
                 height={130}
                 className={[editMode ? styles.image : styles.imageDisabled]}
