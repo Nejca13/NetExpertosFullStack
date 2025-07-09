@@ -40,8 +40,12 @@ export const handleSubmit = (e, user, newProfileImage) => {
     formData.delete('horarios_cierre')
   }
 
+  //enviamos el email
+  formData.set('correo', user.correo.trim())
+
   // Convertir FormData a objeto
   const data = Object.fromEntries(formData)
+  console.log(data)
   if (user.rol === 'Profesional') {
     updateProfessional(user, data)
   }
