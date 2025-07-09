@@ -1,9 +1,14 @@
-// FormUtils.js
-
+'use client'
 import { updateCliente } from '@/services/api/clientes'
 import { updateProfessional } from '@/services/api/profesionales'
 
-export const handleSubmit = (e, user, newProfileImage) => {
+export const handleSubmit = async (
+  e,
+  user,
+  newProfileImage,
+  setCurrentUser,
+  currentUser
+) => {
   e.preventDefault()
   const formData = new FormData(e.target)
 
@@ -15,18 +20,10 @@ export const handleSubmit = (e, user, newProfileImage) => {
   formData.set('apellido', apellido)
   formData.delete('nombre_apellido')
 
-  // Comprobar y manejar la imagen de perfil
-  if (
-    typeof newProfileImage === 'string' &&
-    newProfileImage.startsWith('data:image')
-  ) {
-    if (user.rol === 'Profesional') {
-      formData.set('foto_perfil', newProfileImage)
-    } else {
-      formData.set('foto_perfil', newProfileImage)
-    }
+  if (newProfileImage instanceof File) {
+    console.log('LA IMAGEN ENVIADA ES UN ARCHIVO')
+    formData.set('foto_perfil', newProfileImage)
   } else {
-    formData.delete('foto_perfil')
     formData.delete('foto_perfil')
   }
 
@@ -47,7 +44,22 @@ export const handleSubmit = (e, user, newProfileImage) => {
   const data = Object.fromEntries(formData)
   console.log(data)
   if (user.rol === 'Profesional') {
-    updateProfessional(user, data)
+    try {
+      const res = await updateProfessional(user, formData)
+      if (res.success) {
+        setCurrentUser({
+          token: currentUser.token,
+          user_data: res.data,
+        })
+        return { success: true }
+      } else {
+        console.error('Error al actualizar')
+        return { success: false }
+      }
+    } catch (e) {
+      console.error(e)
+      return { success: false }
+    }
   }
   if (user.rol === 'Cliente') {
     updateCliente(user, data)
