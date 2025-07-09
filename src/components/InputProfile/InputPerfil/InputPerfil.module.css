@@ -1,0 +1,51 @@
+.containerInputs {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formLabel {
+  font-family: var(--font-roboto-regular);
+  font-size: 16px;
+  color: rgb(27, 27, 27);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  margin: 8px 0px;
+  font-family: inherit;
+  border: 1px solid rgb(226, 226, 226);
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.textarea {
+  height: 70px;
+  resize: vertical;
+}
+
+/* Estilos al estar deshabilitados */
+.input:disabled,
+.textarea:disabled,
+.select:disabled {
+  background-color: transparent;
+  border: none;
+  padding: 10px 0px;
+  font-size: 14px;
+  opacity: 0.7;
+  border-bottom: 1px solid rgb(226, 226, 226);
+  border-radius: 0px;
+}
+
+.textarea:disabled {
+  height: fit-content;
+}
