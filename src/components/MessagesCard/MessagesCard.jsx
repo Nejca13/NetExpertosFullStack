@@ -27,23 +27,29 @@ const MessagesCard = ({ item, index, _id }) => {
     console.log(item)
   }, [item])
 
-  const { conversacion_id } = item
-  const { sender_id, sender_name, sender_surname, message, timestamp, image } =
-    item.ultimo_mensaje
+  const { apellido, nombre, foto_perfil, conversacion_id } = item
+  const { timestamp, message } = item.ultimo_mensaje
 
   return (
     <li
       className={styles.li}
       key={index}
       onClick={() => {
+        console.log({
+          _id: _id,
+          conversacion_id: conversacion_id,
+          nombre: nombre,
+          apellido: apellido,
+          foto_perfil: foto_perfil,
+        })
         localStorage.setItem(
           conversacion_id,
           JSON.stringify({
             _id: _id,
-            conversacion_id: conversacion_id,
-            nombre: sender_name,
-            apellido: sender_surname,
-            foto_perfil: item.foto_perfil,
+            conversation_id: conversacion_id,
+            nombre: nombre,
+            apellido: apellido,
+            foto_perfil: foto_perfil,
           })
         )
 
