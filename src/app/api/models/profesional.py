@@ -22,6 +22,7 @@ class Profesional(BaseModel):
     recomendaciones: Optional[int] = 0
     foto_perfil: str
     fotos_trabajos: Optional[List[Foto]] = None
+    verificado: Optional[bool] = False
     horarios_atencion: str
     nacimiento: str
     rubro_nombre: Optional[str] = None

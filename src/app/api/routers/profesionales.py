@@ -576,10 +576,11 @@ async def actualizar_profesional(
     # ✅ Aplicar cambios
     PROFESIONALES_COLLECTION.update_one({"correo": correo}, {"$set": update_data})
 
-    profesional["_id"] = str(profesional["_id"])
+    updated_profesional = PROFESIONALES_COLLECTION.find_one({"correo": correo})
+    updated_profesional["_id"] = str(updated_profesional["_id"])
     return {
         "message": "Profesional actualizado correctamente",
-        "profesional": profesional,
+        "profesional": updated_profesional,
     }
 
 
