@@ -22,8 +22,8 @@ const NotificacionChat = ({ setNotificationMessages }) => {
   const senderId = data?.message?.sender_id || data?.sender_id
   const isOwnMessage = senderId === currentUser?.user_data?._id
 
-  /* // Evito render si no hay data, si es propio o ya está leído
-  if (!data || !data.message || isOwnMessage || isLeido) {
+  // Evito render si no hay data, si es propio o ya está leído
+  if (!data || !data.message || isOwnMessage) {
     console.log('[Noti] No muestro noti porque:', {
       noData: !data,
       noMsg: !data?.message,
@@ -31,12 +31,12 @@ const NotificacionChat = ({ setNotificationMessages }) => {
       leido: isLeido,
     })
     return null
-  } */
+  }
 
   // Efecto que marca como leído y reproduce sonido
   useEffect(() => {
     console.log('[Noti] useEffect disparado', { convoId, isOwnMessage })
-
+    console.log(data)
     if (!convoId || isOwnMessage) return
 
     const stored = JSON.parse(localStorage.getItem('chat_leidos') || '{}')
