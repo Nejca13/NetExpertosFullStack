@@ -127,9 +127,9 @@
 
 .containerInfo .pProfesion {
   width: 100%;
-  max-width: 300px;
-  text-wrap: nowrap;
+  min-width: 200px;
   font-size: 14px;
+  line-height: 20px;
   color: white;
   width: min-content;
   padding: 7px 14px;
